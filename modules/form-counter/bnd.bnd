@@ -1,0 +1,11 @@
+Bundle-Name: form-counter
+Bundle-SymbolicName: ir.seydef.plugin.formcounter
+Bundle-Version: 1.0.0
+Export-Package: \
+	ir.seydef.plugin.formcounter.constants,\
+	ir.seydef.plugin.formcounter.model,\
+	ir.seydef.plugin.formcounter.service,\
+	ir.seydef.plugin.formcounter.util
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"
