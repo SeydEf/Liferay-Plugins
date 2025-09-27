@@ -1,7 +1,7 @@
 package ir.seydef.plugin.formcounter.constants;
 
 /**
- * @author seydef
+ * @author S.Abolfazl Eftekhari
  */
 public class FormCounterPanelCategoryKeys {
 
