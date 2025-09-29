@@ -12,16 +12,17 @@ import com.liferay.portal.kernel.util.WebKeys;
 import ir.seydef.plugin.formcounter.constants.FormCounterPortletKeys;
 import ir.seydef.plugin.formcounter.model.FormInstanceDisplayDTO;
 import ir.seydef.plugin.formcounter.model.FormRecordDisplayDTO;
+import ir.seydef.plugin.formcounter.model.SearchCriteria;
 import ir.seydef.plugin.formcounter.service.DDMFormService;
 import ir.seydef.plugin.formcounter.util.UserBranchUtil;
 import org.osgi.service.component.annotations.Component;
 
-import javax.portlet.Portlet;
-import javax.portlet.PortletException;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import javax.portlet.*;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,6 +49,7 @@ import java.util.Locale;
 public class FormCounterPortlet extends MVCPortlet {
 
     private static final Log _log = LogFactoryUtil.getLog(FormCounterPortlet.class);
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public void doView(RenderRequest renderRequest, RenderResponse renderResponse)
@@ -61,27 +63,32 @@ public class FormCounterPortlet extends MVCPortlet {
 
             String userBranchId = UserBranchUtil.getUserBranchId(userId);
 
-            long selectedFormInstanceId = ParamUtil.getLong(renderRequest,
-                    FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID, 0);
-            int delta = ParamUtil.getInteger(renderRequest, FormCounterPortletKeys.PARAM_DELTA,
-                    FormCounterPortletKeys.DEFAULT_DELTA);
+            PortletSession session = renderRequest.getPortletSession();
+            SearchCriteria searchCriteria = (SearchCriteria) session.getAttribute("searchCriteria");
+
+            if (searchCriteria == null) {
+                searchCriteria = new SearchCriteria();
+                searchCriteria.setUserBranchId(userBranchId);
+                long selectedFormInstanceId = ParamUtil.getLong(renderRequest, FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID, 0);
+                searchCriteria.setFormInstanceId(selectedFormInstanceId);
+            }
+
+            int delta = ParamUtil.getInteger(renderRequest, FormCounterPortletKeys.PARAM_DELTA, FormCounterPortletKeys.DEFAULT_DELTA);
             int cur = ParamUtil.getInteger(renderRequest, "cur", 1);
-            String orderByCol = ParamUtil.getString(renderRequest, "orderByCol",
-                    FormCounterPortletKeys.DEFAULT_ORDER_BY_COL);
-            String orderByType = ParamUtil.getString(renderRequest, "orderByType",
-                    FormCounterPortletKeys.DEFAULT_ORDER_BY_TYPE);
+            String orderByCol = ParamUtil.getString(renderRequest, "orderByCol", FormCounterPortletKeys.DEFAULT_ORDER_BY_COL);
+            String orderByType = ParamUtil.getString(renderRequest, "orderByType", FormCounterPortletKeys.DEFAULT_ORDER_BY_TYPE);
 
             renderRequest.setAttribute("userBranchId", userBranchId);
             renderRequest.setAttribute("hasValidBranchId", UserBranchUtil.hasValidBranchId(userId));
-            renderRequest.setAttribute("selectedFormInstanceId", selectedFormInstanceId);
+            renderRequest.setAttribute("selectedFormInstanceId", searchCriteria.getFormInstanceId());
+            renderRequest.setAttribute("searchCriteria", searchCriteria);
             renderRequest.setAttribute("delta", delta);
             renderRequest.setAttribute("cur", cur);
             renderRequest.setAttribute("orderByCol", orderByCol);
             renderRequest.setAttribute("orderByType", orderByType);
 
             List<DDMFormInstance> formInstances = DDMFormService.getFormInstancesWithBranchId(groupId, locale);
-            List<FormInstanceDisplayDTO> formInstanceDTOs = convertToFormInstanceDTOs(formInstances, locale,
-                    userBranchId);
+            List<FormInstanceDisplayDTO> formInstanceDTOs = convertToFormInstanceDTOs(formInstances, locale, userBranchId);
             renderRequest.setAttribute("formInstances", formInstanceDTOs);
 
             List<FormRecordDisplayDTO> formRecords = new ArrayList<>();
@@ -91,12 +98,17 @@ public class FormCounterPortlet extends MVCPortlet {
                 int start = (cur - 1) * delta;
                 int end = start + delta;
 
-                List<DDMFormInstanceRecord> records = DDMFormService.getFilteredFormRecords(
-                        selectedFormInstanceId, userBranchId, start, end, orderByCol, orderByType);
-
-                formRecords = convertToFormRecordDTOs(records, locale);
-
-                totalCount = DDMFormService.getFilteredFormRecordsCount(selectedFormInstanceId, userBranchId);
+                if (searchCriteria.hasSearchCriteria() || searchCriteria.getFormInstanceId() > 0) {
+                    List<DDMFormInstanceRecord> records = DDMFormService.searchFormRecords(
+                            searchCriteria, start, end, orderByCol, orderByType);
+                    formRecords = convertToFormRecordDTOs(records, locale);
+                    totalCount = DDMFormService.getSearchFormRecordsCount(searchCriteria);
+                } else {
+                    List<DDMFormInstanceRecord> records = DDMFormService.getFilteredFormRecords(
+                            searchCriteria.getFormInstanceId(), userBranchId, start, end, orderByCol, orderByType);
+                    formRecords = convertToFormRecordDTOs(records, locale);
+                    totalCount = DDMFormService.getFilteredFormRecordsCount(searchCriteria.getFormInstanceId(), userBranchId);
+                }
             }
 
             renderRequest.setAttribute("formRecords", formRecords);
@@ -111,6 +123,73 @@ public class FormCounterPortlet extends MVCPortlet {
         }
 
         super.doView(renderRequest, renderResponse);
+    }
+
+    public void searchRecords(ActionRequest actionRequest, ActionResponse actionResponse)
+            throws IOException, PortletException {
+
+        try {
+            ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
+            long userId = themeDisplay.getUserId();
+            String userBranchId = UserBranchUtil.getUserBranchId(userId);
+
+            SearchCriteria searchCriteria = new SearchCriteria();
+            searchCriteria.setUserBranchId(userBranchId);
+
+            long formInstanceId = ParamUtil.getLong(actionRequest, FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID, 0);
+            searchCriteria.setFormInstanceId(formInstanceId);
+
+            String registrantName = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_REGISTRANT_NAME);
+            String formNumber = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_FORM_NUMBER);
+            String trackingCode = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_TRACKING_CODE);
+            String formName = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_FORM_NAME);
+
+            if (Validator.isNotNull(registrantName)) {
+                searchCriteria.setRegistrantName(registrantName.trim());
+            }
+            if (Validator.isNotNull(formNumber)) {
+                searchCriteria.setFormNumber(formNumber.trim());
+            }
+            if (Validator.isNotNull(trackingCode)) {
+                searchCriteria.setTrackingCode(trackingCode.trim());
+            }
+            if (Validator.isNotNull(formName)) {
+                searchCriteria.setFormName(formName.trim());
+            }
+
+            String startDateStr = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_START_DATE);
+            String endDateStr = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_END_DATE);
+
+            if (Validator.isNotNull(startDateStr)) {
+                try {
+                    Date startDate = DATE_FORMAT.parse(startDateStr);
+                    searchCriteria.setStartDate(startDate);
+                } catch (ParseException e) {
+                    _log.warn("Invalid start date format: " + startDateStr, e);
+                }
+            }
+
+            if (Validator.isNotNull(endDateStr)) {
+                try {
+                    Date endDate = DATE_FORMAT.parse(endDateStr);
+                    searchCriteria.setEndDate(endDate);
+                } catch (ParseException e) {
+                    _log.warn("Invalid end date format: " + endDateStr, e);
+                }
+            }
+
+            String status = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_STATUS);
+            if (Validator.isNotNull(status) && !"all".equals(status)) {
+                searchCriteria.setStatus(status);
+            }
+
+            PortletSession session = actionRequest.getPortletSession();
+            session.setAttribute("searchCriteria", searchCriteria);
+
+        } catch (Exception e) {
+            _log.error("Error processing search action", e);
+            actionRequest.setAttribute("errorMessage", "search.error.occurred");
+        }
     }
 
     private List<FormInstanceDisplayDTO> convertToFormInstanceDTOs(List<DDMFormInstance> formInstances,
@@ -150,3 +229,4 @@ public class FormCounterPortlet extends MVCPortlet {
         return dtos;
     }
 }
+
