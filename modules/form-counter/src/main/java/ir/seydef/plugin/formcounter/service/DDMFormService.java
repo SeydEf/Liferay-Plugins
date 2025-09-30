@@ -18,9 +18,13 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import ir.seydef.plugin.formcounter.constants.FormCounterPortletKeys;
+import ir.seydef.plugin.formcounter.model.SearchCriteria;
+import ir.seydef.plugin.formcounter.util.PersianTextUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -290,5 +294,184 @@ public class DDMFormService {
             _log.error("Error retrieving form instance: " + formInstanceId, e);
             return null;
         }
+    }
+
+    public static List<DDMFormInstanceRecord> searchFormRecords(
+            SearchCriteria searchCriteria, int start, int end,
+            String orderByCol, String orderByType) {
+
+        if (Validator.isNull(searchCriteria.getUserBranchId())) {
+            return new ArrayList<>();
+        }
+
+        try {
+            DynamicQuery dynamicQuery = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery();
+
+            if (searchCriteria.getFormInstanceId() > 0) {
+                dynamicQuery.add(PropertyFactoryUtil.forName("formInstanceId").eq(searchCriteria.getFormInstanceId()));
+            }
+
+            if (searchCriteria.getStartDate() != null) {
+                dynamicQuery.add(PropertyFactoryUtil.forName("createDate").ge(searchCriteria.getStartDate()));
+            }
+
+            if (searchCriteria.getEndDate() != null) {
+                Date endDate = new Date(searchCriteria.getEndDate().getTime() + 24 * 60 * 60 * 1000);
+                dynamicQuery.add(PropertyFactoryUtil.forName("createDate").lt(endDate));
+            }
+
+            if (Validator.isNotNull(searchCriteria.getStatus()) && !"all".equals(searchCriteria.getStatus())) {
+                int status = WorkflowConstants.STATUS_APPROVED;
+                if ("draft".equals(searchCriteria.getStatus())) {
+                    status = WorkflowConstants.STATUS_DRAFT;
+                } else if ("pending".equals(searchCriteria.getStatus())) {
+                    status = WorkflowConstants.STATUS_PENDING;
+                }
+                dynamicQuery.add(PropertyFactoryUtil.forName("status").eq(status));
+            }
+
+            if (Validator.isNotNull(orderByCol)) {
+                if ("desc".equalsIgnoreCase(orderByType)) {
+                    dynamicQuery.addOrder(OrderFactoryUtil.desc(orderByCol));
+                } else {
+                    dynamicQuery.addOrder(OrderFactoryUtil.asc(orderByCol));
+                }
+            }
+
+            List<DDMFormInstanceRecord> allRecords = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery(dynamicQuery);
+
+            List<DDMFormInstanceRecord> filteredRecords = new ArrayList<>();
+            for (DDMFormInstanceRecord record : allRecords) {
+                try {
+                    String recordBranchId = extractBranchIdFromRecord(record);
+                    if (!searchCriteria.getUserBranchId().equals(recordBranchId)) {
+                        continue;
+                    }
+
+                    if (matchesTextCriteria(record, searchCriteria)) {
+                        filteredRecords.add(record);
+                    }
+                } catch (Exception e) {
+                    _log.warn("Error filtering record: " + record.getFormInstanceRecordId(), e);
+                }
+            }
+
+            int fromIndex = Math.min(start, filteredRecords.size());
+            int toIndex = Math.min(end, filteredRecords.size());
+
+            return filteredRecords.subList(fromIndex, toIndex);
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public static int getSearchFormRecordsCount(SearchCriteria searchCriteria) {
+        if (Validator.isNull(searchCriteria.getUserBranchId())) {
+            return 0;
+        }
+
+        try {
+            DynamicQuery dynamicQuery = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery();
+
+            if (searchCriteria.getFormInstanceId() > 0) {
+                dynamicQuery.add(PropertyFactoryUtil.forName("formInstanceId").eq(searchCriteria.getFormInstanceId()));
+            }
+
+            if (searchCriteria.getStartDate() != null) {
+                dynamicQuery.add(PropertyFactoryUtil.forName("createDate").ge(searchCriteria.getStartDate()));
+            }
+
+            if (searchCriteria.getEndDate() != null) {
+                Date endDate = new Date(searchCriteria.getEndDate().getTime() + 24 * 60 * 60 * 1000);
+                dynamicQuery.add(PropertyFactoryUtil.forName("createDate").lt(endDate));
+            }
+
+            if (Validator.isNotNull(searchCriteria.getStatus()) && !"all".equals(searchCriteria.getStatus())) {
+                int status = WorkflowConstants.STATUS_APPROVED;
+                if ("draft".equals(searchCriteria.getStatus())) {
+                    status = WorkflowConstants.STATUS_DRAFT;
+                } else if ("pending".equals(searchCriteria.getStatus())) {
+                    status = WorkflowConstants.STATUS_PENDING;
+                }
+                dynamicQuery.add(PropertyFactoryUtil.forName("status").eq(status));
+            }
+
+            List<DDMFormInstanceRecord> allRecords = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery(dynamicQuery);
+
+            int count = 0;
+            for (DDMFormInstanceRecord record : allRecords) {
+                try {
+                    String recordBranchId = extractBranchIdFromRecord(record);
+                    if (searchCriteria.getUserBranchId().equals(recordBranchId) &&
+                            matchesTextCriteria(record, searchCriteria)) {
+                        count++;
+                    }
+                } catch (Exception e) {
+                    _log.warn("Error counting record: " + record.getFormInstanceRecordId(), e);
+                }
+            }
+
+            return count;
+
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private static boolean matchesTextCriteria(DDMFormInstanceRecord record, SearchCriteria searchCriteria) {
+        try {
+            DDMFormValues formValues = record.getDDMFormValues();
+            if (formValues == null) {
+                return !searchCriteria.hasSearchCriteria();
+            }
+
+            DDMFormInstance formInstance = getFormInstance(record.getFormInstanceId());
+
+            if (Validator.isNotNull(searchCriteria.getFormName()) && formInstance != null) {
+                String formName = formInstance.getName(formValues.getDefaultLocale());
+                if (!PersianTextUtil.contains(formName, searchCriteria.getFormName())) {
+                    return false;
+                }
+            }
+
+            List<DDMFormFieldValue> fieldValues = formValues.getDDMFormFieldValues();
+
+            boolean registrantNameMatch = record.getUserName().equals(searchCriteria.getRegistrantName()) ||
+                    PersianTextUtil.contains(record.getUserName(), searchCriteria.getRegistrantName());
+            boolean formNumberMatch = record.getFormInstanceRecordId() == GetterUtil.getLong(searchCriteria.getFormNumber()) ||
+                    PersianTextUtil.contains(String.valueOf(record.getFormInstanceRecordId()), searchCriteria.getFormNumber());
+
+            boolean trackingCodeMatch = checkFieldMatch(fieldValues, "trackingCode", searchCriteria.getTrackingCode());
+
+            return registrantNameMatch && formNumberMatch && trackingCodeMatch;
+
+        } catch (Exception e) {
+            _log.warn("Error matching text criteria for record: " + record.getFormInstanceRecordId(), e);
+            return false;
+        }
+    }
+
+    private static boolean checkFieldMatch(List<DDMFormFieldValue> fieldValues, String fieldName, String searchValue) {
+        if (Validator.isNull(searchValue)) {
+            return true; // No search criteria for this field
+        }
+
+        for (DDMFormFieldValue fieldValue : fieldValues) {
+            if (fieldName.equals(fieldValue.getFieldReference()) ||
+                    fieldName.equals(fieldValue.getName())) {
+
+                if (fieldValue.getValue() != null && fieldValue.getValue().getDefaultLocale() != null) {
+                    String fieldValueString = GetterUtil.getString(
+                            fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
+
+                    if (PersianTextUtil.contains(fieldValueString, searchValue)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }
