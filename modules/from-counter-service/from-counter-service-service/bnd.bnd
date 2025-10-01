@@ -1,0 +1,6 @@
+Bundle-Name: from-counter-service-service
+Bundle-SymbolicName: ir.seydef.plugin.formcounter.service.service
+Bundle-Version: 1.0.0
+Liferay-Require-SchemaVersion: 1.0.0
+Liferay-Service: true
+-dsannotations-options: inherit

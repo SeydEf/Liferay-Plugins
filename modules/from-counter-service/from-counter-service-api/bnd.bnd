@@ -1,0 +1,10 @@
+Bundle-Name: from-counter-service-api
+Bundle-SymbolicName: ir.seydef.plugin.formcounter.service.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	ir.seydef.plugin.formcounter.service.exception,\
+	ir.seydef.plugin.formcounter.service.model,\
+	ir.seydef.plugin.formcounter.service.service,\
+	ir.seydef.plugin.formcounter.service.service.persistence
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../from-counter-service-service/service.xml

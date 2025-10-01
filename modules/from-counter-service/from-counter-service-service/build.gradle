@@ -1,0 +1,12 @@
+dependencies {
+	api project(":modules:from-counter-service:from-counter-service-api")
+
+	compileOnly group: "com.liferay.portal", name: "release.portal.api"
+}
+
+buildService {
+	apiDir = "../from-counter-service-api/src/main/java"
+	testDir = "../from-counter-service-test/src/testIntegration/java"
+}
+
+group = "ir.seydef.plugin.formcounter.service"
