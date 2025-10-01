@@ -30,7 +30,7 @@
         <c:if test="<%= hasValidBranchId %>">
             <div class="branch-info">
                 <span class="branch-label">
-                    <liferay-ui:message key="user.branch.id"/>:
+                    <liferay-ui:message key="branch.id"/>:
                 </span>
                 <span class="branch-value"><%= userBranchId %></span>
             </div>
@@ -90,7 +90,7 @@
                                 <aui:input name="<%= FormCounterPortletKeys.PARAM_REGISTRANT_NAME %>"
                                            type="text"
                                            label="registrant.name"
-                                           value="<%= searchCriteria.getRegistrantName() != null ? searchCriteria.getRegistrantName() : \"\" %>"
+                                           value='<%= searchCriteria.getRegistrantName() != null ? searchCriteria.getRegistrantName() : "" %>'
                                            placeholder="search.by.registrant.name"/>
                             </div>
 
@@ -98,7 +98,7 @@
                                 <aui:input name="<%= FormCounterPortletKeys.PARAM_FORM_NUMBER %>"
                                            type="text"
                                            label="form.number"
-                                           value="<%= searchCriteria.getFormNumber() != null ? searchCriteria.getFormNumber() : \"\" %>"
+                                           value='<%= searchCriteria.getFormNumber() != null ? searchCriteria.getFormNumber() : "" %>'
                                            placeholder="search.by.form.number"/>
                             </div>
 
@@ -106,7 +106,7 @@
                                 <aui:input name="<%= FormCounterPortletKeys.PARAM_TRACKING_CODE %>"
                                            type="text"
                                            label="tracking.code"
-                                           value="<%= searchCriteria.getTrackingCode() != null ? searchCriteria.getTrackingCode() : \"\" %>"
+                                           value='<%= searchCriteria.getTrackingCode() != null ? searchCriteria.getTrackingCode() : "" %>'
                                            placeholder="search.by.tracking.code"/>
                             </div>
 
@@ -114,7 +114,7 @@
                                 <aui:input name="<%= FormCounterPortletKeys.PARAM_FORM_NAME %>"
                                            type="text"
                                            label="form.name"
-                                           value="<%= searchCriteria.getFormName() != null ? searchCriteria.getFormName() : \"\" %>"
+                                           value='<%= searchCriteria.getFormName() != null ? searchCriteria.getFormName() : "" %>'
                                            placeholder="search.by.form.name"/>
                             </div>
                         </div>
@@ -124,31 +124,28 @@
                                 <aui:input name="<%= FormCounterPortletKeys.PARAM_START_DATE %>"
                                            type="date"
                                            label="start.date"
-                                           value="<%= searchCriteria.getStartDate() != null ? dateFormat.format(searchCriteria.getStartDate()) : \"\" %>"/>
+                                           value='<%= searchCriteria.getStartDate() != null ? dateFormat.format(searchCriteria.getStartDate()) : "" %>'/>
                             </div>
 
                             <div class="col-md-3">
                                 <aui:input name="<%= FormCounterPortletKeys.PARAM_END_DATE %>"
                                            type="date"
                                            label="end.date"
-                                           value="<%= searchCriteria.getEndDate() != null ? dateFormat.format(searchCriteria.getEndDate()) : \"\" %>"/>
+                                           value='<%= searchCriteria.getEndDate() != null ? dateFormat.format(searchCriteria.getEndDate()) : "" %>'/>
                             </div>
 
                             <div class="col-md-3">
                                 <aui:select name="<%= FormCounterPortletKeys.PARAM_STATUS %>"
                                             label="status"
-                                            value="<%= searchCriteria.getStatus() != null ? searchCriteria.getStatus() : \"all\" %>">
+                                            value='<%= searchCriteria.getStatus() != null ? searchCriteria.getStatus() : "all" %>'>
                                     <aui:option value="all">
                                         <liferay-ui:message key="all.statuses"/>
                                     </aui:option>
-                                    <aui:option value="approved">
-                                        <liferay-ui:message key="approved"/>
+                                    <aui:option value="seen">
+                                        <liferay-ui:message key="seen"/>
                                     </aui:option>
-                                    <aui:option value="draft">
-                                        <liferay-ui:message key="draft"/>
-                                    </aui:option>
-                                    <aui:option value="pending">
-                                        <liferay-ui:message key="pending"/>
+                                    <aui:option value="unseen">
+                                        <liferay-ui:message key="unseen"/>
                                     </aui:option>
                                 </aui:select>
                             </div>
