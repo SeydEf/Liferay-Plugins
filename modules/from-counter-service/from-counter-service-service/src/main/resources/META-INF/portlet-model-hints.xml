@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="ir.seydef.plugin.formcounter.model.FormSubmissionStatus">
+		<field name="formSubmissionStatusId" type="long" />
+		<field name="formInstanceRecordId" type="long" />
+		<field name="seen" type="boolean" />
+		<field name="seenDate" type="Date" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+	</model>
+</model-hints>
