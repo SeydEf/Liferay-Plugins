@@ -1,11 +1,14 @@
 package ir.seydef.plugin.formcounter.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author S.Abolfazl Eftekhari
  */
-public class SearchCriteria {
+public class SearchCriteria implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String registrantName;
     private String formNumber;
     private String trackingCode;
@@ -93,6 +96,6 @@ public class SearchCriteria {
 
     public boolean hasSearchCriteria() {
         return registrantName != null || formNumber != null || trackingCode != null ||
-               formName != null || startDate != null || endDate != null || status != null;
+                formName != null || startDate != null || endDate != null || status != null;
     }
 }
