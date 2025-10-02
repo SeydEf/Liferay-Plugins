@@ -1,4 +1,4 @@
-package ir.seydef.plugin.formcounter.service;
+package ir.seydef.plugin.formcounter.serviceHelper;
 
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
@@ -23,10 +23,7 @@ import ir.seydef.plugin.formcounter.constants.FormCounterPortletKeys;
 import ir.seydef.plugin.formcounter.model.SearchCriteria;
 import ir.seydef.plugin.formcounter.util.PersianTextUtil;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * @author S.Abolfazl Eftekhari
@@ -239,7 +236,7 @@ public class DDMFormService {
                         } else if (label.has("en")) {
                             labelText = label.getString("en");
                         } else {
-                            java.util.Iterator<String> keys = label.keys();
+                            Iterator<String> keys = label.keys();
                             if (keys.hasNext()) {
                                 String firstKey = keys.next();
                                 labelText = label.getString(firstKey);
