@@ -15,9 +15,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Model listener for DDMFormInstanceRecord to automatically create FormSubmissionStatus entries
- * when new form records with BranchID are created.
- *
  * @author S.Abolfazl Eftekhari
  */
 @Component(
