@@ -46,6 +46,25 @@ public class FormSubmissionStatusLocalServiceWrapper
 	}
 
 	/**
+	 * Creates a new FormSubmissionStatus entry for a form instance record
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @param serviceContext the service context
+	 * @return the created FormSubmissionStatus
+	 * @throws PortalException if a portal exception occurred
+	 */
+	@Override
+	public ir.seydef.plugin.formcounter.model.FormSubmissionStatus
+			addFormSubmissionStatus(
+				long formInstanceRecordId,
+				com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _formSubmissionStatusLocalService.addFormSubmissionStatus(
+			formInstanceRecordId, serviceContext);
+	}
+
+	/**
 	 * Creates a new form submission status with the primary key. Does not add the form submission status to the database.
 	 *
 	 * @param formSubmissionStatusId the primary key for the new form submission status
@@ -57,6 +76,26 @@ public class FormSubmissionStatusLocalServiceWrapper
 
 		return _formSubmissionStatusLocalService.createFormSubmissionStatus(
 			formSubmissionStatusId);
+	}
+
+	/**
+	 * Creates or updates FormSubmissionStatus for a form instance record
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @param seen the seen status
+	 * @param serviceContext the service context
+	 * @return the FormSubmissionStatus
+	 * @throws PortalException if a portal exception occurred
+	 */
+	@Override
+	public ir.seydef.plugin.formcounter.model.FormSubmissionStatus
+			createOrUpdate(
+				long formInstanceRecordId, boolean seen,
+				com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _formSubmissionStatusLocalService.createOrUpdate(
+			formInstanceRecordId, seen, serviceContext);
 	}
 
 	/**
@@ -231,6 +270,20 @@ public class FormSubmissionStatusLocalServiceWrapper
 	}
 
 	/**
+	 * Gets the FormSubmissionStatus by form instance record ID
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @return the FormSubmissionStatus, or null if not found
+	 */
+	@Override
+	public ir.seydef.plugin.formcounter.model.FormSubmissionStatus
+		getByFormInstanceRecordId(long formInstanceRecordId) {
+
+		return _formSubmissionStatusLocalService.getByFormInstanceRecordId(
+			formInstanceRecordId);
+	}
+
+	/**
 	 * Returns the form submission status with the primary key.
 	 *
 	 * @param formSubmissionStatusId the primary key of the form submission status
@@ -305,6 +358,101 @@ public class FormSubmissionStatusLocalServiceWrapper
 
 		return _formSubmissionStatusLocalService.getPersistedModel(
 			primaryKeyObj);
+	}
+
+	/**
+	 * Gets all seen form submissions for a group
+	 *
+	 * @param groupId the group ID
+	 * @return list of seen FormSubmissionStatus entries
+	 */
+	@Override
+	public java.util.List
+		<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
+			getSeenByGroupId(long groupId) {
+
+		return _formSubmissionStatusLocalService.getSeenByGroupId(groupId);
+	}
+
+	/**
+	 * Gets count of seen form submissions for a group
+	 *
+	 * @param groupId the group ID
+	 * @return count of seen submissions
+	 */
+	@Override
+	public int getSeenCountByGroupId(long groupId) {
+		return _formSubmissionStatusLocalService.getSeenCountByGroupId(groupId);
+	}
+
+	/**
+	 * Gets all unseen form submissions for a group
+	 *
+	 * @param groupId the group ID
+	 * @return list of unseen FormSubmissionStatus entries
+	 */
+	@Override
+	public java.util.List
+		<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
+			getUnseenByGroupId(long groupId) {
+
+		return _formSubmissionStatusLocalService.getUnseenByGroupId(groupId);
+	}
+
+	/**
+	 * Gets count of unseen form submissions for a group
+	 *
+	 * @param groupId the group ID
+	 * @return count of unseen submissions
+	 */
+	@Override
+	public int getUnseenCountByGroupId(long groupId) {
+		return _formSubmissionStatusLocalService.getUnseenCountByGroupId(
+			groupId);
+	}
+
+	/**
+	 * Checks if a form submission is seen
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @return true if seen, false otherwise
+	 */
+	@Override
+	public boolean isSeen(long formInstanceRecordId) {
+		return _formSubmissionStatusLocalService.isSeen(formInstanceRecordId);
+	}
+
+	/**
+	 * Marks a form submission as seen
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @param userId the user ID who marked it as seen
+	 * @return the updated FormSubmissionStatus
+	 * @throws PortalException if a portal exception occurred
+	 */
+	@Override
+	public ir.seydef.plugin.formcounter.model.FormSubmissionStatus markAsSeen(
+			long formInstanceRecordId, long userId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _formSubmissionStatusLocalService.markAsSeen(
+			formInstanceRecordId, userId);
+	}
+
+	/**
+	 * Marks a form submission as unseen
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @return the updated FormSubmissionStatus
+	 * @throws PortalException if a portal exception occurred
+	 */
+	@Override
+	public ir.seydef.plugin.formcounter.model.FormSubmissionStatus markAsUnseen(
+			long formInstanceRecordId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _formSubmissionStatusLocalService.markAsUnseen(
+			formInstanceRecordId);
 	}
 
 	/**

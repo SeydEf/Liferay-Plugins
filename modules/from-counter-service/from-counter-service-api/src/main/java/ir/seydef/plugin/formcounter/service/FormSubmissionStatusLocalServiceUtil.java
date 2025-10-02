@@ -53,6 +53,23 @@ public class FormSubmissionStatusLocalServiceUtil {
 	}
 
 	/**
+	 * Creates a new FormSubmissionStatus entry for a form instance record
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @param serviceContext the service context
+	 * @return the created FormSubmissionStatus
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public static FormSubmissionStatus addFormSubmissionStatus(
+			long formInstanceRecordId,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws PortalException {
+
+		return getService().addFormSubmissionStatus(
+			formInstanceRecordId, serviceContext);
+	}
+
+	/**
 	 * Creates a new form submission status with the primary key. Does not add the form submission status to the database.
 	 *
 	 * @param formSubmissionStatusId the primary key for the new form submission status
@@ -62,6 +79,24 @@ public class FormSubmissionStatusLocalServiceUtil {
 		long formSubmissionStatusId) {
 
 		return getService().createFormSubmissionStatus(formSubmissionStatusId);
+	}
+
+	/**
+	 * Creates or updates FormSubmissionStatus for a form instance record
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @param seen the seen status
+	 * @param serviceContext the service context
+	 * @return the FormSubmissionStatus
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public static FormSubmissionStatus createOrUpdate(
+			long formInstanceRecordId, boolean seen,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws PortalException {
+
+		return getService().createOrUpdate(
+			formInstanceRecordId, seen, serviceContext);
 	}
 
 	/**
@@ -208,6 +243,18 @@ public class FormSubmissionStatusLocalServiceUtil {
 	}
 
 	/**
+	 * Gets the FormSubmissionStatus by form instance record ID
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @return the FormSubmissionStatus, or null if not found
+	 */
+	public static FormSubmissionStatus getByFormInstanceRecordId(
+		long formInstanceRecordId) {
+
+		return getService().getByFormInstanceRecordId(formInstanceRecordId);
+	}
+
+	/**
 	 * Returns the form submission status with the primary key.
 	 *
 	 * @param formSubmissionStatusId the primary key of the form submission status
@@ -270,6 +317,84 @@ public class FormSubmissionStatusLocalServiceUtil {
 		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
+	}
+
+	/**
+	 * Gets all seen form submissions for a group
+	 *
+	 * @param groupId the group ID
+	 * @return list of seen FormSubmissionStatus entries
+	 */
+	public static List<FormSubmissionStatus> getSeenByGroupId(long groupId) {
+		return getService().getSeenByGroupId(groupId);
+	}
+
+	/**
+	 * Gets count of seen form submissions for a group
+	 *
+	 * @param groupId the group ID
+	 * @return count of seen submissions
+	 */
+	public static int getSeenCountByGroupId(long groupId) {
+		return getService().getSeenCountByGroupId(groupId);
+	}
+
+	/**
+	 * Gets all unseen form submissions for a group
+	 *
+	 * @param groupId the group ID
+	 * @return list of unseen FormSubmissionStatus entries
+	 */
+	public static List<FormSubmissionStatus> getUnseenByGroupId(long groupId) {
+		return getService().getUnseenByGroupId(groupId);
+	}
+
+	/**
+	 * Gets count of unseen form submissions for a group
+	 *
+	 * @param groupId the group ID
+	 * @return count of unseen submissions
+	 */
+	public static int getUnseenCountByGroupId(long groupId) {
+		return getService().getUnseenCountByGroupId(groupId);
+	}
+
+	/**
+	 * Checks if a form submission is seen
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @return true if seen, false otherwise
+	 */
+	public static boolean isSeen(long formInstanceRecordId) {
+		return getService().isSeen(formInstanceRecordId);
+	}
+
+	/**
+	 * Marks a form submission as seen
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @param userId the user ID who marked it as seen
+	 * @return the updated FormSubmissionStatus
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public static FormSubmissionStatus markAsSeen(
+			long formInstanceRecordId, long userId)
+		throws PortalException {
+
+		return getService().markAsSeen(formInstanceRecordId, userId);
+	}
+
+	/**
+	 * Marks a form submission as unseen
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @return the updated FormSubmissionStatus
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public static FormSubmissionStatus markAsUnseen(long formInstanceRecordId)
+		throws PortalException {
+
+		return getService().markAsUnseen(formInstanceRecordId);
 	}
 
 	/**
