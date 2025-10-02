@@ -49,7 +49,7 @@ public interface FormSubmissionStatusService extends BaseService {
 	 * Creates a new FormSubmissionStatus entry for a form instance record
 	 *
 	 * @param formInstanceRecordId the form instance record ID
-	 * @param serviceContext the service context
+	 * @param serviceContext       the service context
 	 * @return the created FormSubmissionStatus
 	 * @throws PortalException if a portal exception occurred
 	 */
@@ -61,8 +61,8 @@ public interface FormSubmissionStatusService extends BaseService {
 	 * Creates or updates FormSubmissionStatus for a form instance record
 	 *
 	 * @param formInstanceRecordId the form instance record ID
-	 * @param seen the seen status
-	 * @param serviceContext the service context
+	 * @param seen                 the seen status
+	 * @param serviceContext       the service context
 	 * @return the FormSubmissionStatus
 	 * @throws PortalException if a portal exception occurred
 	 */
@@ -112,6 +112,19 @@ public interface FormSubmissionStatusService extends BaseService {
 	public int getSeenCountByGroupId(long groupId) throws PortalException;
 
 	/**
+	 * Gets unseen form submissions by form instance ID
+	 *
+	 * @param formInstanceId the form instance ID
+	 * @param groupId the group ID
+	 * @return list of unseen FormSubmissionStatus entries for the specific form instance
+	 * @throws PortalException if a portal exception occurred
+	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<FormSubmissionStatus> getUnseenByFormInstanceId(
+			long formInstanceId, long groupId)
+		throws PortalException;
+
+	/**
 	 * Gets all unseen form submissions for a group
 	 *
 	 * @param groupId the group ID
@@ -146,7 +159,7 @@ public interface FormSubmissionStatusService extends BaseService {
 	 * Marks a form submission as seen
 	 *
 	 * @param formInstanceRecordId the form instance record ID
-	 * @param userId the user ID who marked it as seen
+	 * @param userId               the user ID who marked it as seen
 	 * @return the updated FormSubmissionStatus
 	 * @throws PortalException if a portal exception occurred
 	 */

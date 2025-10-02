@@ -386,6 +386,22 @@ public class FormSubmissionStatusLocalServiceWrapper
 	}
 
 	/**
+	 * Gets unseen form submissions by form instance ID
+	 *
+	 * @param formInstanceId the form instance ID
+	 * @param groupId the group ID
+	 * @return list of unseen FormSubmissionStatus entries for the specific form instance
+	 */
+	@Override
+	public java.util.List
+		<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
+			getUnseenByFormInstanceId(long formInstanceId, long groupId) {
+
+		return _formSubmissionStatusLocalService.getUnseenByFormInstanceId(
+			formInstanceId, groupId);
+	}
+
+	/**
 	 * Gets all unseen form submissions for a group
 	 *
 	 * @param groupId the group ID

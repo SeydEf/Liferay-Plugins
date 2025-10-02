@@ -35,7 +35,7 @@ public class FormSubmissionStatusServiceUtil {
 	 * Creates a new FormSubmissionStatus entry for a form instance record
 	 *
 	 * @param formInstanceRecordId the form instance record ID
-	 * @param serviceContext the service context
+	 * @param serviceContext       the service context
 	 * @return the created FormSubmissionStatus
 	 * @throws PortalException if a portal exception occurred
 	 */
@@ -52,8 +52,8 @@ public class FormSubmissionStatusServiceUtil {
 	 * Creates or updates FormSubmissionStatus for a form instance record
 	 *
 	 * @param formInstanceRecordId the form instance record ID
-	 * @param seen the seen status
-	 * @param serviceContext the service context
+	 * @param seen                 the seen status
+	 * @param serviceContext       the service context
 	 * @return the FormSubmissionStatus
 	 * @throws PortalException if a portal exception occurred
 	 */
@@ -116,6 +116,21 @@ public class FormSubmissionStatusServiceUtil {
 	}
 
 	/**
+	 * Gets unseen form submissions by form instance ID
+	 *
+	 * @param formInstanceId the form instance ID
+	 * @param groupId the group ID
+	 * @return list of unseen FormSubmissionStatus entries for the specific form instance
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public static List<FormSubmissionStatus> getUnseenByFormInstanceId(
+			long formInstanceId, long groupId)
+		throws PortalException {
+
+		return getService().getUnseenByFormInstanceId(formInstanceId, groupId);
+	}
+
+	/**
 	 * Gets all unseen form submissions for a group
 	 *
 	 * @param groupId the group ID
@@ -158,7 +173,7 @@ public class FormSubmissionStatusServiceUtil {
 	 * Marks a form submission as seen
 	 *
 	 * @param formInstanceRecordId the form instance record ID
-	 * @param userId the user ID who marked it as seen
+	 * @param userId               the user ID who marked it as seen
 	 * @return the updated FormSubmissionStatus
 	 * @throws PortalException if a portal exception occurred
 	 */

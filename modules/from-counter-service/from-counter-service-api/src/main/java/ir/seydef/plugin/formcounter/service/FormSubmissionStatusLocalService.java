@@ -16,6 +16,7 @@ import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.BaseLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalService;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
@@ -68,6 +69,18 @@ public interface FormSubmissionStatusLocalService
 		FormSubmissionStatus formSubmissionStatus);
 
 	/**
+	 * Creates a new FormSubmissionStatus entry for a form instance record
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @param serviceContext the service context
+	 * @return the created FormSubmissionStatus
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public FormSubmissionStatus addFormSubmissionStatus(
+			long formInstanceRecordId, ServiceContext serviceContext)
+		throws PortalException;
+
+	/**
 	 * Creates a new form submission status with the primary key. Does not add the form submission status to the database.
 	 *
 	 * @param formSubmissionStatusId the primary key for the new form submission status
@@ -76,6 +89,20 @@ public interface FormSubmissionStatusLocalService
 	@Transactional(enabled = false)
 	public FormSubmissionStatus createFormSubmissionStatus(
 		long formSubmissionStatusId);
+
+	/**
+	 * Creates or updates FormSubmissionStatus for a form instance record
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @param seen the seen status
+	 * @param serviceContext the service context
+	 * @return the FormSubmissionStatus
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public FormSubmissionStatus createOrUpdate(
+			long formInstanceRecordId, boolean seen,
+			ServiceContext serviceContext)
+		throws PortalException;
 
 	/**
 	 * @throws PortalException
@@ -194,6 +221,16 @@ public interface FormSubmissionStatusLocalService
 	public ActionableDynamicQuery getActionableDynamicQuery();
 
 	/**
+	 * Gets the FormSubmissionStatus by form instance record ID
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @return the FormSubmissionStatus, or null if not found
+	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public FormSubmissionStatus getByFormInstanceRecordId(
+		long formInstanceRecordId);
+
+	/**
 	 * Returns the form submission status with the primary key.
 	 *
 	 * @param formSubmissionStatusId the primary key of the form submission status
@@ -244,6 +281,84 @@ public interface FormSubmissionStatusLocalService
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException;
+
+	/**
+	 * Gets all seen form submissions for a group
+	 *
+	 * @param groupId the group ID
+	 * @return list of seen FormSubmissionStatus entries
+	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<FormSubmissionStatus> getSeenByGroupId(long groupId);
+
+	/**
+	 * Gets count of seen form submissions for a group
+	 *
+	 * @param groupId the group ID
+	 * @return count of seen submissions
+	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getSeenCountByGroupId(long groupId);
+
+	/**
+	 * Gets unseen form submissions by form instance ID
+	 *
+	 * @param formInstanceId the form instance ID
+	 * @param groupId the group ID
+	 * @return list of unseen FormSubmissionStatus entries for the specific form instance
+	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<FormSubmissionStatus> getUnseenByFormInstanceId(
+		long formInstanceId, long groupId);
+
+	/**
+	 * Gets all unseen form submissions for a group
+	 *
+	 * @param groupId the group ID
+	 * @return list of unseen FormSubmissionStatus entries
+	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<FormSubmissionStatus> getUnseenByGroupId(long groupId);
+
+	/**
+	 * Gets count of unseen form submissions for a group
+	 *
+	 * @param groupId the group ID
+	 * @return count of unseen submissions
+	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getUnseenCountByGroupId(long groupId);
+
+	/**
+	 * Checks if a form submission is seen
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @return true if seen, false otherwise
+	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public boolean isSeen(long formInstanceRecordId);
+
+	/**
+	 * Marks a form submission as seen
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @param userId the user ID who marked it as seen
+	 * @return the updated FormSubmissionStatus
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public FormSubmissionStatus markAsSeen(
+			long formInstanceRecordId, long userId)
+		throws PortalException;
+
+	/**
+	 * Marks a form submission as unseen
+	 *
+	 * @param formInstanceRecordId the form instance record ID
+	 * @return the updated FormSubmissionStatus
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public FormSubmissionStatus markAsUnseen(long formInstanceRecordId)
 		throws PortalException;
 
 	/**

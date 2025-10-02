@@ -340,6 +340,19 @@ public class FormSubmissionStatusLocalServiceUtil {
 	}
 
 	/**
+	 * Gets unseen form submissions by form instance ID
+	 *
+	 * @param formInstanceId the form instance ID
+	 * @param groupId the group ID
+	 * @return list of unseen FormSubmissionStatus entries for the specific form instance
+	 */
+	public static List<FormSubmissionStatus> getUnseenByFormInstanceId(
+		long formInstanceId, long groupId) {
+
+		return getService().getUnseenByFormInstanceId(formInstanceId, groupId);
+	}
+
+	/**
 	 * Gets all unseen form submissions for a group
 	 *
 	 * @param groupId the group ID

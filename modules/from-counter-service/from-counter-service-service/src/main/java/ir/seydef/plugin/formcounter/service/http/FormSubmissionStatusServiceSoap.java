@@ -59,7 +59,7 @@ public class FormSubmissionStatusServiceSoap {
 	 * Creates a new FormSubmissionStatus entry for a form instance record
 	 *
 	 * @param formInstanceRecordId the form instance record ID
-	 * @param serviceContext the service context
+	 * @param serviceContext       the service context
 	 * @return the created FormSubmissionStatus
 	 * @throws PortalException if a portal exception occurred
 	 */
@@ -89,7 +89,7 @@ public class FormSubmissionStatusServiceSoap {
 	 * Marks a form submission as seen
 	 *
 	 * @param formInstanceRecordId the form instance record ID
-	 * @param userId the user ID who marked it as seen
+	 * @param userId               the user ID who marked it as seen
 	 * @return the updated FormSubmissionStatus
 	 * @throws PortalException if a portal exception occurred
 	 */
@@ -292,11 +292,40 @@ public class FormSubmissionStatusServiceSoap {
 	}
 
 	/**
+	 * Gets unseen form submissions by form instance ID
+	 *
+	 * @param formInstanceId the form instance ID
+	 * @param groupId the group ID
+	 * @return list of unseen FormSubmissionStatus entries for the specific form instance
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap[]
+			getUnseenByFormInstanceId(long formInstanceId, long groupId)
+		throws RemoteException {
+
+		try {
+			java.util.List
+				<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
+					returnValue =
+						FormSubmissionStatusServiceUtil.
+							getUnseenByFormInstanceId(formInstanceId, groupId);
+
+			return ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap.
+				toSoapModels(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	/**
 	 * Creates or updates FormSubmissionStatus for a form instance record
 	 *
 	 * @param formInstanceRecordId the form instance record ID
-	 * @param seen the seen status
-	 * @param serviceContext the service context
+	 * @param seen                 the seen status
+	 * @param serviceContext       the service context
 	 * @return the FormSubmissionStatus
 	 * @throws PortalException if a portal exception occurred
 	 */

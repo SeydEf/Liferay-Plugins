@@ -417,6 +417,52 @@ public class FormSubmissionStatusServiceHttp {
 		}
 	}
 
+	public static java.util.List
+		<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
+				getUnseenByFormInstanceId(
+					HttpPrincipal httpPrincipal, long formInstanceId,
+					long groupId)
+			throws com.liferay.portal.kernel.exception.PortalException {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				FormSubmissionStatusServiceUtil.class,
+				"getUnseenByFormInstanceId",
+				_getUnseenByFormInstanceIdParameterTypes9);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, formInstanceId, groupId);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return (java.util.List
+				<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>)
+					returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
 	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatus
 			createOrUpdate(
 				HttpPrincipal httpPrincipal, long formInstanceRecordId,
@@ -427,7 +473,7 @@ public class FormSubmissionStatusServiceHttp {
 		try {
 			MethodKey methodKey = new MethodKey(
 				FormSubmissionStatusServiceUtil.class, "createOrUpdate",
-				_createOrUpdateParameterTypes9);
+				_createOrUpdateParameterTypes10);
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, formInstanceRecordId, seen, serviceContext);
@@ -487,7 +533,9 @@ public class FormSubmissionStatusServiceHttp {
 		new Class[] {long.class};
 	private static final Class<?>[] _getSeenCountByGroupIdParameterTypes8 =
 		new Class[] {long.class};
-	private static final Class<?>[] _createOrUpdateParameterTypes9 =
+	private static final Class<?>[] _getUnseenByFormInstanceIdParameterTypes9 =
+		new Class[] {long.class, long.class};
+	private static final Class<?>[] _createOrUpdateParameterTypes10 =
 		new Class[] {
 			long.class, boolean.class,
 			com.liferay.portal.kernel.service.ServiceContext.class
