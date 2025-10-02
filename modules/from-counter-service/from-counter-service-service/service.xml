@@ -1,51 +1,51 @@
 <?xml version="1.0"?>
 <!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.3.0//EN"
-        "http://www.liferay.com/dtd/liferay-service-builder_7_3_0.dtd">
+		"http://www.liferay.com/dtd/liferay-service-builder_7_3_0.dtd">
 
 <service-builder auto-namespace-tables="false" dependency-injector="ds" package-path="ir.seydef.plugin.formcounter">
-    <author>S.Abolfazl Eftekhari</author>
-    <namespace>FormCounter</namespace>
+	<author>S.Abolfazl Eftekhari</author>
+	<namespace>FormCounter</namespace>
 
-    <entity name="FormSubmissionStatus" local-service="true" remote-service="true">
-        <!-- Primary key -->
-        <column name="formSubmissionStatusId" type="long" primary="true"/>
+	<entity name="FormSubmissionStatus" local-service="true" remote-service="true">
+		<!-- Primary key -->
+		<column name="formSubmissionStatusId" primary="true" type="long" />
 
-        <!-- Form instance record reference -->
-        <column name="formInstanceRecordId" type="long"/>
+		<!-- Form instance record reference -->
+		<column name="formInstanceRecordId" type="long" />
 
-        <!-- Status fields -->
-        <column name="seen" type="boolean"/>
-        <column name="seenDate" type="Date"/>
+		<!-- Status fields -->
+		<column name="seen" type="boolean" />
+		<column name="seenDate" type="Date" />
 
-        <!-- Audit fields -->
-        <column name="companyId" type="long"/>
-        <column name="groupId" type="long"/>
-        <column name="userId" type="long"/>
-        <column name="userName" type="String"/>
-        <column name="createDate" type="Date"/>
-        <column name="modifiedDate" type="Date"/>
+		<!-- Audit fields -->
+		<column name="companyId" type="long" />
+		<column name="groupId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
 
-        <!-- Finder methods -->
-        <finder name="FormInstanceRecordId" return-type="FormSubmissionStatus">
-            <finder-column name="formInstanceRecordId"/>
-        </finder>
+		<!-- Finder methods -->
+		<finder name="FormInstanceRecordId" return-type="FormSubmissionStatus">
+			<finder-column name="formInstanceRecordId" />
+		</finder>
 
-        <finder name="Seen" return-type="Collection">
-            <finder-column name="seen"/>
-        </finder>
+		<finder name="Seen" return-type="Collection">
+			<finder-column name="seen" />
+		</finder>
 
-        <finder name="CompanyId" return-type="Collection">
-            <finder-column name="companyId"/>
-        </finder>
+		<finder name="CompanyId" return-type="Collection">
+			<finder-column name="companyId" />
+		</finder>
 
-        <finder name="GroupId" return-type="Collection">
-            <finder-column name="groupId"/>
-        </finder>
+		<finder name="GroupId" return-type="Collection">
+			<finder-column name="groupId" />
+		</finder>
 
-        <finder name="G_S" return-type="Collection">
-            <finder-column name="groupId"/>
-            <finder-column name="seen"/>
-        </finder>
-    </entity>
+		<finder name="G_S" return-type="Collection">
+			<finder-column name="groupId" />
+			<finder-column name="seen" />
+		</finder>
+	</entity>
 
 </service-builder>

@@ -115,7 +115,7 @@ public interface FormSubmissionStatusService extends BaseService {
 	 * Gets unseen form submissions by form instance ID
 	 *
 	 * @param formInstanceId the form instance ID
-	 * @param groupId the group ID
+	 * @param groupId        the group ID
 	 * @return list of unseen FormSubmissionStatus entries for the specific form instance
 	 * @throws PortalException if a portal exception occurred
 	 */
