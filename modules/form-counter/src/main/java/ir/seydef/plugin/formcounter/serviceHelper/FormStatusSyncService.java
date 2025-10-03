@@ -24,12 +24,9 @@ public class FormStatusSyncService {
 
     private static final Log _log = LogFactoryUtil.getLog(FormStatusSyncService.class);
 
-    public void syncFormSubmissionStatuses(long groupId, ServiceContext serviceContext) {
+    public void syncFormSubmissionStatuses(List<DDMFormInstance> ddmFormInstances, ServiceContext serviceContext) {
         try {
-            List<DDMFormInstance> formInstancesWithBranchId = DDMFormService.getFormInstancesWithBranchId(
-                    groupId, serviceContext.getLocale());
-
-            for (DDMFormInstance formInstance : formInstancesWithBranchId) {
+            for (DDMFormInstance formInstance : ddmFormInstances) {
                 try {
                     List<DDMFormInstanceRecord> records = DDMFormInstanceRecordLocalServiceUtil
                             .getFormInstanceRecords(formInstance.getFormInstanceId());
