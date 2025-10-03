@@ -3,6 +3,7 @@ package ir.seydef.plugin.formcounter.model;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.portal.kernel.util.Validator;
+import ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalServiceUtil;
 
 import java.util.Date;
 import java.util.Locale;
@@ -19,14 +20,15 @@ public class FormRecordDisplayDTO {
     private Date createDate;
     private Date modifiedDate;
     private String userName;
-    private int status;
+    private boolean seen;
     private String statusLabel;
+    private Date seenDate;
 
     public FormRecordDisplayDTO() {
     }
 
     public FormRecordDisplayDTO(DDMFormInstanceRecord record, DDMFormInstance formInstance,
-            String branchId, Locale locale) {
+                                String branchId, Locale locale) {
         this.recordId = record.getFormInstanceRecordId();
         this.formInstanceId = record.getFormInstanceId();
         this.formInstanceName = formInstance != null ? formInstance.getName(locale) : "";
@@ -36,11 +38,21 @@ public class FormRecordDisplayDTO {
         this.userName = record.getUserName();
 
         try {
-            this.status = record.getStatus();
-            this.statusLabel = getStatusLabel(record.getStatus());
+            FormSubmissionStatus submissionStatus = FormSubmissionStatusLocalServiceUtil
+                    .getByFormInstanceRecordId(record.getFormInstanceRecordId());
+            if (submissionStatus != null) {
+                this.seen = submissionStatus.isSeen();
+                this.seenDate = submissionStatus.getSeenDate();
+                this.statusLabel = submissionStatus.isSeen() ? "seen" : "unseen";
+            } else {
+                this.seen = false;
+                this.seenDate = null;
+                this.statusLabel = "unseen";
+            }
         } catch (Exception e) {
-            this.status = 0;
-            this.statusLabel = "Unknown";
+            this.seen = false;
+            this.seenDate = null;
+            this.statusLabel = "unseen";
         }
     }
 
@@ -100,12 +112,20 @@ public class FormRecordDisplayDTO {
         this.userName = userName;
     }
 
-    public int getStatus() {
-        return status;
+    public boolean isSeen() {
+        return seen;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setSeen(boolean seen) {
+        this.seen = seen;
+    }
+
+    public Date getSeenDate() {
+        return seenDate;
+    }
+
+    public void setSeenDate(Date seenDate) {
+        this.seenDate = seenDate;
     }
 
     public String getStatusLabel() {
@@ -127,17 +147,6 @@ public class FormRecordDisplayDTO {
         return "";
     }
 
-    private String getStatusLabel(int status) {
-        switch (status) {
-            case 0:
-                return "Approved";
-            case 1:
-                return "Draft";
-            default:
-                return "Unknown";
-        }
-    }
-
     @Override
     public String toString() {
         return "FormRecordDisplayDTO{" +
@@ -147,7 +156,8 @@ public class FormRecordDisplayDTO {
                 ", branchId='" + branchId + '\'' +
                 ", createDate=" + createDate +
                 ", userName='" + userName + '\'' +
-                ", status=" + status +
+                ", seen=" + seen +
+                ", statusLabel='" + statusLabel + '\'' +
                 '}';
     }
 }

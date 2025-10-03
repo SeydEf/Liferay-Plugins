@@ -18,9 +18,10 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import ir.seydef.plugin.formcounter.constants.FormCounterPortletKeys;
+import ir.seydef.plugin.formcounter.model.FormSubmissionStatus;
 import ir.seydef.plugin.formcounter.model.SearchCriteria;
+import ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalServiceUtil;
 import ir.seydef.plugin.formcounter.util.PersianTextUtil;
 
 import java.util.*;
@@ -314,16 +315,6 @@ public class DDMFormService {
                 dynamicQuery.add(PropertyFactoryUtil.forName("createDate").lt(endDate));
             }
 
-            if (Validator.isNotNull(searchCriteria.getStatus()) && !"all".equals(searchCriteria.getStatus())) {
-                int status = WorkflowConstants.STATUS_APPROVED;
-                if ("draft".equals(searchCriteria.getStatus())) {
-                    status = WorkflowConstants.STATUS_DRAFT;
-                } else if ("pending".equals(searchCriteria.getStatus())) {
-                    status = WorkflowConstants.STATUS_PENDING;
-                }
-                dynamicQuery.add(PropertyFactoryUtil.forName("status").eq(status));
-            }
-
             if (Validator.isNotNull(orderByCol)) {
                 if ("desc".equalsIgnoreCase(orderByType)) {
                     dynamicQuery.addOrder(OrderFactoryUtil.desc(orderByCol));
@@ -339,6 +330,10 @@ public class DDMFormService {
                 try {
                     String recordBranchId = extractBranchIdFromRecord(record);
                     if (!searchCriteria.getUserBranchId().equals(recordBranchId)) {
+                        continue;
+                    }
+
+                    if (!matchesSeenStatus(record, searchCriteria.getStatus())) {
                         continue;
                     }
 
@@ -381,16 +376,6 @@ public class DDMFormService {
                 dynamicQuery.add(PropertyFactoryUtil.forName("createDate").lt(endDate));
             }
 
-            if (Validator.isNotNull(searchCriteria.getStatus()) && !"all".equals(searchCriteria.getStatus())) {
-                int status = WorkflowConstants.STATUS_APPROVED;
-                if ("draft".equals(searchCriteria.getStatus())) {
-                    status = WorkflowConstants.STATUS_DRAFT;
-                } else if ("pending".equals(searchCriteria.getStatus())) {
-                    status = WorkflowConstants.STATUS_PENDING;
-                }
-                dynamicQuery.add(PropertyFactoryUtil.forName("status").eq(status));
-            }
-
             List<DDMFormInstanceRecord> allRecords = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery(dynamicQuery);
 
             int count = 0;
@@ -398,6 +383,7 @@ public class DDMFormService {
                 try {
                     String recordBranchId = extractBranchIdFromRecord(record);
                     if (searchCriteria.getUserBranchId().equals(recordBranchId) &&
+                            matchesSeenStatus(record, searchCriteria.getStatus()) &&
                             matchesTextCriteria(record, searchCriteria)) {
                         count++;
                     }
@@ -411,6 +397,34 @@ public class DDMFormService {
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    private static boolean matchesSeenStatus(DDMFormInstanceRecord record, String statusCriteria) {
+        if (Validator.isNull(statusCriteria) || "all".equals(statusCriteria)) {
+            return true;
+        }
+
+        try {
+            FormSubmissionStatus submissionStatus = FormSubmissionStatusLocalServiceUtil
+                    .getByFormInstanceRecordId(record.getFormInstanceRecordId());
+
+            if (submissionStatus == null) {
+                return "unseen".equals(statusCriteria);
+            }
+
+            boolean isSeen = submissionStatus.isSeen();
+
+            if ("seen".equals(statusCriteria)) {
+                return isSeen;
+            } else if ("unseen".equals(statusCriteria)) {
+                return !isSeen;
+            }
+        } catch (Exception e) {
+            _log.warn("Error checking seen status for record: " + record.getFormInstanceRecordId(), e);
+            return "unseen".equals(statusCriteria);
+        }
+
+        return true;
     }
 
     private static boolean matchesTextCriteria(DDMFormInstanceRecord record, SearchCriteria searchCriteria) {
@@ -469,3 +483,4 @@ public class DDMFormService {
         return false;
     }
 }
+

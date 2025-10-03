@@ -95,27 +95,11 @@
                             </div>
 
                             <div class="col-md-3">
-                                <aui:input name="<%= FormCounterPortletKeys.PARAM_FORM_NUMBER %>"
-                                           type="text"
-                                           label="form.number"
-                                           value='<%= searchCriteria.getFormNumber() != null ? searchCriteria.getFormNumber() : "" %>'
-                                           placeholder="search.by.form.number"/>
-                            </div>
-
-                            <div class="col-md-3">
                                 <aui:input name="<%= FormCounterPortletKeys.PARAM_TRACKING_CODE %>"
                                            type="text"
                                            label="tracking.code"
                                            value='<%= searchCriteria.getTrackingCode() != null ? searchCriteria.getTrackingCode() : "" %>'
                                            placeholder="search.by.tracking.code"/>
-                            </div>
-
-                            <div class="col-md-3">
-                                <aui:input name="<%= FormCounterPortletKeys.PARAM_FORM_NAME %>"
-                                           type="text"
-                                           label="form.name"
-                                           value='<%= searchCriteria.getFormName() != null ? searchCriteria.getFormName() : "" %>'
-                                           placeholder="search.by.form.name"/>
                             </div>
                         </div>
 
@@ -187,11 +171,6 @@
                                 orderable="false"/>
 
                         <liferay-ui:search-container-column-text
-                                name="record.id"
-                                property="recordId"
-                                orderable="false"/>
-
-                        <liferay-ui:search-container-column-text
                                 name="form.name"
                                 property="formInstanceName"
                                 orderable="false"/>
@@ -206,17 +185,6 @@
                                 property="createDate"
                                 orderable="true"
                                 orderableProperty="createDate"/>
-
-                        <liferay-ui:search-container-column-date
-                                name="modified.date"
-                                property="modifiedDate"
-                                orderable="true"
-                                orderableProperty="modifiedDate"/>
-
-                        <liferay-ui:search-container-column-text
-                                name="status"
-                                property="statusLabel"
-                                orderable="false"/>
 
                         <liferay-ui:search-container-column-jsp
                                 align="right"
@@ -315,6 +283,28 @@
         font-weight: bold;
         color: #155724;
         margin-left: 0.5rem;
+    }
+
+    .label-success {
+        background-color: #5cb85c;
+        color: white;
+    }
+
+    .label-warning {
+        background-color: #f0ad4e;
+        color: white;
+    }
+
+    .label {
+        display: inline-block;
+        padding: 0.25em 0.6em;
+        font-size: 0.75em;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.25rem;
     }
 </style>
 
