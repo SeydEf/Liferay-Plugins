@@ -1,6 +1,12 @@
 <%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
 <%@ page import="com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord" %>
 <%@ page import="com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordLocalServiceUtil" %>
+<%@ page import="com.liferay.portal.kernel.theme.ThemeDisplay" %>
+<%@ page import="com.liferay.portal.kernel.util.WebKeys" %>
+<%@ page import="ir.seydef.plugin.formcounter.serviceHelper.FormStatusSyncService" %>
+<%@ page import="org.osgi.framework.BundleContext" %>
+<%@ page import="org.osgi.framework.FrameworkUtil" %>
+<%@ page import="org.osgi.framework.ServiceReference" %>
 <%@ page import="java.util.Objects" %>
 
 <%@ include file="/init.jsp" %>
@@ -11,11 +17,31 @@
     String redirect = ParamUtil.getString(renderRequest, "redirect");
     DDMFormInstanceRecord record = null;
     errorMessage = null;
+
     try {
         record = DDMFormInstanceRecordLocalServiceUtil.fetchDDMFormInstanceRecord(recordId);
-        if
-        (record == null) {
+        if (record == null) {
             errorMessage = "Record not found";
+        } else {
+            // Automatically mark the record as seen when accessed
+            try {
+                long userId = themeDisplay.getUserId();
+
+                // Get FormStatusSyncService via OSGi service registry
+                BundleContext bundleContext = FrameworkUtil.getBundle(FormStatusSyncService.class).getBundleContext();
+                ServiceReference<FormStatusSyncService> serviceRef = bundleContext.getServiceReference(FormStatusSyncService.class);
+
+                if (serviceRef != null) {
+                    FormStatusSyncService formStatusSyncService = bundleContext.getService(serviceRef);
+                    if (formStatusSyncService != null) {
+                        formStatusSyncService.markRecordAsSeen(recordId, userId);
+                    }
+                    bundleContext.ungetService(serviceRef);
+                }
+            } catch (Exception e) {
+                // Log error but don't fail the page load
+                System.err.println("Error marking record as seen: " + e.getMessage());
+            }
         }
     } catch (Exception e) {
         errorMessage = "Error loading record";

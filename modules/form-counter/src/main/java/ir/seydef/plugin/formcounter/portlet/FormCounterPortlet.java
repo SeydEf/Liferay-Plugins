@@ -5,6 +5,8 @@ import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -13,9 +15,11 @@ import ir.seydef.plugin.formcounter.constants.FormCounterPortletKeys;
 import ir.seydef.plugin.formcounter.model.FormInstanceDisplayDTO;
 import ir.seydef.plugin.formcounter.model.FormRecordDisplayDTO;
 import ir.seydef.plugin.formcounter.model.SearchCriteria;
-import ir.seydef.plugin.formcounter.service.DDMFormService;
+import ir.seydef.plugin.formcounter.serviceHelper.DDMFormService;
+import ir.seydef.plugin.formcounter.serviceHelper.FormStatusSyncService;
 import ir.seydef.plugin.formcounter.util.UserBranchUtil;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import javax.portlet.*;
 import java.io.IOException;
@@ -51,6 +55,9 @@ public class FormCounterPortlet extends MVCPortlet {
     private static final Log _log = LogFactoryUtil.getLog(FormCounterPortlet.class);
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
+    @Reference
+    protected FormStatusSyncService formStatusSyncService;
+
     @Override
     public void doView(RenderRequest renderRequest, RenderResponse renderResponse)
             throws IOException, PortletException {
@@ -62,6 +69,14 @@ public class FormCounterPortlet extends MVCPortlet {
             long groupId = themeDisplay.getScopeGroupId();
 
             String userBranchId = UserBranchUtil.getUserBranchId(userId);
+            List<DDMFormInstance> formInstances = DDMFormService.getFormInstancesWithBranchId(groupId, locale);
+
+            try {
+                ServiceContext serviceContext = ServiceContextFactory.getInstance(renderRequest);
+                formStatusSyncService.syncFormSubmissionStatuses(formInstances, serviceContext);
+            } catch (Exception e) {
+                _log.warn("Error during background form status synchronization", e);
+            }
 
             PortletSession session = renderRequest.getPortletSession();
             SearchCriteria searchCriteria = (SearchCriteria) session.getAttribute("searchCriteria");
@@ -87,7 +102,6 @@ public class FormCounterPortlet extends MVCPortlet {
             renderRequest.setAttribute("orderByCol", orderByCol);
             renderRequest.setAttribute("orderByType", orderByType);
 
-            List<DDMFormInstance> formInstances = DDMFormService.getFormInstancesWithBranchId(groupId, locale);
             List<FormInstanceDisplayDTO> formInstanceDTOs = convertToFormInstanceDTOs(formInstances, locale, userBranchId);
             renderRequest.setAttribute("formInstances", formInstanceDTOs);
 
@@ -102,12 +116,12 @@ public class FormCounterPortlet extends MVCPortlet {
                     List<DDMFormInstanceRecord> records = DDMFormService.searchFormRecords(
                             searchCriteria, start, end, orderByCol, orderByType);
                     formRecords = convertToFormRecordDTOs(records, locale);
-                    totalCount = DDMFormService.getSearchFormRecordsCount(searchCriteria);
+                    totalCount = formRecords.size();
                 } else {
                     List<DDMFormInstanceRecord> records = DDMFormService.getFilteredFormRecords(
                             searchCriteria.getFormInstanceId(), userBranchId, start, end, orderByCol, orderByType);
                     formRecords = convertToFormRecordDTOs(records, locale);
-                    totalCount = DDMFormService.getFilteredFormRecordsCount(searchCriteria.getFormInstanceId(), userBranchId);
+                    totalCount = formRecords.size();
                 }
             }
 
