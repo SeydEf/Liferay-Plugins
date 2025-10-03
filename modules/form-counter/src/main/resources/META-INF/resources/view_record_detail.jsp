@@ -1,8 +1,6 @@
-<%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
 <%@ page import="com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord" %>
 <%@ page import="com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordLocalServiceUtil" %>
-<%@ page import="com.liferay.portal.kernel.theme.ThemeDisplay" %>
-<%@ page import="com.liferay.portal.kernel.util.WebKeys" %>
+<%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
 <%@ page import="ir.seydef.plugin.formcounter.serviceHelper.FormStatusSyncService" %>
 <%@ page import="org.osgi.framework.BundleContext" %>
 <%@ page import="org.osgi.framework.FrameworkUtil" %>
@@ -23,11 +21,9 @@
         if (record == null) {
             errorMessage = "Record not found";
         } else {
-            // Automatically mark the record as seen when accessed
             try {
                 long userId = themeDisplay.getUserId();
 
-                // Get FormStatusSyncService via OSGi service registry
                 BundleContext bundleContext = FrameworkUtil.getBundle(FormStatusSyncService.class).getBundleContext();
                 ServiceReference<FormStatusSyncService> serviceRef = bundleContext.getServiceReference(FormStatusSyncService.class);
 
@@ -39,7 +35,6 @@
                     bundleContext.ungetService(serviceRef);
                 }
             } catch (Exception e) {
-                // Log error but don't fail the page load
                 System.err.println("Error marking record as seen: " + e.getMessage());
             }
         }
@@ -50,7 +45,8 @@
 
 <div class="ddm-record-detail-view">
     <div class="record-header">
-        <h3><liferay-ui:message key="view.record"/> #<%= recordId %></h3>
+        <h3><liferay-ui:message key="view.record"/> #<%= recordId %>
+        </h3>
 
         <aui:button-row>
             <aui:button href="<%= redirect %>" type="button" value="back"/>

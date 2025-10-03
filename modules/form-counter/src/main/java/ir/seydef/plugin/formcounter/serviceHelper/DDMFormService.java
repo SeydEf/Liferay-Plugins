@@ -42,9 +42,8 @@ public class DDMFormService {
                 try {
                     DDMStructure structure = formInstance.getStructure();
                     if (structure != null) {
-                        if (hasFormField(structure, locale)) {
+                        if (hasFormField(structure)) {
                             formInstancesWithBranchId.add(formInstance);
-                            _log.debug("Found form with branchId field: " + formInstance.getName(locale));
                         }
                     }
                 } catch (Exception e) {
@@ -65,7 +64,6 @@ public class DDMFormService {
             String orderByCol, String orderByType) {
 
         if (Validator.isNull(userBranchId)) {
-            _log.debug("No user branch ID provided, returning empty list");
             return new ArrayList<>();
         }
 
@@ -258,7 +256,7 @@ public class DDMFormService {
         return optionValue;
     }
 
-    private static boolean hasFormField(DDMStructure structure, Locale locale) {
+    private static boolean hasFormField(DDMStructure structure) {
         try {
             String definition = structure.getDefinition();
             if (definition != null) {
@@ -271,7 +269,6 @@ public class DDMFormService {
                         String fieldReference = field.getString("fieldReference");
 
                         if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID.equals(fieldReference)) {
-                            _log.debug("Found branchId field in form structure");
                             return true;
                         }
                     }
