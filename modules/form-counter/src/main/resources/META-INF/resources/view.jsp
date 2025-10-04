@@ -12,12 +12,11 @@
     Long unseenCountObj = (Long) request.getAttribute("unseenCount");
     long unseenCount = unseenCountObj != null ? unseenCountObj : 0;
     SearchCriteria searchCriteria = (SearchCriteria) request.getAttribute("searchCriteria");
-
     if (searchCriteria == null) {
         searchCriteria = new SearchCriteria();
     }
-
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
 %>
 <portlet:actionURL
         name="<%= FormCounterPortletKeys.ACTION_SEARCH %>"
@@ -34,7 +33,7 @@
         <c:if test="<%= hasValidBranchId %>">
             <div class="branch-info">
                 <span class="branch-label">
-                  <liferay-ui:message key="branch.id"/>:
+                  <liferay-ui:message key="branch"/>:
                 </span>
                 <span class="branch-value"><%= userBranchId %></span>
             </div>
@@ -62,9 +61,17 @@
                         name="searchForm"
                 >
                     <div class="search-container">
-                        <h4 class="search-title">
-                            <liferay-ui:message key="search.form.records"/>
-                        </h4>
+                        <div class="search-header-row">
+                            <h4 class="search-title">
+                                <liferay-ui:message key="search.form.records"/>
+                            </h4>
+                            <div class="form-stats-compact">
+                        <span class="stats-badge">
+                          <liferay-ui:message key="total.records.found"/>:
+                          <strong><%= totalCount %></strong>
+                        </span>
+                            </div>
+                        </div>
 
                         <div class="row">
                             <div class="col-md-6">
@@ -72,6 +79,7 @@
                                         name="<%= FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID %>"
                                         label="select.form.instance"
                                         value="<%= selectedFormInstanceId %>"
+                                        onChange="this.form.submit()"
                                 >
                                     <aui:option value="0">
                                         <liferay-ui:message key="all.forms"/>
@@ -90,17 +98,27 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-stats">
-                          <span class="stats-label">
-                            <liferay-ui:message key="total.records.found"/>:
-                          </span>
-                                    <span class="stats-value"><%= totalCount %></span>
-                                </div>
+                                <aui:select
+                                        name="<%= FormCounterPortletKeys.PARAM_STATUS %>"
+                                        label="status"
+                                        value='<%= searchCriteria.getStatus() != null ? searchCriteria.getStatus() : "all" %>'
+                                        onChange="this.form.submit()"
+                                >
+                                    <aui:option value="all">
+                                        <liferay-ui:message key="all.statuses"/>
+                                    </aui:option>
+                                    <aui:option value="unseen">
+                                        <liferay-ui:message key="unseen"/>
+                                    </aui:option>
+                                    <aui:option value="seen">
+                                        <liferay-ui:message key="seen"/>
+                                    </aui:option>
+                                </aui:select>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <aui:input
                                         name="<%= FormCounterPortletKeys.PARAM_REGISTRANT_NAME %>"
                                         type="text"
@@ -110,7 +128,7 @@
                                 />
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <aui:input
                                         name="<%= FormCounterPortletKeys.PARAM_TRACKING_CODE %>"
                                         type="text"
@@ -119,10 +137,8 @@
                                         placeholder="search.by.tracking.code"
                                 />
                             </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <aui:input
                                         name="<%= FormCounterPortletKeys.PARAM_START_DATE %>"
                                         type="date"
@@ -131,7 +147,7 @@
                                 />
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <aui:input
                                         name="<%= FormCounterPortletKeys.PARAM_END_DATE %>"
                                         type="date"
@@ -140,36 +156,20 @@
                                 />
                             </div>
 
-                            <div class="col-md-3">
-                                <aui:select
-                                        name="<%= FormCounterPortletKeys.PARAM_STATUS %>"
-                                        label="status"
-                                        value='<%= searchCriteria.getStatus() != null ? searchCriteria.getStatus() : "all" %>'
-                                >
-                                    <aui:option value="all">
-                                        <liferay-ui:message key="all.statuses"/>
-                                    </aui:option>
-                                    <aui:option value="seen">
-                                        <liferay-ui:message key="seen"/>
-                                    </aui:option>
-                                    <aui:option value="unseen">
-                                        <liferay-ui:message key="unseen"/>
-                                    </aui:option>
-                                </aui:select>
-                            </div>
-
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="search-actions">
                                     <aui:button
                                             type="submit"
                                             value="search"
-                                            cssClass="btn btn-primary"
+                                            cssClass="btn btn-primary btn-block"
+                                            icon="icon-search"
                                     />
                                     <aui:button
                                             type="button"
                                             value="clear"
-                                            cssClass="btn btn-secondary"
+                                            cssClass="btn btn-secondary btn-block"
                                             onclick="clearSearchForm()"
+                                            icon="icon-remove"
                                     />
                                 </div>
                             </div>
@@ -264,7 +264,7 @@
 <c:if test="<%= unseenCount > 0 %>">
     <div id="unseenNotification" class="unseen-notification">
         <div class="notification-content">
-            <span class="notification-text">
+              <span class="notification-text">
                 <liferay-ui:message key="you.have"/>
                 <span class="notification-count"><%= unseenCount %></span>
                 <liferay-ui:message key="unseen.records"/>
@@ -282,11 +282,53 @@
         margin-bottom: 1.5rem;
     }
 
-    .search-title {
-        color: #495057;
+    .search-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         margin-bottom: 1rem;
         border-bottom: 2px solid #007bff;
         padding-bottom: 0.5rem;
+    }
+
+    .search-title {
+        color: #495057;
+        margin: 0;
+    }
+
+    .form-stats-compact {
+        display: flex;
+        align-items: center;
+    }
+
+    .stats-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        animation: fadeInScale 0.5s ease-out;
+    }
+
+    .stats-badge strong {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-left: 0.2rem;
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
     }
 
     .search-container .row {
@@ -294,11 +336,15 @@
     }
 
     .search-actions {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 0.5rem;
         align-items: end;
-        height: 100%;
         padding-top: 1.5rem;
+    }
+
+    .search-actions .btn {
+        width: 100%;
     }
 
     .form-stats {
@@ -458,18 +504,14 @@
             });
         }
 
-        // Show unseen notification for 5 seconds
         const notification = document.getElementById("unseenNotification");
         if (notification) {
-            // Show the notification
             notification.classList.add("show");
 
-            // Hide after 5 seconds
             setTimeout(function () {
                 notification.classList.add("hide");
                 notification.classList.remove("show");
 
-                // Remove from DOM after animation completes
                 setTimeout(function () {
                     notification.style.display = "none";
                 }, 300);
