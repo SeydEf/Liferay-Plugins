@@ -21,18 +21,6 @@
     flex-direction: row-reverse;
   }
 
-  .portlet-title {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #495057;
-
-    [dir="rtl"] & {
-      margin-right: 0;
-      margin-left: 1rem;
-    }
-  }
-
   .branch-info {
     display: flex;
     align-items: center;
@@ -62,6 +50,18 @@
       font-weight: 600;
       color: #007bff;
       font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    }
+  }
+
+  .portlet-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #495057;
+
+    [dir="rtl"] & {
+      margin-right: 0;
+      margin-left: 1rem;
     }
   }
 }
