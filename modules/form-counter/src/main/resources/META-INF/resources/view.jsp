@@ -9,16 +9,20 @@
     List<FormInstanceDisplayDTO> formInstances = (List<FormInstanceDisplayDTO>) request.getAttribute("formInstances");
     List<FormRecordDisplayDTO> formRecords = (List<FormRecordDisplayDTO>) request.getAttribute("formRecords");
     int totalCount = (Integer) request.getAttribute("totalCount");
-
+    Long unseenCountObj = (Long) request.getAttribute("unseenCount");
+    long unseenCount = unseenCountObj != null ? unseenCountObj : 0;
     SearchCriteria searchCriteria = (SearchCriteria) request.getAttribute("searchCriteria");
+
     if (searchCriteria == null) {
         searchCriteria = new SearchCriteria();
     }
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 %>
-
-<portlet:actionURL name="<%= FormCounterPortletKeys.ACTION_SEARCH %>" var="searchURL">
+<portlet:actionURL
+        name="<%= FormCounterPortletKeys.ACTION_SEARCH %>"
+        var="searchURL"
+>
 </portlet:actionURL>
 
 <div class="ddm-form-records-portlet">
@@ -30,7 +34,7 @@
         <c:if test="<%= hasValidBranchId %>">
             <div class="branch-info">
                 <span class="branch-label">
-                    <liferay-ui:message key="branch.id"/>:
+                  <liferay-ui:message key="branch.id"/>:
                 </span>
                 <span class="branch-value"><%= userBranchId %></span>
             </div>
@@ -52,7 +56,11 @@
 
         <c:otherwise>
             <div class="search-form-section">
-                <aui:form action="<%= searchURL %>" method="post" name="searchForm">
+                <aui:form
+                        action="<%= searchURL %>"
+                        method="post"
+                        name="searchForm"
+                >
                     <div class="search-container">
                         <h4 class="search-title">
                             <liferay-ui:message key="search.form.records"/>
@@ -60,16 +68,22 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <aui:select name="<%= FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID %>"
-                                            label="select.form.instance"
-                                            value="<%= selectedFormInstanceId %>">
+                                <aui:select
+                                        name="<%= FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID %>"
+                                        label="select.form.instance"
+                                        value="<%= selectedFormInstanceId %>"
+                                >
                                     <aui:option value="0">
                                         <liferay-ui:message key="all.forms"/>
                                     </aui:option>
 
-                                    <c:forEach items="<%= formInstances %>" var="formInstance">
+                                    <c:forEach
+                                            items="<%= formInstances %>"
+                                            var="formInstance"
+                                    >
                                         <aui:option value="${formInstance.formInstanceId}">
-                                            ${formInstance.displayName} (${formInstance.recordCount})
+                                            ${formInstance.displayName}
+                                            (${formInstance.recordCount})
                                         </aui:option>
                                     </c:forEach>
                                 </aui:select>
@@ -77,9 +91,9 @@
 
                             <div class="col-md-6">
                                 <div class="form-stats">
-                                    <span class="stats-label">
-                                        <liferay-ui:message key="total.records.found"/>:
-                                    </span>
+                          <span class="stats-label">
+                            <liferay-ui:message key="total.records.found"/>:
+                          </span>
                                     <span class="stats-value"><%= totalCount %></span>
                                 </div>
                             </div>
@@ -87,41 +101,51 @@
 
                         <div class="row">
                             <div class="col-md-3">
-                                <aui:input name="<%= FormCounterPortletKeys.PARAM_REGISTRANT_NAME %>"
-                                           type="text"
-                                           label="registrant.name"
-                                           value='<%= searchCriteria.getRegistrantName() != null ? searchCriteria.getRegistrantName() : "" %>'
-                                           placeholder="search.by.registrant.name"/>
+                                <aui:input
+                                        name="<%= FormCounterPortletKeys.PARAM_REGISTRANT_NAME %>"
+                                        type="text"
+                                        label="registrant.name"
+                                        value='<%= searchCriteria.getRegistrantName() != null ? searchCriteria.getRegistrantName() : "" %>'
+                                        placeholder="search.by.registrant.name"
+                                />
                             </div>
 
                             <div class="col-md-3">
-                                <aui:input name="<%= FormCounterPortletKeys.PARAM_TRACKING_CODE %>"
-                                           type="text"
-                                           label="tracking.code"
-                                           value='<%= searchCriteria.getTrackingCode() != null ? searchCriteria.getTrackingCode() : "" %>'
-                                           placeholder="search.by.tracking.code"/>
+                                <aui:input
+                                        name="<%= FormCounterPortletKeys.PARAM_TRACKING_CODE %>"
+                                        type="text"
+                                        label="tracking.code"
+                                        value='<%= searchCriteria.getTrackingCode() != null ? searchCriteria.getTrackingCode() : "" %>'
+                                        placeholder="search.by.tracking.code"
+                                />
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-3">
-                                <aui:input name="<%= FormCounterPortletKeys.PARAM_START_DATE %>"
-                                           type="date"
-                                           label="start.date"
-                                           value='<%= searchCriteria.getStartDate() != null ? dateFormat.format(searchCriteria.getStartDate()) : "" %>'/>
+                                <aui:input
+                                        name="<%= FormCounterPortletKeys.PARAM_START_DATE %>"
+                                        type="date"
+                                        label="start.date"
+                                        value='<%= searchCriteria.getStartDate() != null ? dateFormat.format(searchCriteria.getStartDate()) : "" %>'
+                                />
                             </div>
 
                             <div class="col-md-3">
-                                <aui:input name="<%= FormCounterPortletKeys.PARAM_END_DATE %>"
-                                           type="date"
-                                           label="end.date"
-                                           value='<%= searchCriteria.getEndDate() != null ? dateFormat.format(searchCriteria.getEndDate()) : "" %>'/>
+                                <aui:input
+                                        name="<%= FormCounterPortletKeys.PARAM_END_DATE %>"
+                                        type="date"
+                                        label="end.date"
+                                        value='<%= searchCriteria.getEndDate() != null ? dateFormat.format(searchCriteria.getEndDate()) : "" %>'
+                                />
                             </div>
 
                             <div class="col-md-3">
-                                <aui:select name="<%= FormCounterPortletKeys.PARAM_STATUS %>"
-                                            label="status"
-                                            value='<%= searchCriteria.getStatus() != null ? searchCriteria.getStatus() : "all" %>'>
+                                <aui:select
+                                        name="<%= FormCounterPortletKeys.PARAM_STATUS %>"
+                                        label="status"
+                                        value='<%= searchCriteria.getStatus() != null ? searchCriteria.getStatus() : "all" %>'
+                                >
                                     <aui:option value="all">
                                         <liferay-ui:message key="all.statuses"/>
                                     </aui:option>
@@ -136,9 +160,17 @@
 
                             <div class="col-md-3">
                                 <div class="search-actions">
-                                    <aui:button type="submit" value="search" cssClass="btn btn-primary"/>
-                                    <aui:button type="button" value="clear" cssClass="btn btn-secondary"
-                                                onclick="clearSearchForm()"/>
+                                    <aui:button
+                                            type="submit"
+                                            value="search"
+                                            cssClass="btn btn-primary"
+                                    />
+                                    <aui:button
+                                            type="button"
+                                            value="clear"
+                                            cssClass="btn btn-secondary"
+                                            onclick="clearSearchForm()"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -153,10 +185,11 @@
                         var="searchContainer"
                         delta="60"
                         deltaConfigurable="true"
-                        emptyResultsMessage="no.form.records.found">
-
+                        emptyResultsMessage="no.form.records.found"
+                >
                     <liferay-ui:search-container-results
-                            results="<%= formRecords %>"/>
+                            results="<%= formRecords %>"
+                    />
 
                     <liferay-ui:search-container-row
                             className="ir.seydef.plugin.formcounter.model.FormRecordDisplayDTO"
@@ -164,39 +197,45 @@
                             modelVar="formRecord"
                             indexVar="i"
                     >
+                        <% row.setCssClass(formRecord.isSeen() ? "record-seen" :
+                                "record-unseen"); %>
 
                         <liferay-ui:search-container-column-text
                                 name="row"
                                 value="<%= String.valueOf(i + 1) %>"
-                                orderable="false"/>
+                                orderable="false"
+                        />
 
                         <liferay-ui:search-container-column-text
                                 name="form.name"
                                 property="formInstanceName"
-                                orderable="false"/>
+                                orderable="false"
+                        />
 
                         <liferay-ui:search-container-column-text
                                 name="submitted.by"
                                 property="userName"
-                                orderable="false"/>
+                                orderable="false"
+                        />
 
                         <liferay-ui:search-container-column-date
                                 name="create.date"
                                 property="createDate"
                                 orderable="true"
-                                orderableProperty="createDate"/>
+                                orderableProperty="createDate"
+                        />
 
                         <liferay-ui:search-container-column-jsp
                                 align="right"
-                                path="/record_actions.jsp"/>
-
+                                path="/record_actions.jsp"
+                        />
                     </liferay-ui:search-container-row>
 
                     <liferay-ui:search-iterator
                             displayStyle="list"
                             markupView="lexicon"
-                            searchContainer="<%= searchContainer %>"/>
-
+                            searchContainer="<%= searchContainer %>"
+                    />
                 </liferay-ui:search-container>
             </div>
 
@@ -206,9 +245,12 @@
                     <div class="summary-grid">
                         <c:forEach items="<%= formInstances %>" var="formInstance">
                             <div class="summary-item">
-                                <div class="summary-name">${formInstance.displayName}</div>
+                                <div class="summary-name">
+                                        ${formInstance.displayName}
+                                </div>
                                 <div class="summary-count">
-                                    <liferay-ui:message key="records.count"/>: ${formInstance.recordCount}
+                                    <liferay-ui:message key="records.count"/>:
+                                        ${formInstance.recordCount}
                                 </div>
                             </div>
                         </c:forEach>
@@ -218,6 +260,18 @@
         </c:otherwise>
     </c:choose>
 </div>
+
+<c:if test="<%= unseenCount > 0 %>">
+    <div id="unseenNotification" class="unseen-notification">
+        <div class="notification-content">
+            <span class="notification-text">
+                <liferay-ui:message key="you.have"/>
+                <span class="notification-count"><%= unseenCount %></span>
+                <liferay-ui:message key="unseen.records"/>
+              </span>
+        </div>
+    </div>
+</c:if>
 
 <style>
     .search-form-section {
@@ -285,53 +339,141 @@
         margin-left: 0.5rem;
     }
 
-    .label-success {
-        background-color: #5cb85c;
-        color: white;
+    .record-unseen td {
+        font-weight: bold !important;
+        color: #000 !important;
     }
 
-    .label-warning {
-        background-color: #f0ad4e;
-        color: white;
+    .record-seen td {
+        background-color: #ededed !important;
     }
 
-    .label {
-        display: inline-block;
-        padding: 0.25em 0.6em;
-        font-size: 0.75em;
-        font-weight: 700;
-        line-height: 1;
-        text-align: center;
-        white-space: nowrap;
-        vertical-align: baseline;
-        border-radius: 0.25rem;
+    .unseen-notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #007bff;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+        display: none;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .unseen-notification.show {
+        display: block;
+    }
+
+    .unseen-notification .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .unseen-notification .notification-icon {
+        font-size: 24px;
+    }
+
+    .unseen-notification .notification-text {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .unseen-notification .notification-count {
+        background-color: #ffc107;
+        color: #000;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-weight: bold;
+        margin-left: 5px;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+
+    .unseen-notification.hide {
+        animation: slideOut 0.3s ease-out;
     }
 </style>
 
 <script>
     function clearSearchForm() {
-        document.getElementById('<portlet:namespace /><%= FormCounterPortletKeys.PARAM_REGISTRANT_NAME %>').value = '';
-        document.getElementById('<portlet:namespace /><%= FormCounterPortletKeys.PARAM_FORM_NUMBER %>').value = '';
-        document.getElementById('<portlet:namespace /><%= FormCounterPortletKeys.PARAM_TRACKING_CODE %>').value = '';
-        document.getElementById('<portlet:namespace /><%= FormCounterPortletKeys.PARAM_FORM_NAME %>').value = '';
-        document.getElementById('<portlet:namespace /><%= FormCounterPortletKeys.PARAM_START_DATE %>').value = '';
-        document.getElementById('<portlet:namespace /><%= FormCounterPortletKeys.PARAM_END_DATE %>').value = '';
-        document.getElementById('<portlet:namespace /><%= FormCounterPortletKeys.PARAM_STATUS %>').value = 'all';
-        document.getElementById('<portlet:namespace /><%= FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID %>').value = '0';
+        document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_REGISTRANT_NAME %>"
+        ).value = "";
+        document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_TRACKING_CODE %>"
+        ).value = "";
+        document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_START_DATE %>"
+        ).value = "";
+        document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_END_DATE %>"
+        ).value = "";
+        document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_STATUS %>"
+        ).value = "all";
+        document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID %>"
+        ).value = "0";
 
-        document.getElementById('<portlet:namespace />searchForm').submit();
+        document.getElementById("<portlet:namespace />searchForm").submit();
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const searchForm = document.getElementById('<portlet:namespace />searchForm');
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchForm = document.getElementById(
+            "<portlet:namespace />searchForm"
+        );
         if (searchForm) {
-            searchForm.addEventListener('submit', function () {
-                const submitButton = searchForm.querySelector('button[type="submit"]');
+            searchForm.addEventListener("submit", function () {
+                const submitButton = searchForm.querySelector(
+                    'button[type="submit"]'
+                );
                 if (submitButton) {
-                    submitButton.innerHTML = '<span class="loading-animation"></span> <liferay-ui:message key="searching" />...';
+                    submitButton.innerHTML =
+                        '<span class="loading-animation"></span> <liferay-ui:message key="searching" />...';
                     submitButton.disabled = true;
                 }
             });
+        }
+
+        // Show unseen notification for 5 seconds
+        const notification = document.getElementById("unseenNotification");
+        if (notification) {
+            // Show the notification
+            notification.classList.add("show");
+
+            // Hide after 5 seconds
+            setTimeout(function () {
+                notification.classList.add("hide");
+                notification.classList.remove("show");
+
+                // Remove from DOM after animation completes
+                setTimeout(function () {
+                    notification.style.display = "none";
+                }, 300);
+            }, 5000);
         }
     });
 </script>

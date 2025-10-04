@@ -84,14 +84,18 @@ public class FormCounterPortlet extends MVCPortlet {
             if (searchCriteria == null) {
                 searchCriteria = new SearchCriteria();
                 searchCriteria.setUserBranchId(userBranchId);
-                long selectedFormInstanceId = ParamUtil.getLong(renderRequest, FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID, 0);
+                long selectedFormInstanceId = ParamUtil.getLong(renderRequest,
+                        FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID, 0);
                 searchCriteria.setFormInstanceId(selectedFormInstanceId);
             }
 
-            int delta = ParamUtil.getInteger(renderRequest, FormCounterPortletKeys.PARAM_DELTA, FormCounterPortletKeys.DEFAULT_DELTA);
+            int delta = ParamUtil.getInteger(renderRequest, FormCounterPortletKeys.PARAM_DELTA,
+                    FormCounterPortletKeys.DEFAULT_DELTA);
             int cur = ParamUtil.getInteger(renderRequest, "cur", 1);
-            String orderByCol = ParamUtil.getString(renderRequest, "orderByCol", FormCounterPortletKeys.DEFAULT_ORDER_BY_COL);
-            String orderByType = ParamUtil.getString(renderRequest, "orderByType", FormCounterPortletKeys.DEFAULT_ORDER_BY_TYPE);
+            String orderByCol = ParamUtil.getString(renderRequest, "orderByCol",
+                    FormCounterPortletKeys.DEFAULT_ORDER_BY_COL);
+            String orderByType = ParamUtil.getString(renderRequest, "orderByType",
+                    FormCounterPortletKeys.DEFAULT_ORDER_BY_TYPE);
 
             renderRequest.setAttribute("userBranchId", userBranchId);
             renderRequest.setAttribute("hasValidBranchId", UserBranchUtil.hasValidBranchId(userId));
@@ -102,7 +106,8 @@ public class FormCounterPortlet extends MVCPortlet {
             renderRequest.setAttribute("orderByCol", orderByCol);
             renderRequest.setAttribute("orderByType", orderByType);
 
-            List<FormInstanceDisplayDTO> formInstanceDTOs = convertToFormInstanceDTOs(formInstances, locale, userBranchId);
+            List<FormInstanceDisplayDTO> formInstanceDTOs = convertToFormInstanceDTOs(formInstances, locale,
+                    userBranchId);
             renderRequest.setAttribute("formInstances", formInstanceDTOs);
 
             List<FormRecordDisplayDTO> formRecords = new ArrayList<>();
@@ -127,6 +132,9 @@ public class FormCounterPortlet extends MVCPortlet {
 
             renderRequest.setAttribute("formRecords", formRecords);
             renderRequest.setAttribute("totalCount", totalCount);
+
+            long unseenCount = formRecords.stream().filter(record -> !record.isSeen()).count();
+            renderRequest.setAttribute("unseenCount", unseenCount);
 
             int totalPages = (int) Math.ceil((double) totalCount / delta);
             renderRequest.setAttribute("totalPages", totalPages);
@@ -240,7 +248,14 @@ public class FormCounterPortlet extends MVCPortlet {
                 _log.warn("Error converting record to DTO: " + record.getFormInstanceRecordId(), e);
             }
         }
+
+        dtos.sort((dto1, dto2) -> {
+            if (dto1.isSeen() == dto2.isSeen()) {
+                return dto1.getCreateDate().compareTo(dto2.getCreateDate());
+            }
+            return dto1.isSeen() ? 1 : -1;
+        });
+
         return dtos;
     }
 }
-
