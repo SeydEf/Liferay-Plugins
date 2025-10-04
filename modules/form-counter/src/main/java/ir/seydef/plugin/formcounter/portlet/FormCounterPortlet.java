@@ -114,6 +114,13 @@ public class FormCounterPortlet extends MVCPortlet {
             int totalCount = 0;
 
             if (UserBranchUtil.hasValidBranchId(userId)) {
+                if (searchCriteria.hasSearchCriteria() || searchCriteria.getFormInstanceId() > 0) {
+                    totalCount = DDMFormService.getSearchFormRecordsCount(searchCriteria);
+                } else {
+                    totalCount = DDMFormService.getFilteredFormRecordsCount(
+                            searchCriteria.getFormInstanceId(), userBranchId);
+                }
+
                 int start = (cur - 1) * delta;
                 int end = start + delta;
 
@@ -121,12 +128,10 @@ public class FormCounterPortlet extends MVCPortlet {
                     List<DDMFormInstanceRecord> records = DDMFormService.searchFormRecords(
                             searchCriteria, start, end, orderByCol, orderByType);
                     formRecords = convertToFormRecordDTOs(records, locale);
-                    totalCount = formRecords.size();
                 } else {
                     List<DDMFormInstanceRecord> records = DDMFormService.getFilteredFormRecords(
                             searchCriteria.getFormInstanceId(), userBranchId, start, end, orderByCol, orderByType);
                     formRecords = convertToFormRecordDTOs(records, locale);
-                    totalCount = formRecords.size();
                 }
             }
 
@@ -251,7 +256,7 @@ public class FormCounterPortlet extends MVCPortlet {
 
         dtos.sort((dto1, dto2) -> {
             if (dto1.isSeen() == dto2.isSeen()) {
-                return dto1.getCreateDate().compareTo(dto2.getCreateDate());
+                return dto2.getCreateDate().compareTo(dto1.getCreateDate());
             }
             return dto1.isSeen() ? 1 : -1;
         });
