@@ -258,13 +258,11 @@ public class FormSubmissionStatusServiceImpl
 			formInstanceRecordId);
 	}
 
-	@Reference(
-		target = "(model.class.name=ir.seydef.plugin.formcounter.model.FormSubmissionStatus)"
-	)
+	@Reference
 	private ModelResourcePermission<FormSubmissionStatus>
 		_formSubmissionStatusModelResourcePermission;
 
-	@Reference(target = "(resource.name=ir.seydef.plugin.formcounter)")
+	@Reference
 	private PortletResourcePermission _portletResourcePermission;
 
 }

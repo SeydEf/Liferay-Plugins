@@ -2,10 +2,15 @@ Bundle-Name: form-counter
 Bundle-SymbolicName: ir.seydef.plugin.formcounter
 Bundle-Version: 1.0.0
 Export-Package: \
+    ir.seydef.plugin.formcounter.application.list,\
 	ir.seydef.plugin.formcounter.constants,\
 	ir.seydef.plugin.formcounter.model,\
 	ir.seydef.plugin.formcounter.serviceHelper,\
 	ir.seydef.plugin.formcounter.util
+Import-Package: \
+	ir.seydef.plugin.formcounter.model;resolution:=optional,\
+	ir.seydef.plugin.formcounter.service;resolution:=optional,\
+	*
 Provide-Capability:\
 	liferay.language.resources;\
 		resource.bundle.base.name="content.Language"
