@@ -27,7 +27,6 @@
         <portlet:param name="mvcPath" value="/view_record_detail.jsp"/>
     </portlet:renderURL>
 
-    // Not implemented yet!
     <liferay-ui:icon message="view" url="<%= viewRecordDetailURL %>"/>
 
     <portlet:resourceURL var="exportRecordURL">

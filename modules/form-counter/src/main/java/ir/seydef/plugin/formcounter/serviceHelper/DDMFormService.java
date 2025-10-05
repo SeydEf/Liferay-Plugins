@@ -148,18 +148,15 @@ public class DDMFormService {
                 List<DDMFormFieldValue> formFieldValues = formValues.getDDMFormFieldValues();
 
                 for (DDMFormFieldValue fieldValue : formFieldValues) {
-                    if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID.equals(fieldValue.getFieldReference())) {
+                    if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID.contains(fieldValue.getFieldReference().toLowerCase())) {
                         if (fieldValue.getValue() != null &&
                                 fieldValue.getValue().getDefaultLocale() != null) {
 
                             String optionValue = GetterUtil.getString(
                                     fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
 
-                            if (optionValue.contains("Option")) {
-                                return extractDisplayValueFromStructure(record, fieldValue, optionValue);
-                            }
 
-                            return optionValue;
+                            return extractDisplayValueFromStructure(record, fieldValue, optionValue);
                         }
                     }
                 }
@@ -180,9 +177,9 @@ public class DDMFormService {
             if (formInstance != null) {
                 DDMStructure structure = formInstance.getStructure();
                 if (structure != null) {
-                    String definition = structure.getDefinition();
+                    String definition = structure.getDefinition().toLowerCase();
 
-                    if (definition != null && definition.contains(FormCounterPortletKeys.DDM_FIELD_BRANCH_ID)) {
+                    if (definition.contains(FormCounterPortletKeys.DDM_FIELD_BRANCH_ID)) {
                         return parseOptionValueFromDefinition(definition, fieldValue.getFieldReference(), optionValue);
                     }
                 }
@@ -202,9 +199,10 @@ public class DDMFormService {
             if (fields != null) {
                 for (int i = 0; i < fields.length(); i++) {
                     JSONObject field = fields.getJSONObject(i);
-                    String currentFieldReference = field.getString("fieldReference");
+                    String currentFieldReference = field.getString("fieldreference");
+                    fieldReference = fieldReference.toLowerCase();
 
-                    if (fieldReference.equals(currentFieldReference)) {
+                    if (fieldReference.contains(currentFieldReference)) {
                         JSONArray options = field.getJSONArray("options");
                         if (options != null) {
                             return findOptionLabel(options, optionValue);
@@ -230,16 +228,10 @@ public class DDMFormService {
                     if (label != null) {
                         String labelText = null;
 
-                        if (label.has("en_US")) {
-                            labelText = label.getString("en_US");
-                        } else if (label.has("en")) {
-                            labelText = label.getString("en");
-                        } else {
-                            Iterator<String> keys = label.keys();
-                            if (keys.hasNext()) {
-                                String firstKey = keys.next();
-                                labelText = label.getString(firstKey);
-                            }
+                        Iterator<String> keys = label.keys();
+                        if (keys.hasNext()) {
+                            String firstKey = keys.next();
+                            labelText = label.getString(firstKey);
                         }
 
                         if (Validator.isNotNull(labelText)) {
@@ -269,7 +261,7 @@ public class DDMFormService {
                         JSONObject field = fields.getJSONObject(i);
                         String fieldReference = field.getString("fieldReference");
 
-                        if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID.equals(fieldReference)) {
+                        if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID.contains(fieldReference.toLowerCase())) {
                             return true;
                         }
                     }
