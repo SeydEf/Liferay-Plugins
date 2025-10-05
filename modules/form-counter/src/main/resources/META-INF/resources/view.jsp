@@ -139,20 +139,26 @@
                             </div>
 
                             <div class="col-md-2">
-                                <aui:input
+                                <label><liferay-ui:message key="start.date"/></label>
+                                <liferay-ui:input-date
                                         name="<%= FormCounterPortletKeys.PARAM_START_DATE %>"
-                                        type="date"
-                                        label="start.date"
-                                        value='<%= searchCriteria.getStartDate() != null ? dateFormat.format(searchCriteria.getStartDate()) : "" %>'
+                                        dayValue="<%= searchCriteria.getStartDate() != null ? Integer.parseInt(dateFormat.format(searchCriteria.getStartDate()).substring(8, 10)) : 0 %>"
+                                        monthValue="<%= searchCriteria.getStartDate() != null ? Integer.parseInt(dateFormat.format(searchCriteria.getStartDate()).substring(5, 7)) - 1 : -1 %>"
+                                        yearValue="<%= searchCriteria.getStartDate() != null ? Integer.parseInt(dateFormat.format(searchCriteria.getStartDate()).substring(0, 4)) : 0 %>"
+                                        showDisableCheckbox="<%= false %>"
+                                        nullable="<%= true %>"
                                 />
                             </div>
 
                             <div class="col-md-2">
-                                <aui:input
+                                <label><liferay-ui:message key="end.date"/></label>
+                                <liferay-ui:input-date
                                         name="<%= FormCounterPortletKeys.PARAM_END_DATE %>"
-                                        type="date"
-                                        label="end.date"
-                                        value='<%= searchCriteria.getEndDate() != null ? dateFormat.format(searchCriteria.getEndDate()) : "" %>'
+                                        dayValue="<%= searchCriteria.getEndDate() != null ? Integer.parseInt(dateFormat.format(searchCriteria.getEndDate()).substring(8, 10)) : 0 %>"
+                                        monthValue="<%= searchCriteria.getEndDate() != null ? Integer.parseInt(dateFormat.format(searchCriteria.getEndDate()).substring(5, 7)) - 1 : -1 %>"
+                                        yearValue="<%= searchCriteria.getEndDate() != null ? Integer.parseInt(dateFormat.format(searchCriteria.getEndDate()).substring(0, 4)) : 0 %>"
+                                        showDisableCheckbox="<%= false %>"
+                                        nullable="<%= true %>"
                                 />
                             </div>
 

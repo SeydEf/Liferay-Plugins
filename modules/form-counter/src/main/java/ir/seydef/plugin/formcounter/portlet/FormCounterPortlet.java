@@ -20,8 +20,15 @@ import ir.seydef.plugin.formcounter.serviceHelper.FormStatusSyncService;
 import ir.seydef.plugin.formcounter.util.UserBranchUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
-import javax.portlet.*;
+import javax.portlet.Portlet;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.PortletSession;
+import javax.portlet.PortletException;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,10 +60,10 @@ import java.util.Locale;
 public class FormCounterPortlet extends MVCPortlet {
 
     private static final Log _log = LogFactoryUtil.getLog(FormCounterPortlet.class);
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
 
-    @Reference
-    protected FormStatusSyncService formStatusSyncService;
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    protected volatile FormStatusSyncService formStatusSyncService;
 
     @Override
     public void doView(RenderRequest renderRequest, RenderResponse renderResponse)
@@ -78,8 +85,14 @@ public class FormCounterPortlet extends MVCPortlet {
                 _log.warn("Error during background form status synchronization", e);
             }
 
-            PortletSession session = renderRequest.getPortletSession();
-            SearchCriteria searchCriteria = (SearchCriteria) session.getAttribute("searchCriteria");
+            SearchCriteria searchCriteria;
+
+            try {
+                PortletSession session = renderRequest.getPortletSession();
+                searchCriteria = (SearchCriteria) session.getAttribute("searchCriteria");
+            } catch (Exception exception) {
+                searchCriteria = null;
+            }
 
             if (searchCriteria == null) {
                 searchCriteria = new SearchCriteria();
