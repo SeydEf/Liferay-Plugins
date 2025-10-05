@@ -468,7 +468,7 @@ select:focus,
 }
 
 .stats-badge {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #aaaaaa 0%, #959585 100%);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 20px;
@@ -477,7 +477,6 @@ select:focus,
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  animation: fadeInScale 0.5s ease-out;
 }
 
 .stats-badge strong {
