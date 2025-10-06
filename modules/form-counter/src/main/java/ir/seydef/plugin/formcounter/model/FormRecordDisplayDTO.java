@@ -4,6 +4,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.portal.kernel.util.Validator;
 import ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalServiceUtil;
+import ir.seydef.plugin.formcounter.serviceHelper.DDMFormService;
 
 import java.util.Date;
 import java.util.Locale;
@@ -20,6 +21,7 @@ public class FormRecordDisplayDTO {
     private Date createDate;
     private Date modifiedDate;
     private String userName;
+    private String submitterName;
     private boolean seen;
     private String statusLabel;
     private Date seenDate;
@@ -28,7 +30,7 @@ public class FormRecordDisplayDTO {
     }
 
     public FormRecordDisplayDTO(DDMFormInstanceRecord record, DDMFormInstance formInstance,
-                                String branchId, Locale locale) {
+            String branchId, Locale locale) {
         this.recordId = record.getFormInstanceRecordId();
         this.formInstanceId = record.getFormInstanceId();
         this.formInstanceName = formInstance != null ? formInstance.getName(locale) : "";
@@ -36,6 +38,9 @@ public class FormRecordDisplayDTO {
         this.createDate = record.getCreateDate();
         this.modifiedDate = record.getModifiedDate();
         this.userName = record.getUserName();
+
+        // Extract submitter name from form fields
+        this.submitterName = DDMFormService.extractSubmitterNameFromRecord(record);
 
         try {
             FormSubmissionStatus submissionStatus = FormSubmissionStatusLocalServiceUtil
@@ -110,6 +115,14 @@ public class FormRecordDisplayDTO {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getSubmitterName() {
+        return submitterName;
+    }
+
+    public void setSubmitterName(String submitterName) {
+        this.submitterName = submitterName;
     }
 
     public boolean isSeen() {

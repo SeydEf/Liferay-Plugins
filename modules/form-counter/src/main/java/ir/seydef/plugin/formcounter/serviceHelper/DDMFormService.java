@@ -148,13 +148,13 @@ public class DDMFormService {
                 List<DDMFormFieldValue> formFieldValues = formValues.getDDMFormFieldValues();
 
                 for (DDMFormFieldValue fieldValue : formFieldValues) {
-                    if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID.contains(fieldValue.getFieldReference().toLowerCase())) {
+                    if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID
+                            .contains(fieldValue.getFieldReference().toLowerCase())) {
                         if (fieldValue.getValue() != null &&
                                 fieldValue.getValue().getDefaultLocale() != null) {
 
                             String optionValue = GetterUtil.getString(
                                     fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
-
 
                             return extractDisplayValueFromStructure(record, fieldValue, optionValue);
                         }
@@ -169,8 +169,8 @@ public class DDMFormService {
     }
 
     private static String extractDisplayValueFromStructure(DDMFormInstanceRecord record,
-                                                           DDMFormFieldValue fieldValue,
-                                                           String optionValue) {
+            DDMFormFieldValue fieldValue,
+            String optionValue) {
         try {
             DDMFormInstance formInstance = DDMFormInstanceLocalServiceUtil
                     .fetchDDMFormInstance(record.getFormInstanceId());
@@ -439,8 +439,10 @@ public class DDMFormService {
 
             boolean registrantNameMatch = record.getUserName().equals(searchCriteria.getRegistrantName()) ||
                     PersianTextUtil.contains(record.getUserName(), searchCriteria.getRegistrantName());
-            boolean formNumberMatch = record.getFormInstanceRecordId() == GetterUtil.getLong(searchCriteria.getFormNumber()) ||
-                    PersianTextUtil.contains(String.valueOf(record.getFormInstanceRecordId()), searchCriteria.getFormNumber());
+            boolean formNumberMatch = record.getFormInstanceRecordId() == GetterUtil
+                    .getLong(searchCriteria.getFormNumber()) ||
+                    PersianTextUtil.contains(String.valueOf(record.getFormInstanceRecordId()),
+                            searchCriteria.getFormNumber());
 
             boolean trackingCodeMatch = checkFieldMatch(fieldValues, "trackingCode", searchCriteria.getTrackingCode());
 
@@ -474,5 +476,48 @@ public class DDMFormService {
 
         return false;
     }
-}
 
+    public static String extractSubmitterNameFromRecord(DDMFormInstanceRecord record) {
+        try {
+            if (record != null) {
+                DDMFormValues formValues = record.getDDMFormValues();
+                if (formValues != null) {
+                    List<DDMFormFieldValue> formFieldValues = formValues.getDDMFormFieldValues();
+
+                    String firstName = "";
+                    String lastName = "";
+
+                    for (DDMFormFieldValue fieldValue : formFieldValues) {
+                        String fieldRef = fieldValue.getFieldReference() != null
+                                ? fieldValue.getFieldReference().toLowerCase()
+                                : "";
+
+                        try {
+                            if (fieldValue.getValue() != null && fieldValue.getValue().getDefaultLocale() != null) {
+                                String value = GetterUtil.getString(
+                                        fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
+
+                                if (fieldRef.contains("first") || fieldRef.equals("firstname") ||
+                                        fieldRef.equals("fname") || fieldRef.equals("first_name")) {
+                                    firstName = value;
+                                } else if (fieldRef.contains("last") || fieldRef.equals("lastname") ||
+                                        fieldRef.equals("lname") || fieldRef.equals("surname")
+                                        || fieldRef.equals("last_name")) {
+                                    lastName = value;
+                                }
+                            }
+                        } catch (Exception e) {
+                            _log.warn("Error extracting name field value", e);
+                        }
+                    }
+
+                    String fullName = (firstName + " " + lastName).trim();
+                    return Validator.isNotNull(fullName) ? fullName : "";
+                }
+            }
+        } catch (Exception e) {
+            _log.error("Error extracting submitter name from record", e);
+        }
+        return "";
+    }
+}
