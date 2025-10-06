@@ -9,6 +9,13 @@
   }
 }
 
+.portlet-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #495057;
+}
+
 .portlet-header {
   display: flex;
   justify-content: space-between;
@@ -16,22 +23,6 @@
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid #e9ecef;
-
-  [dir="rtl"] & {
-    flex-direction: row-reverse;
-  }
-
-  .portlet-title {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #495057;
-
-    [dir="rtl"] & {
-      margin-right: 0;
-      margin-left: 1rem;
-    }
-  }
 
   .branch-info {
     display: flex;
@@ -41,21 +32,10 @@
     border-radius: 6px;
     border-left: 4px solid #007bff;
 
-    [dir="rtl"] & {
-      border-left: none;
-      border-right: 4px solid #007bff;
-      flex-direction: row-reverse;
-    }
-
     .branch-label {
       font-weight: 500;
       color: #6c757d;
       margin-right: 0.5rem;
-
-      [dir="rtl"] & {
-        margin-right: 0;
-        margin-left: 0.5rem;
-      }
     }
 
     .branch-value {

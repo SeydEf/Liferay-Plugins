@@ -437,12 +437,19 @@ public class DDMFormService {
 
             List<DDMFormFieldValue> fieldValues = formValues.getDDMFormFieldValues();
 
-            boolean registrantNameMatch = record.getUserName().equals(searchCriteria.getRegistrantName()) ||
-                    PersianTextUtil.contains(record.getUserName(), searchCriteria.getRegistrantName());
-            boolean formNumberMatch = record.getFormInstanceRecordId() == GetterUtil
-                    .getLong(searchCriteria.getFormNumber()) ||
-                    PersianTextUtil.contains(String.valueOf(record.getFormInstanceRecordId()),
-                            searchCriteria.getFormNumber());
+            boolean registrantNameMatch = true;
+            if (Validator.isNotNull(searchCriteria.getRegistrantName())) {
+                String submitterName = extractSubmitterNameFromRecord(record);
+                registrantNameMatch = Validator.isNotNull(submitterName) &&
+                        PersianTextUtil.contains(submitterName, searchCriteria.getRegistrantName());
+            }
+
+            boolean formNumberMatch = true;
+            if (Validator.isNotNull(searchCriteria.getFormNumber())) {
+                formNumberMatch = record.getFormInstanceRecordId() == GetterUtil.getLong(searchCriteria.getFormNumber()) ||
+                        PersianTextUtil.contains(String.valueOf(record.getFormInstanceRecordId()),
+                                searchCriteria.getFormNumber());
+            }
 
             boolean trackingCodeMatch = checkFieldMatch(fieldValues, "trackingCode", searchCriteria.getTrackingCode());
 
