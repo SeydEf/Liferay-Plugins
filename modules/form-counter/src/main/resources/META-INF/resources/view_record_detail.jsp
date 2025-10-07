@@ -5,9 +5,6 @@
 <%@ page import="com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordLocalServiceUtil" %>
 <%@ page import="com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue" %>
 <%@ page import="com.liferay.dynamic.data.mapping.storage.DDMFormValues" %>
-<%@ page import="com.liferay.portal.kernel.json.JSONArray" %>
-<%@ page import="com.liferay.portal.kernel.json.JSONFactoryUtil" %>
-<%@ page import="com.liferay.portal.kernel.json.JSONObject" %>
 <%@ page import="com.liferay.portal.kernel.model.User" %>
 <%@ page import="com.liferay.portal.kernel.service.UserLocalServiceUtil" %>
 <%@ page import="com.liferay.portal.kernel.util.GetterUtil" %>
@@ -15,123 +12,17 @@
 <%@ page import="com.liferay.portal.kernel.util.Validator" %>
 <%@ page import="ir.seydef.plugin.formcounter.model.FormSubmissionStatus" %>
 <%@ page import="ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalServiceUtil" %>
+<%@ page import="ir.seydef.plugin.formcounter.serviceHelper.DDMFormService" %>
 <%@ page import="ir.seydef.plugin.formcounter.serviceHelper.FormStatusSyncService" %>
+<%@ page import="ir.seydef.plugin.formcounter.util.DateConverterImpl" %>
+<%@ page import="ir.seydef.plugin.formcounter.util.FormFieldDisplayUtil" %>
 <%@ page import="org.osgi.framework.BundleContext" %>
 <%@ page import="org.osgi.framework.FrameworkUtil" %>
 <%@ page import="org.osgi.framework.ServiceReference" %>
-<%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="java.util.Iterator" %>
-<%@ page import="java.util.Locale" %>
+<%@ page import="java.util.List" %>
 <%@ page import="java.util.Objects" %>
 
 <%@ include file="/init.jsp" %>
-
-<%!
-    private String getFieldLabel(DDMStructure structure, String fieldName, Locale locale) {
-        try {
-            String definition = structure.getDefinition();
-            if (definition != null) {
-                JSONObject jsonDefinition = JSONFactoryUtil.createJSONObject(definition);
-                JSONArray fields = jsonDefinition.getJSONArray("fields");
-
-                if (fields != null) {
-                    for (int i = 0; i < fields.length(); i++) {
-                        JSONObject field = fields.getJSONObject(i);
-                        String currentFieldName = field.getString("name");
-
-                        if (fieldName.equals(currentFieldName)) {
-                            JSONObject label = field.getJSONObject("label");
-                            if (label != null) {
-                                String localeKey = locale.toString();
-                                if (label.has(localeKey)) {
-                                    return label.getString(localeKey);
-                                } else if (label.has("en_US")) {
-                                    return label.getString("en_US");
-                                } else {
-                                    Iterator<String> keys = label.keys();
-                                    if (keys.hasNext()) {
-                                        return label.getString(keys.next());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Error getting field label: " + e.getMessage());
-        }
-        return fieldName;
-    }
-
-    private String getDisplayValue(DDMStructure structure, DDMFormFieldValue fieldValue, String rawValue) {
-        try {
-            String cleanValue = rawValue;
-            if (rawValue.startsWith("[\"") && rawValue.endsWith("\"]")) {
-                cleanValue = rawValue.substring(2, rawValue.length() - 2);
-            } else if (rawValue.startsWith("[") && rawValue.endsWith("]")) {
-                cleanValue = rawValue.substring(1, rawValue.length() - 1).replaceAll("\"", "");
-            }
-
-            if (cleanValue.contains("Option")) {
-                String definition = structure.getDefinition();
-                if (definition != null) {
-                    JSONObject jsonDefinition = JSONFactoryUtil.createJSONObject(definition);
-                    JSONArray fields = jsonDefinition.getJSONArray("fields");
-
-                    if (fields != null) {
-                        for (int i = 0; i < fields.length(); i++) {
-                            JSONObject field = fields.getJSONObject(i);
-                            String currentFieldName = field.getString("name");
-
-                            if (fieldValue.getName().equals(currentFieldName)) {
-                                JSONArray options = field.getJSONArray("options");
-                                if (options != null) {
-                                    return findOptionLabel(options, cleanValue);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return cleanValue;
-        } catch (Exception e) {
-            System.err.println("Error getting display value: " + e.getMessage());
-            return rawValue;
-        }
-    }
-
-    private String findOptionLabel(JSONArray options, String optionValue) {
-        try {
-            for (int i = 0; i < options.length(); i++) {
-                JSONObject option = options.getJSONObject(i);
-                String value = option.getString("value");
-
-                if (optionValue.contains(value)) {
-                    JSONObject label = option.getJSONObject("label");
-                    if (label != null) {
-                        if (label.has("en_US")) {
-                            return label.getString("en_US");
-                        } else if (label.has("en")) {
-                            return label.getString("en");
-                        } else if (label.has("fa_IR")) {
-                            return label.getString("fa_IR");
-                        } else {
-                            Iterator<String> keys = label.keys();
-                            if (keys.hasNext()) {
-                                return label.getString(keys.next());
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Error finding option label: " + e.getMessage());
-        }
-        return optionValue;
-    }
-%>
 
 <%
     long recordId = ParamUtil.getLong(renderRequest, "recordId");
@@ -140,8 +31,9 @@
     DDMFormInstanceRecord record = null;
     FormSubmissionStatus submissionStatus = null;
     String seenByUserName = null;
+    String submitterName = null;
     String statusLabel = "unseen";
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    DateConverterImpl dateConverter = new DateConverterImpl();
     errorMessage = null;
 
     try {
@@ -149,6 +41,8 @@
         if (record == null) {
             errorMessage = "Record not found";
         } else {
+            submitterName = DDMFormService.extractSubmitterNameFromRecord(record);
+            
             try {
                 long userId = themeDisplay.getUserId();
 
@@ -192,13 +86,10 @@
 %>
 
 <div class="ddm-record-detail-view">
-    <div class="record-header">
-        <h3><liferay-ui:message key="view.record"/> #<%= recordId %>
-        </h3>
-
-        <aui:button-row>
-            <aui:button href="<%= redirect %>" type="button" value="back"/>
-        </aui:button-row>
+    <div class="portlet-header">
+        <h2 class="portlet-title text-center">
+            <liferay-ui:message key="view.record"/> #<%= recordId %>
+        </h2>
     </div>
 
     <c:choose>
@@ -209,57 +100,70 @@
         </c:when>
 
         <c:otherwise>
-            <div class="record-details">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="detail-group">
-                            <label><liferay-ui:message key="record.id"/>:</label>
-                            <span class="detail-value"><%= Objects.requireNonNull(record).getFormInstanceRecordId() %></span>
+            <div class="record-details-section">
+                <div class="details-header-row">
+                    <h4 class="section-title">
+                        <liferay-ui:message key="record.details"/>
+                    </h4>
+                    <aui:button-row>
+                        <aui:button href="<%= redirect %>" type="button" value="back" cssClass="btn btn-secondary"/>
+                    </aui:button-row>
+                </div>
+
+                <div class="record-info-container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="detail-group">
+                                <label class="detail-label"><liferay-ui:message key="record.id"/>:</label>
+                                <span class="detail-value"><%= Objects.requireNonNull(record).getFormInstanceRecordId() %></span>
+                            </div>
+
+                            <div class="detail-group">
+                                <label class="detail-label"><liferay-ui:message key="create.date"/>:</label>
+                                <span class="detail-value"><%= dateConverter.getDateTimeFromGregorianToPersian(record.getCreateDate()) %></span>
+                            </div>
+
+                            <div class="detail-group">
+                                <label class="detail-label"><liferay-ui:message key="modified.date"/>:</label>
+                                <span class="detail-value"><%= dateConverter.getDateTimeFromGregorianToPersian(record.getModifiedDate()) %></span>
+                            </div>
                         </div>
 
-                        <div class="detail-group">
-                            <label><liferay-ui:message key="create.date"/>:</label>
-                            <span class="detail-value"><%= record.getCreateDate() %></span>
-                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-group">
+                                <label class="detail-label"><liferay-ui:message key="submitted.by"/>:</label>
+                                <span class="detail-value"><%= Validator.isNotNull(submitterName) ? submitterName : "-" %></span>
+                            </div>
 
-                        <div class="detail-group">
-                            <label><liferay-ui:message key="modified.date"/>:</label>
-                            <span class="detail-value"><%= record.getModifiedDate() %></span>
-                        </div>
-                    </div>
+                            <div class="detail-group">
+                                <label class="detail-label"><liferay-ui:message key="view.status"/>:</label>
+                                <span class="detail-value">
+                                    <span class="status-badge status-<%= statusLabel %>">
+                                        <liferay-ui:message key="<%= statusLabel %>"/>
+                                    </span>
+                                </span>
+                            </div>
 
-                    <div class="col-md-6">
-                        <div class="detail-group">
-                            <label><liferay-ui:message key="submitted.by"/>:</label>
-                            <span class="detail-value"><%= record.getUserName() %></span>
-                        </div>
+                            <% if (submissionStatus != null && submissionStatus.isSeen()) { %>
+                            <div class="detail-group">
+                                <label class="detail-label"><liferay-ui:message key="seen.date"/>:</label>
+                                <span class="detail-value"><%= submissionStatus.getSeenDate() != null ? dateConverter.getDateTimeFromGregorianToPersian(submissionStatus.getSeenDate()) : "N/A" %></span>
+                            </div>
 
-                        <div class="detail-group">
-                            <label><liferay-ui:message key="view.status"/>:</label>
-                            <span class="detail-value status-badge status-<%= statusLabel %>">
-                                <liferay-ui:message key="<%= statusLabel %>"/>
-                            </span>
+                            <% if (Validator.isNotNull(seenByUserName)) { %>
+                            <div class="detail-group">
+                                <label class="detail-label"><liferay-ui:message key="seen.by"/>:</label>
+                                <span class="detail-value"><%= seenByUserName %></span>
+                            </div>
+                            <% } %>
+                            <% } %>
                         </div>
-
-                        <% if (submissionStatus != null && submissionStatus.isSeen()) { %>
-                        <div class="detail-group">
-                            <label><liferay-ui:message key="seen.date"/>:</label>
-                            <span class="detail-value"><%= submissionStatus.getSeenDate() != null ? dateFormat.format(submissionStatus.getSeenDate()) : "N/A" %></span>
-                        </div>
-
-                        <% if (Validator.isNotNull(seenByUserName)) { %>
-                        <div class="detail-group">
-                            <label><liferay-ui:message key="seen.by"/>:</label>
-                            <span class="detail-value"><%= seenByUserName %></span>
-                        </div>
-                        <% } %>
-                        <% } %>
                     </div>
                 </div>
 
                 <div class="form-data-section">
-                    <h4><liferay-ui:message key="form.data"/></h4>
-                    <div class="form-data-container">
+                    <h4 class="section-title"><liferay-ui:message key="form.data"/></h4>
+                    <div class="form-fields-container">
                         <%
                             try {
                                 DDMFormValues formValues = record.getDDMFormValues();
@@ -273,14 +177,12 @@
                                             structure = formInstance.getStructure();
                                         }
 
-                                        Locale displayLocale = themeDisplay.getLocale();
-
                                         for (DDMFormFieldValue fieldValue : formFieldValues) {
                                             String fieldName = fieldValue.getName();
                                             String fieldLabel = fieldName;
 
                                             if (structure != null) {
-                                                fieldLabel = getFieldLabel(structure, fieldName, displayLocale);
+                                                fieldLabel = FormFieldDisplayUtil.getFieldLabel(structure, fieldName);
                                             }
 
                                             String value = "";
@@ -292,7 +194,7 @@
                                                     );
 
                                                     if (structure != null) {
-                                                        value = getDisplayValue(structure, fieldValue, rawValue);
+                                                        value = FormFieldDisplayUtil.getDisplayValue(structure, fieldValue, rawValue);
                                                     } else {
                                                         value = rawValue;
                                                     }
@@ -307,19 +209,24 @@
                             <label class="form-field-label"><%= fieldLabel %>
                             </label>
                             <% if (isMultiline) { %>
-                            <textarea
+                            <label>
+                                <textarea
                                     class="form-control form-field-input form-field-textarea"
                                     disabled
                                     readonly
-                                    rows="4"><%= Validator.isNotNull(value) ? value : "N/A" %></textarea>
+                                    rows="4"><%= Validator.isNotNull(value) ? value : "N/A" %>
+                                </textarea>
+                            </label>
                             <% } else { %>
-                            <input
+                            <label>
+                                <input
                                     type="text"
                                     class="form-control form-field-input"
                                     value="<%= Validator.isNotNull(value) ? value : "N/A" %>"
                                     disabled
                                     readonly
-                            />
+                                />
+                            </label>
                             <% } %>
                         </div>
                         <%
