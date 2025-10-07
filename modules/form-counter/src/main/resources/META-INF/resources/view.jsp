@@ -1,19 +1,23 @@
-<%@ page import="ir.seydef.plugin.formcounter.model.SearchCriteria" %> <%@ page
-import="java.text.SimpleDateFormat" %> <%@ include file="/init.jsp" %> <%
+<%@ page import="ir.seydef.plugin.formcounter.model.SearchCriteria" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ include file="/init.jsp" %>
+
+<%
 boolean hasValidBranchId = (Boolean) request.getAttribute("hasValidBranchId");
-String userBranchId = (String) request.getAttribute("userBranchId"); long
-selectedFormInstanceId = (Long) request.getAttribute("selectedFormInstanceId");
-List<FormInstanceDisplayDTO>
-  formInstances = (List<FormInstanceDisplayDTO
-    >) request.getAttribute("formInstances"); List<FormRecordDisplayDTO>
-      formRecords = (List<FormRecordDisplayDTO
-        >) request.getAttribute("formRecords"); int totalCount = (Integer)
-        request.getAttribute("totalCount"); Long unseenCountObj = (Long)
-        request.getAttribute("unseenCount"); long unseenCount = unseenCountObj
-        != null ? unseenCountObj : 0; SearchCriteria searchCriteria =
-        (SearchCriteria) request.getAttribute("searchCriteria"); if
-        (searchCriteria == null) { searchCriteria = new SearchCriteria(); }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); %>
+String userBranchId = (String) request.getAttribute("userBranchId");
+long selectedFormInstanceId = (Long) request.getAttribute("selectedFormInstanceId");
+List<FormInstanceDisplayDTO> formInstances = (List<FormInstanceDisplayDTO>) request.getAttribute("formInstances");
+List<FormRecordDisplayDTO> formRecords = (List<FormRecordDisplayDTO>) request.getAttribute("formRecords");
+int totalCount = (Integer) request.getAttribute("totalCount");
+Long unseenCountObj = (Long) request.getAttribute("unseenCount");
+long unseenCount = unseenCountObj != null ? unseenCountObj : 0;
+SearchCriteria searchCriteria = (SearchCriteria) request.getAttribute("searchCriteria");
+
+if (searchCriteria == null) {
+  searchCriteria = new SearchCriteria();
+}
+SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+%>
         <portlet:actionURL
           name="<%= FormCounterPortletKeys.ACTION_SEARCH %>"
           var="searchURL"
@@ -164,7 +168,6 @@ List<FormInstanceDisplayDTO>
                             onclick="clearSearchForm()"
                             icon="icon-remove"
                           />
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -205,9 +208,16 @@ List<FormInstanceDisplayDTO>
                       orderable="false"
                     />
 
+                      <%
+                          String submitterName = formRecord.getSubmitterName();
+                          if (submitterName.isEmpty()) {
+                              submitterName = " - ";
+                          }
+                      %>
+
                     <liferay-ui:search-container-column-text
                       name="submitted.by"
-                      property="submitterName"
+                      value="<%= submitterName %>"
                       orderable="false"
                     />
 
