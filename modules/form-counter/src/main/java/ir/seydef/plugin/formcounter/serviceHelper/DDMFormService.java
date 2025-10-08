@@ -146,20 +146,7 @@ public class DDMFormService {
             DDMFormValues formValues = record.getDDMFormValues();
             if (formValues != null) {
                 List<DDMFormFieldValue> formFieldValues = formValues.getDDMFormFieldValues();
-
-                for (DDMFormFieldValue fieldValue : formFieldValues) {
-                    if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID
-                            .contains(fieldValue.getFieldReference().toLowerCase())) {
-                        if (fieldValue.getValue() != null &&
-                                fieldValue.getValue().getDefaultLocale() != null) {
-
-                            String optionValue = GetterUtil.getString(
-                                    fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
-
-                            return extractDisplayValueFromStructure(record, fieldValue, optionValue);
-                        }
-                    }
-                }
+                return extractBranchIdRecursively(record, formFieldValues);
             }
         } catch (Exception e) {
             _log.error("Error extracting branch ID from record: " + record.getFormInstanceRecordId(), e);
@@ -168,9 +155,47 @@ public class DDMFormService {
         return null;
     }
 
+    private static String extractBranchIdRecursively(DDMFormInstanceRecord record, List<DDMFormFieldValue> formFieldValues) {
+        if (formFieldValues == null || formFieldValues.isEmpty()) {
+            return null;
+        }
+
+        for (DDMFormFieldValue fieldValue : formFieldValues) {
+            try {
+                String fieldRef = fieldValue.getFieldReference() != null 
+                        ? fieldValue.getFieldReference().toLowerCase() 
+                        : "";
+
+                if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID.contains(fieldRef)) {
+                    if (fieldValue.getValue() != null && fieldValue.getValue().getDefaultLocale() != null) {
+                        String optionValue = GetterUtil.getString(
+                                fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
+
+                        if (Validator.isNotNull(optionValue)) {
+                            return extractDisplayValueFromStructure(record, fieldValue, optionValue);
+                        }
+                    }
+                }
+
+                List<DDMFormFieldValue> nestedFieldValues = fieldValue.getNestedDDMFormFieldValues();
+                if (nestedFieldValues != null && !nestedFieldValues.isEmpty()) {
+                    String nestedBranchId = extractBranchIdRecursively(record, nestedFieldValues);
+                    if (Validator.isNotNull(nestedBranchId)) {
+                        return nestedBranchId;
+                    }
+                }
+
+            } catch (Exception e) {
+                _log.warn("Error extracting branch ID from field", e);
+            }
+        }
+
+        return null;
+    }
+
     private static String extractDisplayValueFromStructure(DDMFormInstanceRecord record,
-            DDMFormFieldValue fieldValue,
-            String optionValue) {
+                                                           DDMFormFieldValue fieldValue,
+                                                           String optionValue) {
         try {
             DDMFormInstance formInstance = DDMFormInstanceLocalServiceUtil
                     .fetchDDMFormInstance(record.getFormInstanceId());
@@ -222,6 +247,7 @@ public class DDMFormService {
             for (int i = 0; i < options.length(); i++) {
                 JSONObject option = options.getJSONObject(i);
                 String value = option.getString("value");
+                optionValue = optionValue.toLowerCase();
 
                 if (optionValue.contains(value)) {
                     JSONObject label = option.getJSONObject("label");
@@ -466,18 +492,40 @@ public class DDMFormService {
             return true; // No search criteria for this field
         }
 
+        return checkFieldMatchRecursively(fieldValues, fieldName, searchValue);
+    }
+
+    private static boolean checkFieldMatchRecursively(List<DDMFormFieldValue> fieldValues, String fieldName, String searchValue) {
+        if (fieldValues == null || fieldValues.isEmpty()) {
+            return false;
+        }
+
         for (DDMFormFieldValue fieldValue : fieldValues) {
-            if (fieldName.equals(fieldValue.getFieldReference()) ||
-                    fieldName.equals(fieldValue.getName())) {
+            try {
+                // Check current field
+                if (fieldName.equals(fieldValue.getFieldReference()) ||
+                        fieldName.equals(fieldValue.getName())) {
 
-                if (fieldValue.getValue() != null && fieldValue.getValue().getDefaultLocale() != null) {
-                    String fieldValueString = GetterUtil.getString(
-                            fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
+                    if (fieldValue.getValue() != null && fieldValue.getValue().getDefaultLocale() != null) {
+                        String fieldValueString = GetterUtil.getString(
+                                fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
 
-                    if (PersianTextUtil.contains(fieldValueString, searchValue)) {
+                        if (PersianTextUtil.contains(fieldValueString, searchValue)) {
+                            return true;
+                        }
+                    }
+                }
+
+                // Check nested fields recursively
+                List<DDMFormFieldValue> nestedFieldValues = fieldValue.getNestedDDMFormFieldValues();
+                if (nestedFieldValues != null && !nestedFieldValues.isEmpty()) {
+                    if (checkFieldMatchRecursively(nestedFieldValues, fieldName, searchValue)) {
                         return true;
                     }
                 }
+
+            } catch (Exception e) {
+                _log.warn("Error checking field match for field: " + fieldName, e);
             }
         }
 
@@ -491,32 +539,13 @@ public class DDMFormService {
                 if (formValues != null) {
                     List<DDMFormFieldValue> formFieldValues = formValues.getDDMFormFieldValues();
 
-                    String firstName = "";
-                    String lastName = "";
+                    String firstName;
+                    String lastName;
 
-                    for (DDMFormFieldValue fieldValue : formFieldValues) {
-                        String fieldRef = fieldValue.getFieldReference() != null
-                                ? fieldValue.getFieldReference().toLowerCase()
-                                : "";
+                    Map<String, String> nameFields = extractNameFieldsRecursively(formFieldValues);
 
-                        try {
-                            if (fieldValue.getValue() != null && fieldValue.getValue().getDefaultLocale() != null) {
-                                String value = GetterUtil.getString(
-                                        fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
-
-                                if (fieldRef.contains("first") || fieldRef.equals("firstname") ||
-                                        fieldRef.equals("fname") || fieldRef.equals("first_name")) {
-                                    firstName = value;
-                                } else if (fieldRef.contains("last") || fieldRef.equals("lastname") ||
-                                        fieldRef.equals("lname") || fieldRef.equals("surname")
-                                        || fieldRef.equals("last_name")) {
-                                    lastName = value;
-                                }
-                            }
-                        } catch (Exception e) {
-                            _log.warn("Error extracting name field value", e);
-                        }
-                    }
+                    firstName = nameFields.getOrDefault("firstName", "");
+                    lastName = nameFields.getOrDefault("lastName", "");
 
                     String fullName = (firstName + " " + lastName).trim();
                     return Validator.isNotNull(fullName) ? fullName : "";
@@ -526,5 +555,67 @@ public class DDMFormService {
             _log.error("Error extracting submitter name from record", e);
         }
         return "";
+    }
+
+    private static Map<String, String> extractNameFieldsRecursively(List<DDMFormFieldValue> formFieldValues) {
+        Map<String, String> nameFields = new HashMap<>();
+        nameFields.put("firstName", "");
+        nameFields.put("lastName", "");
+
+        if (formFieldValues == null || formFieldValues.isEmpty()) {
+            return nameFields;
+        }
+
+        for (DDMFormFieldValue fieldValue : formFieldValues) {
+            try {
+                String fieldRef = fieldValue.getFieldReference() != null
+                        ? fieldValue.getFieldReference().toLowerCase()
+                        : "";
+
+                if (fieldValue.getValue() != null && fieldValue.getValue().getDefaultLocale() != null) {
+                    String value = GetterUtil.getString(
+                            fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
+
+                    if (Validator.isNotNull(value)) {
+                        if (fieldRef.contains("first") || fieldRef.equals("firstname") ||
+                                fieldRef.equals("fname") || fieldRef.equals("first_name")) {
+                            if (Validator.isNull(nameFields.get("firstName"))) {
+                                nameFields.put("firstName", value);
+                            }
+                        } else if (fieldRef.contains("last") || fieldRef.equals("lastname") ||
+                                fieldRef.equals("lname") || fieldRef.equals("surname") ||
+                                fieldRef.equals("last_name")) {
+                            if (Validator.isNull(nameFields.get("lastName"))) {
+                                nameFields.put("lastName", value);
+                            }
+                        }
+                    }
+                }
+
+                List<DDMFormFieldValue> nestedFieldValues = fieldValue.getNestedDDMFormFieldValues();
+                if (nestedFieldValues != null && !nestedFieldValues.isEmpty()) {
+                    Map<String, String> nestedNameFields = extractNameFieldsRecursively(nestedFieldValues);
+
+                    if (Validator.isNull(nameFields.get("firstName")) &&
+                            Validator.isNotNull(nestedNameFields.get("firstName"))) {
+                        nameFields.put("firstName", nestedNameFields.get("firstName"));
+                    }
+                    if (Validator.isNull(nameFields.get("lastName")) &&
+                            Validator.isNotNull(nestedNameFields.get("lastName"))) {
+                        nameFields.put("lastName", nestedNameFields.get("lastName"));
+                    }
+                }
+
+                if (Validator.isNotNull(nameFields.get("firstName")) &&
+                        Validator.isNotNull(nameFields.get("lastName"))) {
+                    break;
+                }
+
+            } catch (Exception e) {
+                _log.warn("Error extracting name field value", e);
+            }
+        }
+
+        return nameFields;
     }
 }
