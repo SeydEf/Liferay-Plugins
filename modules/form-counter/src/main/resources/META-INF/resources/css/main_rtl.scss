@@ -3,10 +3,6 @@
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-  [dir="rtl"] & {
-    text-align: right;
-  }
 }
 
 .portlet-title {
@@ -56,20 +52,12 @@
     background-color: #fff3cd;
     border-color: #ffeaa7;
     color: #856404;
-
-    [dir="rtl"] & {
-      text-align: right;
-    }
   }
 
   &.alert-danger {
     background-color: #f8d7da;
     border-color: #f5c6cb;
     color: #721c24;
-
-    [dir="rtl"] & {
-      text-align: right;
-    }
   }
 }
 
@@ -95,20 +83,10 @@
     justify-content: flex-end;
     height: 100%;
 
-    [dir="rtl"] & {
-      justify-content: flex-start;
-      flex-direction: row-reverse;
-    }
-
     .stats-label {
       font-weight: 500;
       color: #6c757d;
       margin-right: 0.5rem;
-
-      [dir="rtl"] & {
-        margin-right: 0;
-        margin-left: 0.5rem;
-      }
     }
 
     .stats-value {
@@ -135,10 +113,6 @@
           color: #495057;
           padding: 1rem 0.75rem;
 
-          [dir="rtl"] & {
-            text-align: right;
-          }
-
           &.sortable {
             cursor: pointer;
             transition: background-color 0.2s ease;
@@ -162,10 +136,6 @@
             padding: 0.75rem;
             vertical-align: middle;
             border-bottom: 1px solid #dee2e6;
-
-            [dir="rtl"] & {
-              text-align: right;
-            }
 
             /* Record ID styling */
             &:first-child {
@@ -217,10 +187,6 @@
     justify-content: center;
     margin-top: 1.5rem;
 
-    [dir="rtl"] & {
-      flex-direction: row-reverse;
-    }
-
     .page-item {
       .page-link {
         border-radius: 6px;
@@ -252,10 +218,6 @@
     margin-bottom: 1rem;
     color: #495057;
     font-weight: 600;
-
-    [dir="rtl"] & {
-      text-align: right;
-    }
   }
 
   .summary-grid {
@@ -269,12 +231,6 @@
       border-radius: 6px;
       border-left: 4px solid #007bff;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-
-      [dir="rtl"] & {
-        border-left: none;
-        border-right: 4px solid #007bff;
-        text-align: right;
-      }
 
       .summary-name {
         font-weight: 600;
@@ -295,21 +251,12 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border: 1px solid #dee2e6;
 
-  [dir="rtl"] & {
-    right: 0;
-    left: auto;
-  }
-
   .dropdown-item {
     padding: 0.5rem 1rem;
     transition: background-color 0.2s ease;
 
     &:hover {
       background-color: #f8f9fa;
-    }
-
-    [dir="rtl"] & {
-      text-align: right;
     }
   }
 }
@@ -322,18 +269,10 @@
       flex-direction: column;
       align-items: flex-start;
 
-      [dir="rtl"] & {
-        align-items: flex-end;
-      }
-
       .branch-info {
         margin-top: 1rem;
         width: 100%;
         justify-content: center;
-
-        [dir="rtl"] & {
-          justify-content: center;
-        }
       }
     }
 
@@ -352,10 +291,6 @@
 
       .form-stats {
         justify-content: center;
-
-        [dir="rtl"] & {
-          justify-content: center;
-        }
       }
     }
 

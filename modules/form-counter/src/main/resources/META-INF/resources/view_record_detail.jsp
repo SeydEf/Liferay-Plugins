@@ -20,7 +20,6 @@
 <%@ page import="org.osgi.framework.FrameworkUtil" %>
 <%@ page import="org.osgi.framework.ServiceReference" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.util.Objects" %>
 
 <%@ include file="/init.jsp" %>
 
@@ -114,8 +113,8 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="detail-group">
-                                <label class="detail-label"><liferay-ui:message key="record.id"/>:</label>
-                                <span class="detail-value"><%= Objects.requireNonNull(record).getFormInstanceRecordId() %></span>
+                                <label class="detail-label"><liferay-ui:message key="submitted.by"/>:</label>
+                                <span class="detail-value"><%= Validator.isNotNull(submitterName) ? submitterName : "-" %></span>
                             </div>
 
                             <div class="detail-group">
@@ -130,11 +129,6 @@
                         </div>
 
                         <div class="col-md-6">
-                            <div class="detail-group">
-                                <label class="detail-label"><liferay-ui:message key="submitted.by"/>:</label>
-                                <span class="detail-value"><%= Validator.isNotNull(submitterName) ? submitterName : "-" %></span>
-                            </div>
-
                             <div class="detail-group">
                                 <label class="detail-label"><liferay-ui:message key="view.status"/>:</label>
                                 <span class="detail-value">
