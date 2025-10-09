@@ -7,7 +7,6 @@
 <%@ page import="com.liferay.dynamic.data.mapping.storage.DDMFormValues" %>
 <%@ page import="com.liferay.portal.kernel.model.User" %>
 <%@ page import="com.liferay.portal.kernel.service.UserLocalServiceUtil" %>
-<%@ page import="com.liferay.portal.kernel.util.GetterUtil" %>
 <%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
 <%@ page import="com.liferay.portal.kernel.util.Validator" %>
 <%@ page import="ir.seydef.plugin.formcounter.model.FormSubmissionStatus" %>
@@ -19,7 +18,6 @@
 <%@ page import="org.osgi.framework.BundleContext" %>
 <%@ page import="org.osgi.framework.FrameworkUtil" %>
 <%@ page import="org.osgi.framework.ServiceReference" %>
-<%@ page import="java.util.List" %>
 
 <%@ include file="/init.jsp" %>
 
@@ -41,7 +39,7 @@
             errorMessage = "Record not found";
         } else {
             submitterName = DDMFormService.extractSubmitterNameFromRecord(record);
-            
+
             try {
                 long userId = themeDisplay.getUserId();
 
@@ -171,60 +169,12 @@
                                             structure = formInstance.getStructure();
                                         }
 
-                                        for (DDMFormFieldValue fieldValue : formFieldValues) {
-                                            String fieldName = fieldValue.getName();
-                                            String fieldLabel = fieldName;
-
-                                            if (structure != null) {
-                                                fieldLabel = FormFieldDisplayUtil.getFieldLabel(structure, fieldName);
-                                            }
-
-                                            String value = "";
-                                            boolean isMultiline = false;
-                                            try {
-                                                if (fieldValue.getValue() != null && fieldValue.getValue().getDefaultLocale() != null) {
-                                                    String rawValue = GetterUtil.getString(
-                                                            fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale())
-                                                    );
-
-                                                    if (structure != null) {
-                                                        value = FormFieldDisplayUtil.getDisplayValue(structure, fieldValue, rawValue);
-                                                    } else {
-                                                        value = rawValue;
-                                                    }
-
-                                                    isMultiline = value.contains("\n") || value.length() > 100;
-                                                }
-                                            } catch (Exception e) {
-                                                value = "N/A";
-                                            }
+                                        String renderedHtml = FormFieldDisplayUtil.renderFormFieldsAsHtml(formFieldValues, structure, 0);
                         %>
-                        <div class="form-field-group">
-                            <label class="form-field-label"><%= fieldLabel %>
-                            </label>
-                            <% if (isMultiline) { %>
-                            <label>
-                                <textarea
-                                    class="form-control form-field-input form-field-textarea"
-                                    disabled
-                                    readonly
-                                    rows="4"><%= Validator.isNotNull(value) ? value : "N/A" %>
-                                </textarea>
-                            </label>
-                            <% } else { %>
-                            <label>
-                                <input
-                                    type="text"
-                                    class="form-control form-field-input"
-                                    value="<%= Validator.isNotNull(value) ? value : "N/A" %>"
-                                    disabled
-                                    readonly
-                                />
-                            </label>
-                            <% } %>
-                        </div>
+
+                        <%= renderedHtml %>
+
                         <%
-                            }
                         } else {
                         %>
                         <div class="alert alert-info">

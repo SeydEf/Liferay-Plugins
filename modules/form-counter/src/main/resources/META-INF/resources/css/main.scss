@@ -803,6 +803,30 @@ select:focus,
   font-family: inherit;
 }
 
+.nested-fields-container {
+  margin-top: 15px;
+  padding-left: 20px;
+  border-left: 3px solid #e7e7ed;
+}
+
+.form-field-group.nested-level-1 {
+  margin-left: 0;
+  background: #f9fafb;
+  border-left: 2px solid #0b5fff;
+}
+
+.form-field-group.nested-level-2 {
+  margin-left: 0;
+  background: #f5f6f8;
+  border-left: 2px solid #667eea;
+}
+
+.form-field-group.nested-level-3 {
+  margin-left: 0;
+  background: #f1f2f4;
+  border-left: 2px solid #9ca3af;
+}
+
 .btn {
   padding: 8px 16px;
   border-radius: 4px;
