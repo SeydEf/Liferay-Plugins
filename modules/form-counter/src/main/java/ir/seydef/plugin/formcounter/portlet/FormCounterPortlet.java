@@ -76,7 +76,7 @@ public class FormCounterPortlet extends MVCPortlet {
             long groupId = themeDisplay.getScopeGroupId();
 
             String userBranchId = UserBranchUtil.getUserBranchId(userId);
-            List<DDMFormInstance> formInstances = DDMFormService.getFormInstancesWithBranchId(groupId, locale);
+            List<DDMFormInstance> formInstances = DDMFormService.getFormInstancesWithBranchId(groupId);
 
             try {
                 ServiceContext serviceContext = ServiceContextFactory.getInstance(renderRequest);
@@ -241,6 +241,9 @@ public class FormCounterPortlet extends MVCPortlet {
 
             if (Validator.isNotNull(userBranchId)) {
                 int count = DDMFormService.getFilteredFormRecordsCount(formInstance.getFormInstanceId(), userBranchId);
+                if (count == 0) {
+                    continue;
+                }
                 dto.setRecordCount(count);
             }
 

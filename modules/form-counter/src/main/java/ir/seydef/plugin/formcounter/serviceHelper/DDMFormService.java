@@ -33,7 +33,7 @@ public class DDMFormService {
 
     private static final Log _log = LogFactoryUtil.getLog(DDMFormService.class);
 
-    public static List<DDMFormInstance> getFormInstancesWithBranchId(long groupId, Locale locale) {
+    public static List<DDMFormInstance> getFormInstancesWithBranchId(long groupId) {
         List<DDMFormInstance> formInstancesWithBranchId = new ArrayList<>();
 
         try {
@@ -155,15 +155,16 @@ public class DDMFormService {
         return null;
     }
 
-    private static String extractBranchIdRecursively(DDMFormInstanceRecord record, List<DDMFormFieldValue> formFieldValues) {
+    private static String extractBranchIdRecursively(DDMFormInstanceRecord record,
+                                                     List<DDMFormFieldValue> formFieldValues) {
         if (formFieldValues == null || formFieldValues.isEmpty()) {
             return null;
         }
 
         for (DDMFormFieldValue fieldValue : formFieldValues) {
             try {
-                String fieldRef = fieldValue.getFieldReference() != null 
-                        ? fieldValue.getFieldReference().toLowerCase() 
+                String fieldRef = fieldValue.getFieldReference() != null
+                        ? fieldValue.getFieldReference().toLowerCase()
                         : "";
 
                 if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID.contains(fieldRef)) {
@@ -222,17 +223,9 @@ public class DDMFormService {
 
             JSONArray fields = jsonDefinition.getJSONArray("fields");
             if (fields != null) {
-                for (int i = 0; i < fields.length(); i++) {
-                    JSONObject field = fields.getJSONObject(i);
-                    String currentFieldReference = field.getString("fieldreference");
-                    fieldReference = fieldReference.toLowerCase();
-
-                    if (fieldReference.contains(currentFieldReference)) {
-                        JSONArray options = field.getJSONArray("options");
-                        if (options != null) {
-                            return findOptionLabel(options, optionValue);
-                        }
-                    }
+                String result = parseOptionValueRecursively(fields, fieldReference.toLowerCase(), optionValue);
+                if (result != null && !result.equals(optionValue)) {
+                    return result;
                 }
             }
         } catch (Exception e) {
@@ -240,6 +233,43 @@ public class DDMFormService {
         }
 
         return optionValue;
+    }
+
+    private static String parseOptionValueRecursively(JSONArray fields, String fieldReference, String optionValue) {
+        if (fields == null) {
+            return null;
+        }
+
+        for (int i = 0; i < fields.length(); i++) {
+            try {
+                JSONObject field = fields.getJSONObject(i);
+                String currentFieldReference = field.getString("fieldreference");
+
+                if (fieldReference.contains(currentFieldReference)) {
+                    JSONArray options = field.getJSONArray("options");
+                    if (options != null) {
+                        String label = findOptionLabel(options, optionValue);
+                        if (label != null && !label.equals(optionValue)) {
+                            return label;
+                        }
+                    }
+                }
+
+                if (field.has("nestedfields")) {
+                    JSONArray nestedFields = field.getJSONArray("nestedfields");
+                    if (nestedFields != null && nestedFields.length() > 0) {
+                        String result = parseOptionValueRecursively(nestedFields, fieldReference, optionValue);
+                        if (result != null && !result.equals(optionValue)) {
+                            return result;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                _log.warn("Error processing field in option value parsing", e);
+            }
+        }
+
+        return null;
     }
 
     private static String findOptionLabel(JSONArray options, String optionValue) {
@@ -283,18 +313,41 @@ public class DDMFormService {
                 JSONArray fields = jsonDefinition.getJSONArray("fields");
 
                 if (fields != null) {
-                    for (int i = 0; i < fields.length(); i++) {
-                        JSONObject field = fields.getJSONObject(i);
-                        String fieldReference = field.getString("fieldReference");
-
-                        if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID.contains(fieldReference.toLowerCase())) {
-                            return true;
-                        }
-                    }
+                    return hasFormFieldRecursively(fields);
                 }
             }
         } catch (Exception e) {
             _log.error("Error checking form field: " + FormCounterPortletKeys.DDM_FIELD_BRANCH_ID, e);
+        }
+
+        return false;
+    }
+
+    private static boolean hasFormFieldRecursively(JSONArray fields) {
+        if (fields == null) {
+            return false;
+        }
+
+        for (int i = 0; i < fields.length(); i++) {
+            try {
+                JSONObject field = fields.getJSONObject(i);
+                String fieldReference = field.getString("fieldReference");
+
+                if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID.contains(fieldReference.toLowerCase())) {
+                    return true;
+                }
+
+                if (field.has("nestedFields")) {
+                    JSONArray nestedFields = field.getJSONArray("nestedFields");
+                    if (nestedFields != null && nestedFields.length() > 0) {
+                        if (hasFormFieldRecursively(nestedFields)) {
+                            return true;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                _log.warn("Error processing field in branch ID search", e);
+            }
         }
 
         return false;
@@ -472,7 +525,8 @@ public class DDMFormService {
 
             boolean formNumberMatch = true;
             if (Validator.isNotNull(searchCriteria.getFormNumber())) {
-                formNumberMatch = record.getFormInstanceRecordId() == GetterUtil.getLong(searchCriteria.getFormNumber()) ||
+                formNumberMatch = record.getFormInstanceRecordId() == GetterUtil.getLong(searchCriteria.getFormNumber())
+                        ||
                         PersianTextUtil.contains(String.valueOf(record.getFormInstanceRecordId()),
                                 searchCriteria.getFormNumber());
             }
@@ -495,14 +549,14 @@ public class DDMFormService {
         return checkFieldMatchRecursively(fieldValues, fieldName, searchValue);
     }
 
-    private static boolean checkFieldMatchRecursively(List<DDMFormFieldValue> fieldValues, String fieldName, String searchValue) {
+    private static boolean checkFieldMatchRecursively(List<DDMFormFieldValue> fieldValues, String fieldName,
+                                                      String searchValue) {
         if (fieldValues == null || fieldValues.isEmpty()) {
             return false;
         }
 
         for (DDMFormFieldValue fieldValue : fieldValues) {
             try {
-                // Check current field
                 if (fieldName.equals(fieldValue.getFieldReference()) ||
                         fieldName.equals(fieldValue.getName())) {
 
@@ -516,7 +570,6 @@ public class DDMFormService {
                     }
                 }
 
-                // Check nested fields recursively
                 List<DDMFormFieldValue> nestedFieldValues = fieldValue.getNestedDDMFormFieldValues();
                 if (nestedFieldValues != null && !nestedFieldValues.isEmpty()) {
                     if (checkFieldMatchRecursively(nestedFieldValues, fieldName, searchValue)) {
