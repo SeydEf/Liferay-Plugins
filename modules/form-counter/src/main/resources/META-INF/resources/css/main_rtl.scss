@@ -894,3 +894,220 @@ select:focus,
     margin-top: 10px;
   }
 }
+
+/* Print Styles for A4 Format - RTL Version */
+@media print {
+  /* Page setup for A4 */
+  @page {
+    size: A4 landscape;
+  }
+
+  /* Hide unnecessary elements */
+  .portlet-header,
+  .portlet-title-text,
+  .portlet-topper,
+  .portlet-topper-toolbar,
+  .lfr-nav-container,
+  .btn,
+  button,
+  .alert,
+  .alert-info,
+  .alert-warning,
+  .alert-success,
+  .navigation,
+  .navbar,
+  .sidebar,
+  #navigation,
+  .control-menu,
+  .product-menu,
+  .sidenav-container,
+  .management-bar,
+  .taglib-search-iterator-page-iterator-top,
+  .taglib-search-iterator-page-iterator-bottom,
+  .lfr-search-container-wrapper .management-bar,
+  .export-buttons,
+  .form-group.input-group,
+  .search-form {
+    display: none !important;
+  }
+
+  /* Reset body and main container */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt;
+    line-height: 1.4;
+    direction: rtl;
+    text-align: right;
+  }
+
+  /* Optimize main container */
+  .portlet-boundary,
+  .portlet-content,
+  .portlet-body {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Record details section */
+  .record-details-section {
+    margin-bottom: 20pt;
+    page-break-inside: avoid;
+  }
+
+  .record-details-section h3 {
+    font-size: 14pt;
+    font-weight: bold;
+    margin-bottom: 10pt;
+    padding-bottom: 5pt;
+    border-bottom: 2pt solid #333;
+    color: black !important;
+    text-align: right;
+  }
+
+  .details-grid {
+    display: block;
+  }
+
+  .detail-group {
+    margin-bottom: 8pt;
+    page-break-inside: avoid;
+  }
+
+  .detail-label {
+    font-weight: bold;
+    color: black !important;
+    font-size: 10pt;
+    min-width: auto;
+  }
+
+  .detail-value {
+    color: #333 !important;
+    font-size: 10pt;
+  }
+
+  /* Form data section */
+  .form-data-section {
+    page-break-before: avoid;
+  }
+
+  .form-data-section h3 {
+    font-size: 14pt;
+    font-weight: bold;
+    margin-bottom: 10pt;
+    margin-top: 15pt;
+    padding-bottom: 5pt;
+    border-bottom: 2pt solid #333;
+    color: black !important;
+    text-align: right;
+  }
+
+  .form-field-item {
+    margin-bottom: 12pt;
+    page-break-inside: avoid;
+  }
+
+  .field-label {
+    font-weight: bold;
+    color: black !important;
+    font-size: 10pt;
+    margin-bottom: 3pt;
+  }
+
+  .field-value {
+    color: #333 !important;
+    font-size: 10pt;
+    padding: 5pt;
+    border: 1pt solid #ccc;
+    background: #f9f9f9 !important;
+  }
+
+  /* Nested field styles - RTL specific */
+  .nested-field {
+    margin-right: 15pt;
+    margin-left: 0;
+    padding-right: 10pt;
+    padding-left: 0;
+    border-right: 2pt solid #ddd;
+    border-left: none;
+  }
+
+  .nested-field .field-label {
+    font-size: 9pt;
+  }
+
+  .nested-field .field-value {
+    font-size: 9pt;
+  }
+
+  /* Remove backgrounds and shadows */
+  * {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Keep specific backgrounds for readability */
+  .field-value,
+  .detail-value {
+    background: #f9f9f9 !important;
+  }
+
+  /* Links - show URL in black */
+  a {
+    color: black !important;
+    text-decoration: underline;
+  }
+
+  a[href]:after {
+    content: none !important;
+  }
+
+  /* Table styles if any tables exist */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th,
+  td {
+    border: 1pt solid #ddd;
+    padding: 5pt;
+    text-align: right;
+  }
+
+  th {
+    background: #f0f0f0 !important;
+    font-weight: bold;
+  }
+
+  /* Page break helpers */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Add print header with record info */
+  .record-details-section:before {
+    content: "جزئیات رکورد فرم";
+    display: block;
+    font-size: 16pt;
+    font-weight: bold;
+    margin-bottom: 15pt;
+    padding-bottom: 10pt;
+    border-bottom: 3pt solid #000;
+    text-align: right;
+  }
+
+  /* Ensure good contrast */
+  .badge,
+  .label,
+  .tag {
+    border: 1pt solid #333 !important;
+    color: black !important;
+  }
+}

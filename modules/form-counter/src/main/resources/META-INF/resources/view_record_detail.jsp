@@ -103,6 +103,7 @@
                         <liferay-ui:message key="record.details"/>
                     </h4>
                     <aui:button-row>
+                        <aui:button onClick="window.print()" type="button" value="print" cssClass="btn btn-primary" icon="icon-print"/>
                         <aui:button href="<%= redirect %>" type="button" value="back" cssClass="btn btn-secondary"/>
                     </aui:button-row>
                 </div>
