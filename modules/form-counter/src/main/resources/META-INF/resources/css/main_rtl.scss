@@ -188,8 +188,10 @@
       background: #fff;
       padding: 1rem;
       border-radius: 6px;
-      border-left: 4px solid #007bff;
+      border-right: 4px solid #007bff;
+      border-left: none;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
 
       .summary-name {
         font-weight: 600;
@@ -200,6 +202,31 @@
       .summary-count {
         color: #6c757d;
         font-size: 0.875rem;
+      }
+    }
+
+    .summary-item.clickable-summary {
+      cursor: pointer;
+      user-select: none;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        border-right-color: #0056b3;
+        background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+
+        .summary-name {
+          color: #007bff;
+        }
+
+        .summary-count {
+          color: #495057;
+        }
+      }
+
+      &:active {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
       }
     }
   }
@@ -432,6 +459,25 @@ select:focus,
 .record-seen td {
   background-color: #ededed !important;
 }
+
+///* Clickable rows */
+//.table-responsive table tbody tr {
+//  cursor: pointer;
+//  transition: all 0.2s ease;
+//}
+//
+//.table-responsive table tbody tr:hover td {
+//  background-color: #e3f2fd !important;
+//  transform: scale(1.01);
+//}
+//
+//.record-seen:hover td {
+//  background-color: #d6e8f5 !important;
+//}
+//
+//.record-unseen:hover td {
+//  background-color: #e8f4fd !important;
+//}
 
 .unseen-notification {
   position: fixed;
