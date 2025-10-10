@@ -136,53 +136,12 @@
             padding: 0.75rem;
             vertical-align: middle;
             border-bottom: 1px solid #dee2e6;
-
-            /* Record ID styling */
-            &:first-child {
-              font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-              font-weight: 500;
-              color: #007bff;
-            }
-
-            /* Branch ID styling */
-            &:nth-child(3) {
-              font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-              background: #e3f2fd;
-              border-radius: 4px;
-              font-weight: 500;
-            }
-
-            /* Status styling */
-            &:nth-child(7) {
-              .status-label {
-                padding: 0.25rem 0.5rem;
-                border-radius: 4px;
-                font-size: 0.875rem;
-                font-weight: 500;
-
-                &.status-approved {
-                  background: #d4edda;
-                  color: #155724;
-                }
-
-                &.status-pending {
-                  background: #fff3cd;
-                  color: #856404;
-                }
-
-                &.status-denied {
-                  background: #f8d7da;
-                  color: #721c24;
-                }
-              }
-            }
           }
         }
       }
     }
   }
 
-  /* Pagination styling */
   .pagination {
     justify-content: center;
     margin-top: 1.5rem;
@@ -192,7 +151,7 @@
         border-radius: 6px;
         margin: 0 0.125rem;
         border: 1px solid #dee2e6;
-        color: #007bff;
+        color: #000000;
 
         &:hover {
           background-color: #e9ecef;
@@ -803,6 +762,13 @@ select:focus,
   font-family: inherit;
 }
 
+.btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
 .nested-fields-container {
   margin-top: 15px;
   padding-left: 20px;
@@ -827,12 +793,6 @@ select:focus,
   border-left: 2px solid #9ca3af;
 }
 
-.btn {
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
 
 .btn-secondary {
   background-color: #6b6c7e;
