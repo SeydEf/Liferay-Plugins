@@ -894,15 +894,12 @@ select:focus,
   }
 }
 
-/* Print Styles for A4 Format */
 @media print {
-  /* Page setup for A4 */
   @page {
-    size: A4 landscape;
+    size: auto;
     margin: 2cm 1.5cm;
   }
 
-  /* Hide unnecessary elements */
   .portlet-header,
   .portlet-title-text,
   .portlet-topper,
@@ -931,7 +928,6 @@ select:focus,
     display: none !important;
   }
 
-  /* Reset body and main container */
   body {
     background: white !important;
     color: black !important;
@@ -939,7 +935,6 @@ select:focus,
     line-height: 1.4;
   }
 
-  /* Optimize main container */
   .portlet-boundary,
   .portlet-content,
   .portlet-body {
@@ -951,7 +946,6 @@ select:focus,
     border: none !important;
   }
 
-  /* Record details section */
   .record-details-section {
     margin-bottom: 20pt;
     page-break-inside: avoid;
@@ -987,7 +981,6 @@ select:focus,
     font-size: 10pt;
   }
 
-  /* Form data section */
   .form-data-section {
     page-break-before: avoid;
   }
@@ -1022,7 +1015,6 @@ select:focus,
     background: #f9f9f9 !important;
   }
 
-  /* Nested field styles */
   .nested-field {
     margin-left: 15pt;
     padding-left: 10pt;
@@ -1037,20 +1029,17 @@ select:focus,
     font-size: 9pt;
   }
 
-  /* Remove backgrounds and shadows */
   * {
     background: transparent !important;
     box-shadow: none !important;
     text-shadow: none !important;
   }
 
-  /* Keep specific backgrounds for readability */
   .field-value,
   .detail-value {
     background: #f9f9f9 !important;
   }
 
-  /* Links - show URL in black */
   a {
     color: black !important;
     text-decoration: underline;
@@ -1060,7 +1049,6 @@ select:focus,
     content: none !important;
   }
 
-  /* Table styles if any tables exist */
   table {
     border-collapse: collapse;
     width: 100%;
@@ -1078,13 +1066,11 @@ select:focus,
     font-weight: bold;
   }
 
-  /* Page break helpers */
   h1, h2, h3, h4, h5, h6 {
     page-break-after: avoid;
     page-break-inside: avoid;
   }
 
-  /* Add print header with record info */
   .record-details-section:before {
     content: "Form Record Details";
     display: block;
@@ -1095,7 +1081,6 @@ select:focus,
     border-bottom: 3pt solid #000;
   }
 
-  /* Ensure good contrast */
   .badge,
   .label,
   .tag {
