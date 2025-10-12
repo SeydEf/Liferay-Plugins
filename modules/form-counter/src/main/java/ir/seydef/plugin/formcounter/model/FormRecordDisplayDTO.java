@@ -4,7 +4,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.portal.kernel.util.Validator;
 import ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalServiceUtil;
-import ir.seydef.plugin.formcounter.serviceHelper.DDMFormService;
+import ir.seydef.plugin.formcounter.helper.DDMFormService;
 
 import java.util.Date;
 import java.util.Locale;

@@ -9,8 +9,8 @@ import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.util.Validator;
-import ir.seydef.plugin.formcounter.serviceHelper.DDMFormService;
-import ir.seydef.plugin.formcounter.serviceHelper.FormStatusSyncService;
+import ir.seydef.plugin.formcounter.helper.DDMFormService;
+import ir.seydef.plugin.formcounter.helper.FormStatusSyncService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 

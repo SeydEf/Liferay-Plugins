@@ -1,4 +1,4 @@
-package ir.seydef.plugin.formcounter.serviceHelper;
+package ir.seydef.plugin.formcounter.helper;
 
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;

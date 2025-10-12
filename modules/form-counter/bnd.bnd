@@ -5,7 +5,7 @@ Export-Package: \
     ir.seydef.plugin.formcounter.application.list,\
 	ir.seydef.plugin.formcounter.constants,\
 	ir.seydef.plugin.formcounter.model,\
-	ir.seydef.plugin.formcounter.serviceHelper,\
+    ir.seydef.plugin.formcounter.helper,\
 	ir.seydef.plugin.formcounter.util
 Import-Package: \
 	ir.seydef.plugin.formcounter.model;resolution:=optional,\
