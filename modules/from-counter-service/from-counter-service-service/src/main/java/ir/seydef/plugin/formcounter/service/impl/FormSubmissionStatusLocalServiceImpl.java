@@ -30,37 +30,19 @@ import org.osgi.service.component.annotations.Reference;
 public class FormSubmissionStatusLocalServiceImpl
 	extends FormSubmissionStatusLocalServiceBaseImpl {
 
-	/**
-	 * Creates a new FormSubmissionStatus entry for a form instance record
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @param serviceContext the service context
-	 * @return the created FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public FormSubmissionStatus addFormSubmissionStatus(
 			long formInstanceRecordId, ServiceContext serviceContext)
 		throws PortalException {
 
-		// Generate primary key
-
 		long formSubmissionStatusId = counterLocalService.increment();
-
-		// Create the entity
 
 		FormSubmissionStatus formSubmissionStatus =
 			formSubmissionStatusPersistence.create(formSubmissionStatusId);
 
-		// Set form instance record ID
-
 		formSubmissionStatus.setFormInstanceRecordId(formInstanceRecordId);
-
-		// Set status fields - initially unseen
 
 		formSubmissionStatus.setSeen(false);
 		formSubmissionStatus.setSeenDate(null);
-
-		// Set audit fields
 
 		User user = _userLocalService.getUser(serviceContext.getUserId());
 		Date now = new Date();
@@ -75,15 +57,6 @@ public class FormSubmissionStatusLocalServiceImpl
 		return formSubmissionStatusPersistence.update(formSubmissionStatus);
 	}
 
-	/**
-	 * Creates or updates FormSubmissionStatus for a form instance record
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @param seen the seen status
-	 * @param serviceContext the service context
-	 * @return the FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public FormSubmissionStatus createOrUpdate(
 			long formInstanceRecordId, boolean seen,
 			ServiceContext serviceContext)
@@ -94,7 +67,6 @@ public class FormSubmissionStatusLocalServiceImpl
 
 		if (existing != null) {
 
-			// Update existing
 
 			existing.setSeen(seen);
 			existing.setSeenDate(seen ? new Date() : null);
@@ -102,8 +74,6 @@ public class FormSubmissionStatusLocalServiceImpl
 
 			return formSubmissionStatusPersistence.update(existing);
 		}
-
-		// Create new
 
 		FormSubmissionStatus newStatus = addFormSubmissionStatus(
 			formInstanceRecordId, serviceContext);
@@ -117,12 +87,6 @@ public class FormSubmissionStatusLocalServiceImpl
 		return newStatus;
 	}
 
-	/**
-	 * Gets the FormSubmissionStatus by form instance record ID
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @return the FormSubmissionStatus, or null if not found
-	 */
 	public FormSubmissionStatus getByFormInstanceRecordId(
 		long formInstanceRecordId) {
 
@@ -135,39 +99,18 @@ public class FormSubmissionStatusLocalServiceImpl
 		}
 	}
 
-	/**
-	 * Gets all seen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return list of seen FormSubmissionStatus entries
-	 */
 	public List<FormSubmissionStatus> getSeenByGroupId(long groupId) {
 		return formSubmissionStatusPersistence.findByG_S(groupId, true);
 	}
 
-	/**
-	 * Gets count of seen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return count of seen submissions
-	 */
 	public int getSeenCountByGroupId(long groupId) {
 		return formSubmissionStatusPersistence.countByG_S(groupId, true);
 	}
 
-	/**
-	 * Gets unseen form submissions by form instance ID
-	 *
-	 * @param formInstanceId the form instance ID
-	 * @param groupId the group ID
-	 * @return list of unseen FormSubmissionStatus entries for the specific form instance
-	 */
 	public List<FormSubmissionStatus> getUnseenByFormInstanceId(
 		long formInstanceId, long groupId) {
 
 		try {
-
-			// Use dynamic query to filter by form instance ID
 
 			com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery =
 				dynamicQuery(
@@ -179,19 +122,13 @@ public class FormSubmissionStatusLocalServiceImpl
 						eq("seen", false)
 				);
 
-			// Get all unseen submissions for the group
-
 			List<FormSubmissionStatus> unseenSubmissions = dynamicQuery(
 				dynamicQuery);
-
-			// Filter by form instance ID by checking the form instance record
 
 			List<FormSubmissionStatus> result = new java.util.ArrayList<>();
 
 			for (FormSubmissionStatus status : unseenSubmissions) {
 				try {
-
-					// Get the form instance record and check its form instance ID
 
 					com.liferay.dynamic.data.lists.model.DDLRecord record =
 						com.liferay.dynamic.data.lists.service.
@@ -203,9 +140,6 @@ public class FormSubmissionStatusLocalServiceImpl
 					}
 				}
 				catch (Exception e) {
-
-					// Skip records that can't be found or accessed
-
 					continue;
 				}
 			}
@@ -217,51 +151,21 @@ public class FormSubmissionStatusLocalServiceImpl
 		}
 	}
 
-	/**
-	 * Gets all unseen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return list of unseen FormSubmissionStatus entries
-	 */
 	public List<FormSubmissionStatus> getUnseenByGroupId(long groupId) {
 		return formSubmissionStatusPersistence.findByG_S(groupId, false);
 	}
 
-	/**
-	 * Gets count of unseen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return count of unseen submissions
-	 */
 	public int getUnseenCountByGroupId(long groupId) {
 		return formSubmissionStatusPersistence.countByG_S(groupId, false);
 	}
 
-	/**
-	 * Checks if a form submission is seen
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @return true if seen, false otherwise
-	 */
 	public boolean isSeen(long formInstanceRecordId) {
 		FormSubmissionStatus status = getByFormInstanceRecordId(
 			formInstanceRecordId);
 
-		if ((status != null) && status.isSeen()) {
-			return true;
-		}
+        return (status != null) && status.isSeen();
+    }
 
-		return false;
-	}
-
-	/**
-	 * Marks a form submission as seen
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @param userId the user ID who marked it as seen
-	 * @return the updated FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public FormSubmissionStatus markAsSeen(
 			long formInstanceRecordId, long userId)
 		throws PortalException {
@@ -277,13 +181,6 @@ public class FormSubmissionStatusLocalServiceImpl
 		return formSubmissionStatusPersistence.update(formSubmissionStatus);
 	}
 
-	/**
-	 * Marks a form submission as unseen
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @return the updated FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public FormSubmissionStatus markAsUnseen(long formInstanceRecordId)
 		throws PortalException {
 

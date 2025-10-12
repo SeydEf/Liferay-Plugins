@@ -33,14 +33,6 @@ import org.osgi.service.component.annotations.Reference;
 public class FormSubmissionStatusServiceImpl
 	extends FormSubmissionStatusServiceBaseImpl {
 
-	/**
-	 * Creates a new FormSubmissionStatus entry for a form instance record
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @param serviceContext       the service context
-	 * @return the created FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public FormSubmissionStatus addFormSubmissionStatus(
 			long formInstanceRecordId, ServiceContext serviceContext)
 		throws PortalException {
@@ -53,15 +45,6 @@ public class FormSubmissionStatusServiceImpl
 			formInstanceRecordId, serviceContext);
 	}
 
-	/**
-	 * Creates or updates FormSubmissionStatus for a form instance record
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @param seen                 the seen status
-	 * @param serviceContext       the service context
-	 * @return the FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public FormSubmissionStatus createOrUpdate(
 			long formInstanceRecordId, boolean seen,
 			ServiceContext serviceContext)
@@ -85,13 +68,6 @@ public class FormSubmissionStatusServiceImpl
 			formInstanceRecordId, seen, serviceContext);
 	}
 
-	/**
-	 * Gets the FormSubmissionStatus by form instance record ID
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @return the FormSubmissionStatus, or null if not found
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public FormSubmissionStatus getByFormInstanceRecordId(
 			long formInstanceRecordId)
 		throws PortalException {
@@ -108,13 +84,6 @@ public class FormSubmissionStatusServiceImpl
 		return formSubmissionStatus;
 	}
 
-	/**
-	 * Gets all seen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return list of seen FormSubmissionStatus entries
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public List<FormSubmissionStatus> getSeenByGroupId(long groupId)
 		throws PortalException {
 
@@ -124,13 +93,6 @@ public class FormSubmissionStatusServiceImpl
 		return formSubmissionStatusLocalService.getSeenByGroupId(groupId);
 	}
 
-	/**
-	 * Gets count of seen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return count of seen submissions
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public int getSeenCountByGroupId(long groupId) throws PortalException {
 		_portletResourcePermission.check(
 			getPermissionChecker(), groupId, ActionKeys.VIEW);
@@ -138,14 +100,6 @@ public class FormSubmissionStatusServiceImpl
 		return formSubmissionStatusLocalService.getSeenCountByGroupId(groupId);
 	}
 
-	/**
-	 * Gets unseen form submissions by form instance ID
-	 *
-	 * @param formInstanceId the form instance ID
-	 * @param groupId        the group ID
-	 * @return list of unseen FormSubmissionStatus entries for the specific form instance
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public List<FormSubmissionStatus> getUnseenByFormInstanceId(
 			long formInstanceId, long groupId)
 		throws PortalException {
@@ -157,13 +111,6 @@ public class FormSubmissionStatusServiceImpl
 			formInstanceId, groupId);
 	}
 
-	/**
-	 * Gets all unseen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return list of unseen FormSubmissionStatus entries
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public List<FormSubmissionStatus> getUnseenByGroupId(long groupId)
 		throws PortalException {
 
@@ -173,13 +120,6 @@ public class FormSubmissionStatusServiceImpl
 		return formSubmissionStatusLocalService.getUnseenByGroupId(groupId);
 	}
 
-	/**
-	 * Gets count of unseen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return count of unseen submissions
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public int getUnseenCountByGroupId(long groupId) throws PortalException {
 		_portletResourcePermission.check(
 			getPermissionChecker(), groupId, ActionKeys.VIEW);
@@ -188,13 +128,6 @@ public class FormSubmissionStatusServiceImpl
 			groupId);
 	}
 
-	/**
-	 * Checks if a form submission is seen
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @return true if seen, false otherwise
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public boolean isSeen(long formInstanceRecordId) throws PortalException {
 		FormSubmissionStatus formSubmissionStatus =
 			formSubmissionStatusLocalService.getByFormInstanceRecordId(
@@ -208,14 +141,6 @@ public class FormSubmissionStatusServiceImpl
 		return formSubmissionStatusLocalService.isSeen(formInstanceRecordId);
 	}
 
-	/**
-	 * Marks a form submission as seen
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @param userId               the user ID who marked it as seen
-	 * @return the updated FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public FormSubmissionStatus markAsSeen(
 			long formInstanceRecordId, long userId)
 		throws PortalException {
@@ -234,13 +159,6 @@ public class FormSubmissionStatusServiceImpl
 			formInstanceRecordId, userId);
 	}
 
-	/**
-	 * Marks a form submission as unseen
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @return the updated FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public FormSubmissionStatus markAsUnseen(long formInstanceRecordId)
 		throws PortalException {
 
