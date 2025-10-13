@@ -1,0 +1,16 @@
+Bundle-Name: form-counter-rules-admin
+Bundle-SymbolicName: ir.seydef.plugin.formcounter.rules.admin
+Bundle-Version: 1.0.0
+Export-Package: \
+	ir.seydef.plugin.formcounter.rules.admin.constants,\
+	ir.seydef.plugin.formcounter.rules.admin.model,\
+	ir.seydef.plugin.formcounter.rules.admin.util
+Import-Package: \
+	ir.seydef.plugin.formcounter.model;resolution:=optional,\
+	ir.seydef.plugin.formcounter.service;resolution:=optional,\
+	ir.seydef.plugin.formcounter.rules.admin.model;resolution:=optional,\
+	ir.seydef.plugin.formcounter.rules.admin.util;resolution:=optional,\
+	*
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"
