@@ -1,6 +1,20 @@
 <?xml version="1.0"?>
 
 <model-hints>
+	<model name="ir.seydef.plugin.formcounter.model.FormCounterRule">
+		<field name="formCounterRuleId" type="long" />
+		<field name="ruleName" type="String" />
+		<field name="description" type="String" />
+		<field name="ruleConditions" type="String" />
+		<field name="logicOperator" type="String" />
+		<field name="active" type="boolean" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+	</model>
 	<model name="ir.seydef.plugin.formcounter.model.FormSubmissionStatus">
 		<field name="formSubmissionStatusId" type="long" />
 		<field name="formInstanceRecordId" type="long" />

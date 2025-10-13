@@ -88,59 +88,19 @@ public class FormSubmissionStatusServiceHttp {
 	}
 
 	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatus
-			markAsSeen(
+			createOrUpdate(
 				HttpPrincipal httpPrincipal, long formInstanceRecordId,
-				long userId)
+				boolean seen,
+				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				FormSubmissionStatusServiceUtil.class, "markAsSeen",
-				_markAsSeenParameterTypes1);
+				FormSubmissionStatusServiceUtil.class, "createOrUpdate",
+				_createOrUpdateParameterTypes1);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, formInstanceRecordId, userId);
-
-			Object returnObj = null;
-
-			try {
-				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
-			}
-			catch (Exception exception) {
-				if (exception instanceof
-						com.liferay.portal.kernel.exception.PortalException) {
-
-					throw (com.liferay.portal.kernel.exception.PortalException)
-						exception;
-				}
-
-				throw new com.liferay.portal.kernel.exception.SystemException(
-					exception);
-			}
-
-			return (ir.seydef.plugin.formcounter.model.FormSubmissionStatus)
-				returnObj;
-		}
-		catch (com.liferay.portal.kernel.exception.SystemException
-					systemException) {
-
-			_log.error(systemException, systemException);
-
-			throw systemException;
-		}
-	}
-
-	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatus
-			markAsUnseen(HttpPrincipal httpPrincipal, long formInstanceRecordId)
-		throws com.liferay.portal.kernel.exception.PortalException {
-
-		try {
-			MethodKey methodKey = new MethodKey(
-				FormSubmissionStatusServiceUtil.class, "markAsUnseen",
-				_markAsUnseenParameterTypes2);
-
-			MethodHandler methodHandler = new MethodHandler(
-				methodKey, formInstanceRecordId);
+				methodKey, formInstanceRecordId, seen, serviceContext);
 
 			Object returnObj = null;
 
@@ -180,7 +140,7 @@ public class FormSubmissionStatusServiceHttp {
 			MethodKey methodKey = new MethodKey(
 				FormSubmissionStatusServiceUtil.class,
 				"getByFormInstanceRecordId",
-				_getByFormInstanceRecordIdParameterTypes3);
+				_getByFormInstanceRecordIdParameterTypes2);
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, formInstanceRecordId);
@@ -214,55 +174,15 @@ public class FormSubmissionStatusServiceHttp {
 		}
 	}
 
-	public static boolean isSeen(
-			HttpPrincipal httpPrincipal, long formInstanceRecordId)
-		throws com.liferay.portal.kernel.exception.PortalException {
-
-		try {
-			MethodKey methodKey = new MethodKey(
-				FormSubmissionStatusServiceUtil.class, "isSeen",
-				_isSeenParameterTypes4);
-
-			MethodHandler methodHandler = new MethodHandler(
-				methodKey, formInstanceRecordId);
-
-			Object returnObj = null;
-
-			try {
-				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
-			}
-			catch (Exception exception) {
-				if (exception instanceof
-						com.liferay.portal.kernel.exception.PortalException) {
-
-					throw (com.liferay.portal.kernel.exception.PortalException)
-						exception;
-				}
-
-				throw new com.liferay.portal.kernel.exception.SystemException(
-					exception);
-			}
-
-			return ((Boolean)returnObj).booleanValue();
-		}
-		catch (com.liferay.portal.kernel.exception.SystemException
-					systemException) {
-
-			_log.error(systemException, systemException);
-
-			throw systemException;
-		}
-	}
-
 	public static java.util.List
 		<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
-				getUnseenByGroupId(HttpPrincipal httpPrincipal, long groupId)
+				getSeenByGroupId(HttpPrincipal httpPrincipal, long groupId)
 			throws com.liferay.portal.kernel.exception.PortalException {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				FormSubmissionStatusServiceUtil.class, "getUnseenByGroupId",
-				_getUnseenByGroupIdParameterTypes5);
+				FormSubmissionStatusServiceUtil.class, "getSeenByGroupId",
+				_getSeenByGroupIdParameterTypes3);
 
 			MethodHandler methodHandler = new MethodHandler(methodKey, groupId);
 
@@ -296,15 +216,100 @@ public class FormSubmissionStatusServiceHttp {
 		}
 	}
 
+	public static int getSeenCountByGroupId(
+			HttpPrincipal httpPrincipal, long groupId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				FormSubmissionStatusServiceUtil.class, "getSeenCountByGroupId",
+				_getSeenCountByGroupIdParameterTypes4);
+
+			MethodHandler methodHandler = new MethodHandler(methodKey, groupId);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return ((Integer)returnObj).intValue();
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
 	public static java.util.List
 		<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
-				getSeenByGroupId(HttpPrincipal httpPrincipal, long groupId)
+				getUnseenByFormInstanceId(
+					HttpPrincipal httpPrincipal, long formInstanceId,
+					long groupId)
 			throws com.liferay.portal.kernel.exception.PortalException {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				FormSubmissionStatusServiceUtil.class, "getSeenByGroupId",
-				_getSeenByGroupIdParameterTypes6);
+				FormSubmissionStatusServiceUtil.class,
+				"getUnseenByFormInstanceId",
+				_getUnseenByFormInstanceIdParameterTypes5);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, formInstanceId, groupId);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return (java.util.List
+				<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>)
+					returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
+	public static java.util.List
+		<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
+				getUnseenByGroupId(HttpPrincipal httpPrincipal, long groupId)
+			throws com.liferay.portal.kernel.exception.PortalException {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				FormSubmissionStatusServiceUtil.class, "getUnseenByGroupId",
+				_getUnseenByGroupIdParameterTypes6);
 
 			MethodHandler methodHandler = new MethodHandler(methodKey, groupId);
 
@@ -378,60 +383,17 @@ public class FormSubmissionStatusServiceHttp {
 		}
 	}
 
-	public static int getSeenCountByGroupId(
-			HttpPrincipal httpPrincipal, long groupId)
+	public static boolean isSeen(
+			HttpPrincipal httpPrincipal, long formInstanceRecordId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				FormSubmissionStatusServiceUtil.class, "getSeenCountByGroupId",
-				_getSeenCountByGroupIdParameterTypes8);
-
-			MethodHandler methodHandler = new MethodHandler(methodKey, groupId);
-
-			Object returnObj = null;
-
-			try {
-				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
-			}
-			catch (Exception exception) {
-				if (exception instanceof
-						com.liferay.portal.kernel.exception.PortalException) {
-
-					throw (com.liferay.portal.kernel.exception.PortalException)
-						exception;
-				}
-
-				throw new com.liferay.portal.kernel.exception.SystemException(
-					exception);
-			}
-
-			return ((Integer)returnObj).intValue();
-		}
-		catch (com.liferay.portal.kernel.exception.SystemException
-					systemException) {
-
-			_log.error(systemException, systemException);
-
-			throw systemException;
-		}
-	}
-
-	public static java.util.List
-		<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
-				getUnseenByFormInstanceId(
-					HttpPrincipal httpPrincipal, long formInstanceId,
-					long groupId)
-			throws com.liferay.portal.kernel.exception.PortalException {
-
-		try {
-			MethodKey methodKey = new MethodKey(
-				FormSubmissionStatusServiceUtil.class,
-				"getUnseenByFormInstanceId",
-				_getUnseenByFormInstanceIdParameterTypes9);
+				FormSubmissionStatusServiceUtil.class, "isSeen",
+				_isSeenParameterTypes8);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, formInstanceId, groupId);
+				methodKey, formInstanceRecordId);
 
 			Object returnObj = null;
 
@@ -450,9 +412,7 @@ public class FormSubmissionStatusServiceHttp {
 					exception);
 			}
 
-			return (java.util.List
-				<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>)
-					returnObj;
+			return ((Boolean)returnObj).booleanValue();
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException
 					systemException) {
@@ -464,19 +424,59 @@ public class FormSubmissionStatusServiceHttp {
 	}
 
 	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatus
-			createOrUpdate(
+			markAsSeen(
 				HttpPrincipal httpPrincipal, long formInstanceRecordId,
-				boolean seen,
-				com.liferay.portal.kernel.service.ServiceContext serviceContext)
+				long userId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				FormSubmissionStatusServiceUtil.class, "createOrUpdate",
-				_createOrUpdateParameterTypes10);
+				FormSubmissionStatusServiceUtil.class, "markAsSeen",
+				_markAsSeenParameterTypes9);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, formInstanceRecordId, seen, serviceContext);
+				methodKey, formInstanceRecordId, userId);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return (ir.seydef.plugin.formcounter.model.FormSubmissionStatus)
+				returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
+	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatus
+			markAsUnseen(HttpPrincipal httpPrincipal, long formInstanceRecordId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				FormSubmissionStatusServiceUtil.class, "markAsUnseen",
+				_markAsUnseenParameterTypes10);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, formInstanceRecordId);
 
 			Object returnObj = null;
 
@@ -514,31 +514,30 @@ public class FormSubmissionStatusServiceHttp {
 		new Class[] {
 			long.class, com.liferay.portal.kernel.service.ServiceContext.class
 		};
-	private static final Class<?>[] _markAsSeenParameterTypes1 = new Class[] {
-		long.class, long.class
-	};
-	private static final Class<?>[] _markAsUnseenParameterTypes2 = new Class[] {
-		long.class
-	};
-	private static final Class<?>[] _getByFormInstanceRecordIdParameterTypes3 =
-		new Class[] {long.class};
-	private static final Class<?>[] _isSeenParameterTypes4 = new Class[] {
-		long.class
-	};
-	private static final Class<?>[] _getUnseenByGroupIdParameterTypes5 =
-		new Class[] {long.class};
-	private static final Class<?>[] _getSeenByGroupIdParameterTypes6 =
-		new Class[] {long.class};
-	private static final Class<?>[] _getUnseenCountByGroupIdParameterTypes7 =
-		new Class[] {long.class};
-	private static final Class<?>[] _getSeenCountByGroupIdParameterTypes8 =
-		new Class[] {long.class};
-	private static final Class<?>[] _getUnseenByFormInstanceIdParameterTypes9 =
-		new Class[] {long.class, long.class};
-	private static final Class<?>[] _createOrUpdateParameterTypes10 =
+	private static final Class<?>[] _createOrUpdateParameterTypes1 =
 		new Class[] {
 			long.class, boolean.class,
 			com.liferay.portal.kernel.service.ServiceContext.class
 		};
+	private static final Class<?>[] _getByFormInstanceRecordIdParameterTypes2 =
+		new Class[] {long.class};
+	private static final Class<?>[] _getSeenByGroupIdParameterTypes3 =
+		new Class[] {long.class};
+	private static final Class<?>[] _getSeenCountByGroupIdParameterTypes4 =
+		new Class[] {long.class};
+	private static final Class<?>[] _getUnseenByFormInstanceIdParameterTypes5 =
+		new Class[] {long.class, long.class};
+	private static final Class<?>[] _getUnseenByGroupIdParameterTypes6 =
+		new Class[] {long.class};
+	private static final Class<?>[] _getUnseenCountByGroupIdParameterTypes7 =
+		new Class[] {long.class};
+	private static final Class<?>[] _isSeenParameterTypes8 = new Class[] {
+		long.class
+	};
+	private static final Class<?>[] _markAsSeenParameterTypes9 = new Class[] {
+		long.class, long.class
+	};
+	private static final Class<?>[] _markAsUnseenParameterTypes10 =
+		new Class[] {long.class};
 
 }

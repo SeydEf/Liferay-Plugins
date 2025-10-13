@@ -55,14 +55,6 @@ import java.rmi.RemoteException;
 @Deprecated
 public class FormSubmissionStatusServiceSoap {
 
-	/**
-	 * Creates a new FormSubmissionStatus entry for a form instance record
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @param serviceContext       the service context
-	 * @return the created FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap
 			addFormSubmissionStatus(
 				long formInstanceRecordId,
@@ -85,22 +77,16 @@ public class FormSubmissionStatusServiceSoap {
 		}
 	}
 
-	/**
-	 * Marks a form submission as seen
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @param userId               the user ID who marked it as seen
-	 * @return the updated FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap
-			markAsSeen(long formInstanceRecordId, long userId)
+			createOrUpdate(
+				long formInstanceRecordId, boolean seen,
+				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws RemoteException {
 
 		try {
 			ir.seydef.plugin.formcounter.model.FormSubmissionStatus
-				returnValue = FormSubmissionStatusServiceUtil.markAsSeen(
-					formInstanceRecordId, userId);
+				returnValue = FormSubmissionStatusServiceUtil.createOrUpdate(
+					formInstanceRecordId, seen, serviceContext);
 
 			return ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap.
 				toSoapModel(returnValue);
@@ -112,39 +98,6 @@ public class FormSubmissionStatusServiceSoap {
 		}
 	}
 
-	/**
-	 * Marks a form submission as unseen
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @return the updated FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
-	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap
-			markAsUnseen(long formInstanceRecordId)
-		throws RemoteException {
-
-		try {
-			ir.seydef.plugin.formcounter.model.FormSubmissionStatus
-				returnValue = FormSubmissionStatusServiceUtil.markAsUnseen(
-					formInstanceRecordId);
-
-			return ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap.
-				toSoapModel(returnValue);
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	/**
-	 * Gets the FormSubmissionStatus by form instance record ID
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @return the FormSubmissionStatus, or null if not found
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap
 			getByFormInstanceRecordId(long formInstanceRecordId)
 		throws RemoteException {
@@ -165,64 +118,6 @@ public class FormSubmissionStatusServiceSoap {
 		}
 	}
 
-	/**
-	 * Checks if a form submission is seen
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @return true if seen, false otherwise
-	 * @throws PortalException if a portal exception occurred
-	 */
-	public static boolean isSeen(long formInstanceRecordId)
-		throws RemoteException {
-
-		try {
-			boolean returnValue = FormSubmissionStatusServiceUtil.isSeen(
-				formInstanceRecordId);
-
-			return returnValue;
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	/**
-	 * Gets all unseen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return list of unseen FormSubmissionStatus entries
-	 * @throws PortalException if a portal exception occurred
-	 */
-	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap[]
-			getUnseenByGroupId(long groupId)
-		throws RemoteException {
-
-		try {
-			java.util.List
-				<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
-					returnValue =
-						FormSubmissionStatusServiceUtil.getUnseenByGroupId(
-							groupId);
-
-			return ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap.
-				toSoapModels(returnValue);
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	/**
-	 * Gets all seen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return list of seen FormSubmissionStatus entries
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap[]
 			getSeenByGroupId(long groupId)
 		throws RemoteException {
@@ -244,37 +139,6 @@ public class FormSubmissionStatusServiceSoap {
 		}
 	}
 
-	/**
-	 * Gets count of unseen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return count of unseen submissions
-	 * @throws PortalException if a portal exception occurred
-	 */
-	public static int getUnseenCountByGroupId(long groupId)
-		throws RemoteException {
-
-		try {
-			int returnValue =
-				FormSubmissionStatusServiceUtil.getUnseenCountByGroupId(
-					groupId);
-
-			return returnValue;
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	/**
-	 * Gets count of seen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return count of seen submissions
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public static int getSeenCountByGroupId(long groupId)
 		throws RemoteException {
 
@@ -291,14 +155,6 @@ public class FormSubmissionStatusServiceSoap {
 		}
 	}
 
-	/**
-	 * Gets unseen form submissions by form instance ID
-	 *
-	 * @param formInstanceId the form instance ID
-	 * @param groupId        the group ID
-	 * @return list of unseen FormSubmissionStatus entries for the specific form instance
-	 * @throws PortalException if a portal exception occurred
-	 */
 	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap[]
 			getUnseenByFormInstanceId(long formInstanceId, long groupId)
 		throws RemoteException {
@@ -320,25 +176,87 @@ public class FormSubmissionStatusServiceSoap {
 		}
 	}
 
-	/**
-	 * Creates or updates FormSubmissionStatus for a form instance record
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @param seen                 the seen status
-	 * @param serviceContext       the service context
-	 * @return the FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
+	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap[]
+			getUnseenByGroupId(long groupId)
+		throws RemoteException {
+
+		try {
+			java.util.List
+				<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
+					returnValue =
+						FormSubmissionStatusServiceUtil.getUnseenByGroupId(
+							groupId);
+
+			return ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap.
+				toSoapModels(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static int getUnseenCountByGroupId(long groupId)
+		throws RemoteException {
+
+		try {
+			int returnValue =
+				FormSubmissionStatusServiceUtil.getUnseenCountByGroupId(
+					groupId);
+
+			return returnValue;
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static boolean isSeen(long formInstanceRecordId)
+		throws RemoteException {
+
+		try {
+			boolean returnValue = FormSubmissionStatusServiceUtil.isSeen(
+				formInstanceRecordId);
+
+			return returnValue;
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
 	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap
-			createOrUpdate(
-				long formInstanceRecordId, boolean seen,
-				com.liferay.portal.kernel.service.ServiceContext serviceContext)
+			markAsSeen(long formInstanceRecordId, long userId)
 		throws RemoteException {
 
 		try {
 			ir.seydef.plugin.formcounter.model.FormSubmissionStatus
-				returnValue = FormSubmissionStatusServiceUtil.createOrUpdate(
-					formInstanceRecordId, seen, serviceContext);
+				returnValue = FormSubmissionStatusServiceUtil.markAsSeen(
+					formInstanceRecordId, userId);
+
+			return ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap.
+				toSoapModel(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap
+			markAsUnseen(long formInstanceRecordId)
+		throws RemoteException {
+
+		try {
+			ir.seydef.plugin.formcounter.model.FormSubmissionStatus
+				returnValue = FormSubmissionStatusServiceUtil.markAsUnseen(
+					formInstanceRecordId);
 
 			return ir.seydef.plugin.formcounter.model.FormSubmissionStatusSoap.
 				toSoapModel(returnValue);

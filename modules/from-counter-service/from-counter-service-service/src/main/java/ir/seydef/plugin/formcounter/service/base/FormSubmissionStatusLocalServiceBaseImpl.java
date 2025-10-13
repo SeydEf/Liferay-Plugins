@@ -34,6 +34,7 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import ir.seydef.plugin.formcounter.model.FormSubmissionStatus;
 import ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalService;
 import ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalServiceUtil;
+import ir.seydef.plugin.formcounter.service.persistence.FormCounterRulePersistence;
 import ir.seydef.plugin.formcounter.service.persistence.FormSubmissionStatusPersistence;
 
 import java.io.Serializable;
@@ -444,6 +445,9 @@ public abstract class FormSubmissionStatusLocalServiceBaseImpl
 			throw new SystemException(exception);
 		}
 	}
+
+	@Reference
+	protected FormCounterRulePersistence formCounterRulePersistence;
 
 	protected FormSubmissionStatusLocalService formSubmissionStatusLocalService;
 

@@ -24,14 +24,6 @@ public class FormSubmissionStatusServiceWrapper
 		_formSubmissionStatusService = formSubmissionStatusService;
 	}
 
-	/**
-	 * Creates a new FormSubmissionStatus entry for a form instance record
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @param serviceContext       the service context
-	 * @return the created FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	@Override
 	public ir.seydef.plugin.formcounter.model.FormSubmissionStatus
 			addFormSubmissionStatus(
@@ -43,15 +35,6 @@ public class FormSubmissionStatusServiceWrapper
 			formInstanceRecordId, serviceContext);
 	}
 
-	/**
-	 * Creates or updates FormSubmissionStatus for a form instance record
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @param seen                 the seen status
-	 * @param serviceContext       the service context
-	 * @return the FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	@Override
 	public ir.seydef.plugin.formcounter.model.FormSubmissionStatus
 			createOrUpdate(
@@ -63,13 +46,6 @@ public class FormSubmissionStatusServiceWrapper
 			formInstanceRecordId, seen, serviceContext);
 	}
 
-	/**
-	 * Gets the FormSubmissionStatus by form instance record ID
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @return the FormSubmissionStatus, or null if not found
-	 * @throws PortalException if a portal exception occurred
-	 */
 	@Override
 	public ir.seydef.plugin.formcounter.model.FormSubmissionStatus
 			getByFormInstanceRecordId(long formInstanceRecordId)
@@ -89,13 +65,6 @@ public class FormSubmissionStatusServiceWrapper
 		return _formSubmissionStatusService.getOSGiServiceIdentifier();
 	}
 
-	/**
-	 * Gets all seen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return list of seen FormSubmissionStatus entries
-	 * @throws PortalException if a portal exception occurred
-	 */
 	@Override
 	public java.util.List
 		<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
@@ -105,13 +74,6 @@ public class FormSubmissionStatusServiceWrapper
 		return _formSubmissionStatusService.getSeenByGroupId(groupId);
 	}
 
-	/**
-	 * Gets count of seen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return count of seen submissions
-	 * @throws PortalException if a portal exception occurred
-	 */
 	@Override
 	public int getSeenCountByGroupId(long groupId)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -119,14 +81,6 @@ public class FormSubmissionStatusServiceWrapper
 		return _formSubmissionStatusService.getSeenCountByGroupId(groupId);
 	}
 
-	/**
-	 * Gets unseen form submissions by form instance ID
-	 *
-	 * @param formInstanceId the form instance ID
-	 * @param groupId        the group ID
-	 * @return list of unseen FormSubmissionStatus entries for the specific form instance
-	 * @throws PortalException if a portal exception occurred
-	 */
 	@Override
 	public java.util.List
 		<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
@@ -137,13 +91,6 @@ public class FormSubmissionStatusServiceWrapper
 			formInstanceId, groupId);
 	}
 
-	/**
-	 * Gets all unseen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return list of unseen FormSubmissionStatus entries
-	 * @throws PortalException if a portal exception occurred
-	 */
 	@Override
 	public java.util.List
 		<ir.seydef.plugin.formcounter.model.FormSubmissionStatus>
@@ -153,13 +100,6 @@ public class FormSubmissionStatusServiceWrapper
 		return _formSubmissionStatusService.getUnseenByGroupId(groupId);
 	}
 
-	/**
-	 * Gets count of unseen form submissions for a group
-	 *
-	 * @param groupId the group ID
-	 * @return count of unseen submissions
-	 * @throws PortalException if a portal exception occurred
-	 */
 	@Override
 	public int getUnseenCountByGroupId(long groupId)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -167,13 +107,6 @@ public class FormSubmissionStatusServiceWrapper
 		return _formSubmissionStatusService.getUnseenCountByGroupId(groupId);
 	}
 
-	/**
-	 * Checks if a form submission is seen
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @return true if seen, false otherwise
-	 * @throws PortalException if a portal exception occurred
-	 */
 	@Override
 	public boolean isSeen(long formInstanceRecordId)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -181,14 +114,6 @@ public class FormSubmissionStatusServiceWrapper
 		return _formSubmissionStatusService.isSeen(formInstanceRecordId);
 	}
 
-	/**
-	 * Marks a form submission as seen
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @param userId               the user ID who marked it as seen
-	 * @return the updated FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	@Override
 	public ir.seydef.plugin.formcounter.model.FormSubmissionStatus markAsSeen(
 			long formInstanceRecordId, long userId)
@@ -198,13 +123,6 @@ public class FormSubmissionStatusServiceWrapper
 			formInstanceRecordId, userId);
 	}
 
-	/**
-	 * Marks a form submission as unseen
-	 *
-	 * @param formInstanceRecordId the form instance record ID
-	 * @return the updated FormSubmissionStatus
-	 * @throws PortalException if a portal exception occurred
-	 */
 	@Override
 	public ir.seydef.plugin.formcounter.model.FormSubmissionStatus markAsUnseen(
 			long formInstanceRecordId)
