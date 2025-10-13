@@ -48,4 +48,30 @@
 		</finder>
 	</entity>
 
+	<entity name="FormCounterRule" local-service="true" remote-service="true">
+		<!-- Primary key -->
+		<column name="formCounterRuleId" primary="true" type="long" />
+
+		<!-- Rule definition fields -->
+		<column name="ruleName" type="String" />
+		<column name="description" type="String" />
+		<column name="ruleConditions" type="String" />
+		<!-- JSON format storing conditions - will use TEXT in upgrade -->
+		<column name="logicOperator" type="String" />
+		<!-- AND or OR - defines how conditions are combined -->
+		<column name="active" type="boolean" />
+
+		<!-- Audit fields -->
+		<column name="companyId" type="long" />
+		<column name="groupId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Finder methods -->
+		<finder name="Active" return-type="Collection">
+			<finder-column name="active" />
+		</finder>
+	</entity>
 </service-builder>
