@@ -56,9 +56,7 @@
 		<column name="ruleName" type="String" />
 		<column name="description" type="String" />
 		<column name="ruleConditions" type="String" />
-		<!-- JSON format storing conditions - will use TEXT in upgrade -->
 		<column name="logicOperator" type="String" />
-		<!-- AND or OR - defines how conditions are combined -->
 		<column name="active" type="boolean" />
 
 		<!-- Audit fields -->
