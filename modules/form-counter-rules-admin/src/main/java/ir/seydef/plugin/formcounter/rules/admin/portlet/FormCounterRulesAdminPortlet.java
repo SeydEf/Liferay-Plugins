@@ -33,28 +33,30 @@ import org.osgi.service.component.annotations.Reference;
  * @author S.Abolfazl Eftekhari
  */
 @Component(
-    immediate = true,
-    property = {
-        "com.liferay.portlet.display-category=category.sample",
-        "com.liferay.portlet.header-portlet-css=/css/main.css",
-        "com.liferay.portlet.instanceable=false",
-        "javax.portlet.display-name=Form Counter Rules Admin",
-        "javax.portlet.init-param.template-path=/",
-        "javax.portlet.init-param.view-template=/view.jsp",
-        "javax.portlet.name=" + FormCounterRulesAdminPortletKeys.FORM_COUNTER_RULES_ADMIN,
-        "javax.portlet.resource-bundle=content.Language",
-        "javax.portlet.security-role-ref=power-user,user"
-    },
-    service = Portlet.class
+        immediate = true,
+        property = {
+                "com.liferay.portlet.display-category=category.sample",
+                "com.liferay.portlet.header-portlet-css=/css/main.css",
+                "com.liferay.portlet.instanceable=false",
+                "javax.portlet.display-name=Form Counter Rules Admin",
+                "javax.portlet.init-param.template-path=/",
+                "javax.portlet.init-param.view-template=/view.jsp",
+                "javax.portlet.name=" + FormCounterRulesAdminPortletKeys.FORM_COUNTER_RULES_ADMIN,
+                "javax.portlet.resource-bundle=content.Language",
+                "javax.portlet.security-role-ref=power-user,user"
+        },
+        service = Portlet.class
 )
 public class FormCounterRulesAdminPortlet extends MVCPortlet {
 
     private static final Log _log = LogFactoryUtil.getLog(FormCounterRulesAdminPortlet.class);
+    @Reference
+    private FormCounterRuleLocalService _formCounterRuleLocalService;
 
     @Override
     public void render(RenderRequest renderRequest, RenderResponse renderResponse)
-        throws IOException, PortletException {
-        
+            throws IOException, PortletException {
+
         try {
             List<FormCounterRule> rules = _formCounterRuleLocalService.getFormCounterRules(-1, -1);
             renderRequest.setAttribute("rules", rules);
@@ -64,29 +66,29 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
                 FormCounterRule rule = _formCounterRuleLocalService.fetchFormCounterRule(ruleId);
                 if (rule != null) {
                     renderRequest.setAttribute("rule", rule);
-                    
+
                     Rule ruleModel = Rule.fromJSONString(rule.getRuleConditions());
                     if (ruleModel != null) {
                         renderRequest.setAttribute("ruleModel", ruleModel);
                     }
                 }
             }
-            
+
         } catch (Exception e) {
             _log.error("Error preparing rule admin portlet render", e);
             SessionErrors.add(renderRequest, "error-loading-rules");
         }
-        
+
         super.render(renderRequest, renderResponse);
     }
 
     public void addRule(
-            ActionRequest actionRequest, ActionResponse actionResponse) 
-        throws Exception {
+            ActionRequest actionRequest, ActionResponse actionResponse)
+            throws Exception {
 
         ServiceContext serviceContext = ServiceContextFactory.getInstance(
                 FormCounterRule.class.getName(), actionRequest);
-        
+
         String ruleName = ParamUtil.getString(actionRequest, "ruleName");
         String description = ParamUtil.getString(actionRequest, "description");
         boolean active = ParamUtil.getBoolean(actionRequest, "active", true);
@@ -104,11 +106,11 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
             String field = ParamUtil.getString(actionRequest, "field" + i);
             String operator = ParamUtil.getString(actionRequest, "operator" + i);
             String reference = ParamUtil.getString(actionRequest, "reference" + i);
-            
+
             RuleCondition condition = new RuleCondition(field, operator, reference);
             ruleModel.addCondition(condition);
         }
-        
+
         try {
             _formCounterRuleLocalService.addFormCounterRule(
                     0,
@@ -118,7 +120,7 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
                     logicOperator,
                     active,
                     serviceContext);
-            
+
             SessionMessages.add(actionRequest, "rule-added-successfully");
         } catch (Exception e) {
             _log.error("Error adding rule", e);
@@ -127,16 +129,16 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
     }
 
     public void updateRule(
-            ActionRequest actionRequest, ActionResponse actionResponse) 
-        throws Exception {
-        
+            ActionRequest actionRequest, ActionResponse actionResponse)
+            throws Exception {
+
         long ruleId = ParamUtil.getLong(actionRequest, "ruleId");
-        
+
         if (ruleId <= 0) {
             SessionErrors.add(actionRequest, "error-invalid-rule-id");
             return;
         }
-        
+
         String ruleName = ParamUtil.getString(actionRequest, "ruleName");
         String description = ParamUtil.getString(actionRequest, "description");
         boolean active = ParamUtil.getBoolean(actionRequest, "active", true);
@@ -155,11 +157,11 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
             String field = ParamUtil.getString(actionRequest, "field" + i);
             String operator = ParamUtil.getString(actionRequest, "operator" + i);
             String reference = ParamUtil.getString(actionRequest, "reference" + i);
-            
+
             RuleCondition condition = new RuleCondition(field, operator, reference);
             ruleModel.addCondition(condition);
         }
-        
+
         try {
             FormCounterRule rule = _formCounterRuleLocalService.getFormCounterRule(ruleId);
 
@@ -169,9 +171,9 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
             rule.setLogicOperator(logicOperator);
             rule.setActive(active);
             rule.setModifiedDate(new Date());
-            
+
             _formCounterRuleLocalService.updateFormCounterRule(rule);
-            
+
             SessionMessages.add(actionRequest, "rule-updated-successfully");
         } catch (Exception e) {
             _log.error("Error updating rule", e);
@@ -180,16 +182,16 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
     }
 
     public void deleteRule(
-            ActionRequest actionRequest, ActionResponse actionResponse) 
-        throws Exception {
-        
+            ActionRequest actionRequest, ActionResponse actionResponse)
+            throws Exception {
+
         long ruleId = ParamUtil.getLong(actionRequest, "ruleId");
-        
+
         if (ruleId <= 0) {
             SessionErrors.add(actionRequest, "error-invalid-rule-id");
             return;
         }
-        
+
         try {
             _formCounterRuleLocalService.deleteFormCounterRule(ruleId);
             SessionMessages.add(actionRequest, "rule-deleted-successfully");
@@ -198,7 +200,4 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
             SessionErrors.add(actionRequest, "error-deleting-rule");
         }
     }
-    
-    @Reference
-    private FormCounterRuleLocalService _formCounterRuleLocalService;
 }
