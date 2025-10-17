@@ -8,26 +8,18 @@ import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
-
 import ir.seydef.plugin.formcounter.model.FormCounterRule;
 import ir.seydef.plugin.formcounter.rules.admin.constants.FormCounterRulesAdminPortletKeys;
 import ir.seydef.plugin.formcounter.rules.admin.model.Rule;
 import ir.seydef.plugin.formcounter.rules.admin.model.RuleCondition;
 import ir.seydef.plugin.formcounter.service.FormCounterRuleLocalService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
+import javax.portlet.*;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.Portlet;
-import javax.portlet.PortletException;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author S.Abolfazl Eftekhari
@@ -100,6 +92,16 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
 
         int conditionCount = ParamUtil.getInteger(actionRequest, "conditionCount", 0);
 
+        String namespace = actionResponse.getNamespace();
+
+        String conditionCountParam = namespace + "conditionCount";
+        int conditionCountWithNS = ParamUtil.getInteger(actionRequest, conditionCountParam, -1);
+
+        if (conditionCountWithNS >= 0) {
+            conditionCount = conditionCountWithNS;
+            _log.info("Using conditionCount with namespace: " + conditionCount);
+        }
+
         for (int i = 0; i < conditionCount; i++) {
             String field = ParamUtil.getString(actionRequest, "field" + i);
             String operator = ParamUtil.getString(actionRequest, "operator" + i);
@@ -150,6 +152,14 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
         ruleModel.setActive(active);
 
         int conditionCount = ParamUtil.getInteger(actionRequest, "conditionCount", 0);
+
+        String namespace = actionResponse.getNamespace();
+        String conditionCountParam = namespace + "conditionCount";
+        int conditionCountWithNS = ParamUtil.getInteger(actionRequest, conditionCountParam, -1);
+
+        if (conditionCountWithNS >= 0) {
+            conditionCount = conditionCountWithNS;
+        }
 
         for (int i = 0; i < conditionCount; i++) {
             String field = ParamUtil.getString(actionRequest, "field" + i);

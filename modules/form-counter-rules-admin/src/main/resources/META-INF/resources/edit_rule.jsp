@@ -1,5 +1,6 @@
 <%@ page import="ir.seydef.plugin.formcounter.rules.admin.util.ExpandoFieldUtil" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %>
 
 <%@ include file="/init.jsp" %>
 
@@ -164,7 +165,6 @@
 </div>
 
 <aui:script>
-    // Generate custom fields options for JavaScript template
     var customFieldsOptions = [
     <%
         for (int i = 0; i < customFields.size(); i++) {
@@ -181,7 +181,6 @@
     %>
     ];
 
-    // Build the select options HTML with field type
     // Create a function that generates custom field options HTML dynamically
     function getCustomFieldOptionsHTML() {
         var optionsHTML = '';
@@ -234,11 +233,31 @@
     AUI().ready(function () {
     var conditionsContainer = document.getElementById("conditionsContainer");
     var addConditionButton = document.querySelector(".add-condition");
-    var conditionCountInput = document.getElementById(
-        "<portlet:namespace/>conditionCount"
-    );
+    // Try multiple ways to get the conditionCount input element
+    var conditionCountInput = document.getElementById("<portlet:namespace/>conditionCount") || 
+                             document.querySelector("input[name='<portlet:namespace/>conditionCount']") ||
+                             document.querySelector("input[name='conditionCount']");
+                             
+    // Log whether we found the element
+    if (!conditionCountInput) {
+        console.error("Could not find conditionCount input element!");
+        // Create a backup input if needed
+        var formElement = document.querySelector("form");
+        if (formElement) {
+            conditionCountInput = document.createElement("input");
+            conditionCountInput.type = "hidden";
+            conditionCountInput.name = "<portlet:namespace/>conditionCount";
+            conditionCountInput.id = "<portlet:namespace/>conditionCount";
+            conditionCountInput.value = document.querySelectorAll(".condition-row").length;
+            formElement.appendChild(conditionCountInput);
+            console.log("Created backup conditionCount input element");
+        }
+    } else {
+        console.log("Found conditionCount input with ID: " + conditionCountInput.id);
+    }
+    
     var nextIndex = document.querySelectorAll(".condition-row").length;
-    var form = document.getElementById("<portlet:namespace/>fm");
+    var form = document.getElementById("<portlet:namespace/>fm") || document.querySelector("form[name='<portlet:namespace/>fm']") || document.querySelector("form");
 
     // Handle add condition button
     if (addConditionButton) {
@@ -318,7 +337,34 @@
     // Update the condition count hidden input
     function updateConditionCount() {
     var count = document.querySelectorAll(".condition-row").length;
-    conditionCountInput.value = count;
+    // Check if conditionCountInput exists before accessing its value property
+    if (conditionCountInput) {
+        conditionCountInput.value = count;
+        console.log("Updated condition count to: " + count);
+    } else {
+        console.error("Cannot update condition count - input element not found");
+        // Try to find it again
+        conditionCountInput = document.getElementById("<portlet:namespace/>conditionCount") || 
+                             document.querySelector("input[name='<portlet:namespace/>conditionCount']") ||
+                             document.querySelector("input[name='conditionCount']");
+        
+        if (conditionCountInput) {
+            conditionCountInput.value = count;
+            console.log("Found and updated condition count to: " + count);
+        } else {
+            // Create a new input if needed
+            var formElement = document.querySelector("form");
+            if (formElement) {
+                conditionCountInput = document.createElement("input");
+                conditionCountInput.type = "hidden";
+                conditionCountInput.name = "<portlet:namespace/>conditionCount";
+                conditionCountInput.id = "<portlet:namespace/>conditionCount";
+                conditionCountInput.value = count;
+                formElement.appendChild(conditionCountInput);
+                console.log("Created and set condition count input to: " + count);
+            }
+        }
+    }
     }
 
     // Form validation before submit
@@ -327,7 +373,29 @@
     // Update condition count before validation
     updateConditionCount();
 
-    var conditionCount = parseInt(conditionCountInput.value);
+    var conditionCount = 0;
+    
+    // Safely get the condition count
+    if (conditionCountInput && conditionCountInput.value) {
+        conditionCount = parseInt(conditionCountInput.value);
+    } else {
+        conditionCount = document.querySelectorAll(".condition-row").length;
+        console.log("Using DOM count for conditions: " + conditionCount);
+        
+        // Make sure we have an input for the form submission
+        var hiddenInput = document.querySelector("input[name='<portlet:namespace/>conditionCount']");
+        if (!hiddenInput) {
+            hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "<portlet:namespace/>conditionCount";
+            hiddenInput.value = conditionCount;
+            form.appendChild(hiddenInput);
+            console.log("Created condition count input for form submission: " + conditionCount);
+        } else {
+            hiddenInput.value = conditionCount;
+            console.log("Updated existing condition count input: " + conditionCount);
+        }
+    }
     var ruleName = document.getElementById("<portlet:namespace/>ruleName").value.trim();
 
     // Validate rule name
@@ -348,9 +416,18 @@
     var conditionRows = document.querySelectorAll(".condition-row");
     for (var i = 0; i < conditionRows.length; i++) {
     var index = conditionRows[i].getAttribute("data-index");
-    var fieldSelect = document.querySelector('select[name="<portlet:namespace/>field' + index + '"]');
-    var operatorSelect = document.querySelector('select[name="<portlet:namespace/>operator' + index + '"]');
-    var referenceInput = document.querySelector('input[name="<portlet:namespace/>reference' + index + '"]');
+    // Try multiple selector approaches to find the fields
+    var fieldSelect = document.querySelector('select[name="<portlet:namespace/>field' + index + '"]') || 
+                      conditionRows[i].querySelector('select[id$="field' + index + '"]') ||
+                      conditionRows[i].querySelector('select');
+                      
+    var operatorSelect = document.querySelector('select[name="<portlet:namespace/>operator' + index + '"]') ||
+                         conditionRows[i].querySelector('select[id$="operator' + index + '"]') ||
+                         conditionRows[i].querySelectorAll('select')[1];
+                         
+    var referenceInput = document.querySelector('input[name="<portlet:namespace/>reference' + index + '"]') ||
+                        conditionRows[i].querySelector('input[id$="reference' + index + '"]') ||
+                        conditionRows[i].querySelector('input');
 
     if (!fieldSelect || !fieldSelect.value) {
     alert("Please select a custom field for condition " + (parseInt(i) + 1));
