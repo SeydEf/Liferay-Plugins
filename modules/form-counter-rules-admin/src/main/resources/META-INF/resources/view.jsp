@@ -88,11 +88,6 @@
             </liferay-ui:search-container-column-text>
 
             <liferay-ui:search-container-column-date
-                    name="create-date"
-                    value="<%= rule.getCreateDate() %>"
-            />
-
-            <liferay-ui:search-container-column-date
                     name="modified-date"
                     value="<%= rule.getModifiedDate() %>"
             />
