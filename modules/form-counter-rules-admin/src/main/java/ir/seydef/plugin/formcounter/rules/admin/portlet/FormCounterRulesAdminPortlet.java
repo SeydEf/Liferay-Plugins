@@ -32,21 +32,19 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author S.Abolfazl Eftekhari
  */
-@Component(
-        immediate = true,
-        property = {
-                "com.liferay.portlet.display-category=category.sample",
-                "com.liferay.portlet.header-portlet-css=/css/main.css",
-                "com.liferay.portlet.instanceable=false",
-                "javax.portlet.display-name=Form Counter Rules Admin",
-                "javax.portlet.init-param.template-path=/",
-                "javax.portlet.init-param.view-template=/view.jsp",
-                "javax.portlet.name=" + FormCounterRulesAdminPortletKeys.FORM_COUNTER_RULES_ADMIN,
-                "javax.portlet.resource-bundle=content.Language",
-                "javax.portlet.security-role-ref=power-user,user"
-        },
-        service = Portlet.class
-)
+@Component(immediate = true, property = {
+        "com.liferay.portlet.add-default-resource=true",
+        "com.liferay.portlet.display-category=category.hidden",
+        "com.liferay.portlet.header-portlet-css=/css/main.css",
+        "com.liferay.portlet.instanceable=false",
+        "com.liferay.portlet.use-default-template=true",
+        "javax.portlet.display-name=Form Counter Rules",
+        "javax.portlet.init-param.template-path=/",
+        "javax.portlet.init-param.view-template=/view.jsp",
+        "javax.portlet.name=" + FormCounterRulesAdminPortletKeys.FORM_COUNTER_RULES_ADMIN,
+        "javax.portlet.resource-bundle=content.Language",
+        "javax.portlet.security-role-ref=power-user,user,administrator"
+}, service = Portlet.class)
 public class FormCounterRulesAdminPortlet extends MVCPortlet {
 
     private static final Log _log = LogFactoryUtil.getLog(FormCounterRulesAdminPortlet.class);

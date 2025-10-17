@@ -5,7 +5,6 @@
 %>
 
 <div class="container-fluid-1280">
-    <h1><liferay-ui:message key="form.counter.rules.admin.title"/></h1>
 
     <liferay-ui:success
             key="rule-added-successfully"
