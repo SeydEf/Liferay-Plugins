@@ -36,7 +36,7 @@
         <aui:input name="ruleId" type="hidden" value="<%= ruleId %>"/>
         <aui:input
                 name="conditionCount"
-                id="conditionCount"
+                id="<portlet:namespace/>conditionCount"
                 type="hidden"
                 value="<%= conditions.size() %>"
         />
@@ -169,9 +169,12 @@
     <%
         for (int i = 0; i < customFields.size(); i++) {
             ExpandoFieldInfo field = customFields.get(i);
-            if (i > 0) {%>
-    <%= "," %>
-    <%}%>
+            if (i > 0) {
+    %>
+        <%= "," %>
+    <%
+            }
+    %>
     {name: "<%= field.getName() %>", displayName: "<%= field.getDisplayName() %>", type: "<%= field.getType() %>"}
     <%
         }
@@ -179,55 +182,52 @@
     ];
 
     // Build the select options HTML with field type
-    var customFieldOptionsHTML = "";
-    console.log(customFieldsOptions);
-    for (var i = 0; i < customFieldsOptions.length; i++) {
-    customFieldOptionsHTML += '<option value="' + customFieldsOptions[i].name + '">' +
-    customFieldsOptions[i].displayName + ' (' + customFieldsOptions[i].type + ')</option>';
+    // Create a function that generates custom field options HTML dynamically
+    function getCustomFieldOptionsHTML() {
+        var optionsHTML = '';
+        for (var i = 0; i < customFieldsOptions.length; i++) {
+            optionsHTML += '<option value="' + customFieldsOptions[i].name + '">' +
+                customFieldsOptions[i].displayName + ' (' + customFieldsOptions[i].type + ')</option>';
+        }
+        return optionsHTML;
     }
 
-    // Initialize empty condition template
-    const conditionTemplate = `
-    <div class="condition-row" data-index="{index}">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="_<portlet:namespace />field{index}">Custom Field</label>
-                    <select id="_<portlet:namespace />field{index}" name="<portlet:namespace />field{index}"
-                            class="form-control">
-                            ${customFieldOptionsHTML}
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="_<portlet:namespace />operator{index}">Operator</label>
-                    <select id="_<portlet:namespace />operator{index}" name="<portlet:namespace />operator{index}"
-                            class="form-control">
-                        <option value="contains">contains</option>
-                        <option value="equal">equal</option>
-                        <option value="not-equal">not equal</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="form-group">
-                    <label for="_<portlet:namespace />reference{index}">Reference Field Name</label>
-                    <input id="_<portlet:namespace />reference{index}" name="<portlet:namespace />reference{index}"
-                           class="form-control" type="text">
-                </div>
-            </div>
-            <div class="col-md-1">
-                <label>&nbsp;</label>
-                <button type="button" class="btn btn-danger remove-condition" data-index="{index}"
-                        style="margin-top: 24px;">
-                    <i class="icon-trash"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-    `;
-
+    // Initialize the condition template with a function that will insert options when needed
+    var conditionTemplate =
+    '<div class="condition-row" data-index="{index}">' +
+        '<div class="row">' +
+            '<div class="col-md-3">' +
+                '<div class="form-group">' +
+                    '<label for="_<portlet:namespace />field{index}">Custom Field</label>' +
+                    '<select id="_<portlet:namespace />field{index}" name="<portlet:namespace />field{index}" class="form-control">' +
+                            '{CustomFieldOptionsHTML}' +
+                    '</select>' +
+                '</div>' +
+            '</div>' +
+            '<div class="col-md-3">' +
+                '<div class="form-group">' +
+                    '<label for="_<portlet:namespace />operator{index}">Operator</label>' +
+                    '<select id="_<portlet:namespace />operator{index}" name="<portlet:namespace />operator{index}" class="form-control">' +
+                        '<option value="<%= FormCounterRulesAdminPortletKeys.OPERATOR_CONTAINS %>">contains</option>' +
+                        '<option value="<%= FormCounterRulesAdminPortletKeys.OPERATOR_EQUAL %>">equal</option>' +
+                        '<option value="<%= FormCounterRulesAdminPortletKeys.OPERATOR_NOT_EQUAL %>">not equal</option>' +
+                    '</select>' +
+                '</div>' +
+            '</div>' +
+            '<div class="col-md-5">' +
+                '<div class="form-group">' +
+                    '<label for="_<portlet:namespace />reference{index}">Reference Field Name</label>' +
+                    '<input id="_<portlet:namespace />reference{index}" name="<portlet:namespace />reference{index}" class="form-control" type="text">' +
+                '</div>' +
+            '</div>' +
+            '<div class="col-md-1">' +
+                '<label>&nbsp;</label>' +
+                '<button type="button" class="btn btn-danger remove-condition" data-index="{index}" style="margin-top: 24px;">' +
+                    '<i class="icon-trash"></i>' +
+                '</button>' +
+            '</div>' +
+        '</div>' +
+    '</div>';
 
     /* Rule Builder JS */
 
@@ -235,7 +235,7 @@
     var conditionsContainer = document.getElementById("conditionsContainer");
     var addConditionButton = document.querySelector(".add-condition");
     var conditionCountInput = document.getElementById(
-    "_<portlet:namespace/>conditionCount"
+        "<portlet:namespace/>conditionCount"
     );
     var nextIndex = document.querySelectorAll(".condition-row").length;
     var form = document.getElementById("<portlet:namespace/>fm");
@@ -243,14 +243,14 @@
     // Handle add condition button
     if (addConditionButton) {
     addConditionButton.addEventListener("click", function () {
-    console.log("Adding new condition with index: " + nextIndex);
     var newConditionHtml = conditionTemplate.replace(/{index}/g, nextIndex);
+    // Insert custom field options
+    newConditionHtml = newConditionHtml.replace('{CustomFieldOptionsHTML}', getCustomFieldOptionsHTML());
     var tempDiv = document.createElement("div");
     tempDiv.innerHTML = newConditionHtml;
 
     var newConditionNode = tempDiv.firstElementChild;
     conditionsContainer.appendChild(newConditionNode);
-
     nextIndex++;
     updateConditionCount();
 
@@ -371,8 +371,9 @@
     }
     }
 
-    // Log for debugging
-    console.log("Form submitting with " + conditionCount + " conditions");
+    // Final update just to be sure
+    document.querySelector("input[name='<portlet:namespace/>conditionCount']").value = conditionCount;
+    
     return true;
     });
     }
