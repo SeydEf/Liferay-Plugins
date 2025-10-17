@@ -123,7 +123,7 @@
                                     />
                                     <aui:option
                                             value="<%= FormCounterRulesAdminPortletKeys.OPERATOR_NOT_EQUAL %>"
-                                            label="not equal"
+                                            label="not-equal"
                                             selected='<%= "not-equal".equals(condition.getOperator()) %>'
                                     />
                                 </aui:select>
@@ -197,7 +197,7 @@
         '<div class="row">' +
             '<div class="col-md-3">' +
                 '<div class="form-group">' +
-                    '<label for="_<portlet:namespace />field{index}">Custom Field</label>' +
+                    '<label for="_<portlet:namespace />field{index}"><%= LanguageUtil.get(request, "custom-field") %></label>' +
                     '<select id="_<portlet:namespace />field{index}" name="<portlet:namespace />field{index}" class="form-control">' +
                             '{CustomFieldOptionsHTML}' +
                     '</select>' +
@@ -205,17 +205,17 @@
             '</div>' +
             '<div class="col-md-3">' +
                 '<div class="form-group">' +
-                    '<label for="_<portlet:namespace />operator{index}">Operator</label>' +
+                    '<label for="_<portlet:namespace />operator{index}"><%= LanguageUtil.get(request, "operator") %></label>' +
                     '<select id="_<portlet:namespace />operator{index}" name="<portlet:namespace />operator{index}" class="form-control">' +
-                        '<option value="<%= FormCounterRulesAdminPortletKeys.OPERATOR_CONTAINS %>">contains</option>' +
-                        '<option value="<%= FormCounterRulesAdminPortletKeys.OPERATOR_EQUAL %>">equal</option>' +
-                        '<option value="<%= FormCounterRulesAdminPortletKeys.OPERATOR_NOT_EQUAL %>">not equal</option>' +
+                        '<option value="<%= FormCounterRulesAdminPortletKeys.OPERATOR_CONTAINS %>"><%= LanguageUtil.get(request, "contains") %></option>' +
+                        '<option value="<%= FormCounterRulesAdminPortletKeys.OPERATOR_EQUAL %>"><%= LanguageUtil.get(request, "equal") %></option>' +
+                        '<option value="<%= FormCounterRulesAdminPortletKeys.OPERATOR_NOT_EQUAL %>"><%= LanguageUtil.get(request, "not-equal") %></option>' +
                     '</select>' +
                 '</div>' +
             '</div>' +
             '<div class="col-md-5">' +
                 '<div class="form-group">' +
-                    '<label for="_<portlet:namespace />reference{index}">Reference Field Name</label>' +
+                    '<label for="_<portlet:namespace />reference{index}"><%= LanguageUtil.get(request, "reference-field-name") %></label>' +
                     '<input id="_<portlet:namespace />reference{index}" name="<portlet:namespace />reference{index}" class="form-control" type="text">' +
                 '</div>' +
             '</div>' +
@@ -234,10 +234,10 @@
     var conditionsContainer = document.getElementById("conditionsContainer");
     var addConditionButton = document.querySelector(".add-condition");
     // Try multiple ways to get the conditionCount input element
-    var conditionCountInput = document.getElementById("<portlet:namespace/>conditionCount") || 
+    var conditionCountInput = document.getElementById("<portlet:namespace/>conditionCount") ||
                              document.querySelector("input[name='<portlet:namespace/>conditionCount']") ||
                              document.querySelector("input[name='conditionCount']");
-                             
+
     // Log whether we found the element
     if (!conditionCountInput) {
         console.error("Could not find conditionCount input element!");
@@ -255,7 +255,7 @@
     } else {
         console.log("Found conditionCount input with ID: " + conditionCountInput.id);
     }
-    
+
     var nextIndex = document.querySelectorAll(".condition-row").length;
     var form = document.getElementById("<portlet:namespace/>fm") || document.querySelector("form[name='<portlet:namespace/>fm']") || document.querySelector("form");
 
@@ -344,10 +344,10 @@
     } else {
         console.error("Cannot update condition count - input element not found");
         // Try to find it again
-        conditionCountInput = document.getElementById("<portlet:namespace/>conditionCount") || 
+        conditionCountInput = document.getElementById("<portlet:namespace/>conditionCount") ||
                              document.querySelector("input[name='<portlet:namespace/>conditionCount']") ||
                              document.querySelector("input[name='conditionCount']");
-        
+
         if (conditionCountInput) {
             conditionCountInput.value = count;
             console.log("Found and updated condition count to: " + count);
@@ -374,14 +374,14 @@
     updateConditionCount();
 
     var conditionCount = 0;
-    
+
     // Safely get the condition count
     if (conditionCountInput && conditionCountInput.value) {
         conditionCount = parseInt(conditionCountInput.value);
     } else {
         conditionCount = document.querySelectorAll(".condition-row").length;
         console.log("Using DOM count for conditions: " + conditionCount);
-        
+
         // Make sure we have an input for the form submission
         var hiddenInput = document.querySelector("input[name='<portlet:namespace/>conditionCount']");
         if (!hiddenInput) {
@@ -417,14 +417,14 @@
     for (var i = 0; i < conditionRows.length; i++) {
     var index = conditionRows[i].getAttribute("data-index");
     // Try multiple selector approaches to find the fields
-    var fieldSelect = document.querySelector('select[name="<portlet:namespace/>field' + index + '"]') || 
+    var fieldSelect = document.querySelector('select[name="<portlet:namespace/>field' + index + '"]') ||
                       conditionRows[i].querySelector('select[id$="field' + index + '"]') ||
                       conditionRows[i].querySelector('select');
-                      
+
     var operatorSelect = document.querySelector('select[name="<portlet:namespace/>operator' + index + '"]') ||
                          conditionRows[i].querySelector('select[id$="operator' + index + '"]') ||
                          conditionRows[i].querySelectorAll('select')[1];
-                         
+
     var referenceInput = document.querySelector('input[name="<portlet:namespace/>reference' + index + '"]') ||
                         conditionRows[i].querySelector('input[id$="reference' + index + '"]') ||
                         conditionRows[i].querySelector('input');
@@ -450,7 +450,7 @@
 
     // Final update just to be sure
     document.querySelector("input[name='<portlet:namespace/>conditionCount']").value = conditionCount;
-    
+
     return true;
     });
     }
