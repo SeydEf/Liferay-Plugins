@@ -90,8 +90,8 @@
             <aui:fieldset label="conditions">
                 <div id="conditionsContainer">
                     <% for (int i = 0; i < conditions.size(); i++) {
-                        RuleCondition
-                                condition = conditions.get(i); %>
+                        RuleCondition condition = conditions.get(i);
+                    %>
                     <div class="condition-row" data-index="<%= i %>">
                         <div class="row">
                             <div class="col-md-3">
@@ -99,7 +99,7 @@
                                         name='<%= "field" + i %>'
                                         label="custom-field"
                                 >
-                                    <% for (ExpandoFieldInfo field : customFields) { %>
+                                    <% for (ExpandoFieldInfo field : customFields) {%>
                                     <aui:option
                                             value="<%= field.getName() %>"
                                             selected="<%= condition.getField().equals(field.getName()) %>"
@@ -132,6 +132,7 @@
                                 <aui:input
                                         name='<%= "reference" + i %>'
                                         label="reference-field-name"
+                                        type="text"
                                         value="<%= condition.getReference() %>"
                                 />
                             </div>
@@ -141,7 +142,7 @@
                                         class="btn btn-danger remove-condition"
                                         data-index="<%= i %>"
                                 >
-                                    <i class="icon-trash"></i>
+                                    <i class="trash"></i>
                                 </button>
                             </div>
                         </div>
