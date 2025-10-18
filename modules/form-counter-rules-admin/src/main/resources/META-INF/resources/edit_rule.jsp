@@ -1,32 +1,38 @@
 <%@ page import="ir.seydef.plugin.formcounter.rules.admin.util.ExpandoFieldUtil" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %>
+<%@ page import="com.liferay.petra.string.StringPool" %>
 
 <%@ include file="/init.jsp" %>
 
 <%
     FormCounterRule formCounterRule = (FormCounterRule) request.getAttribute("rule");
     Rule ruleModel = (Rule) request.getAttribute("ruleModel");
+
     long ruleId = 0;
-    String ruleName = "";
-    String description = "";
-    boolean active = true;
+    String ruleName = StringPool.BLANK;
+    String description = StringPool.BLANK;
+    boolean active = Boolean.TRUE;
     String logicOperator = FormCounterRulesAdminPortletKeys.LOGIC_OR;
+
     List<RuleCondition> conditions = new ArrayList<>();
+    List<ExpandoFieldInfo> customFields = ExpandoFieldUtil.getUserCustomFields(themeDisplay.getCompanyId());
+
     if (formCounterRule != null) {
         ruleId = formCounterRule.getFormCounterRuleId();
         ruleName = formCounterRule.getRuleName();
         description = formCounterRule.getDescription();
         active = formCounterRule.getActive();
         logicOperator = formCounterRule.getLogicOperator();
+
         if (ruleModel != null) {
             conditions = ruleModel.getConditions();
         }
     }
+
     String actionName = (ruleId > 0) ? FormCounterRulesAdminPortletKeys.ACTION_UPDATE_RULE :
             FormCounterRulesAdminPortletKeys.ACTION_ADD_RULE;
     String actionTitle = (ruleId > 0) ? "edit-rule" : "add-rule";
-    List<ExpandoFieldInfo> customFields = ExpandoFieldUtil.getUserCustomFields(themeDisplay.getCompanyId());
 %>
 
 <portlet:actionURL name="<%= actionName %>" var="saveRuleURL"/>
@@ -257,27 +263,37 @@
         document.querySelector("form[name='<portlet:namespace/>fm']") ||
         document.querySelector("form");
 
+    function addNewCondition() {
+        var newConditionHtml = conditionTemplate.replace(/{index}/g, nextIndex);
+        // Insert custom field options
+        newConditionHtml = newConditionHtml.replace(
+            "{CustomFieldOptionsHTML}",
+            getCustomFieldOptionsHTML()
+        );
+        var tempDiv = document.createElement("div");
+        tempDiv.innerHTML = newConditionHtml;
+
+        var newConditionNode = tempDiv.firstElementChild;
+        conditionsContainer.appendChild(newConditionNode);
+        nextIndex++;
+        updateConditionCount();
+
+        // Attach event listeners to the new remove button
+        attachRemoveConditionEvent(
+            newConditionNode.querySelector(".remove-condition")
+        );
+    }
+
+    // Add default condition for new rules (when there are no conditions and ruleId is 0)
+    var isNewRule ='<%= ruleId == 0 %>';
+    if (isNewRule && nextIndex === 0) {
+        addNewCondition();
+    }
+
     // Handle add condition button
     if (addConditionButton) {
         addConditionButton.addEventListener("click", function () {
-            var newConditionHtml = conditionTemplate.replace(/{index}/g, nextIndex);
-            // Insert custom field options
-            newConditionHtml = newConditionHtml.replace(
-                "{CustomFieldOptionsHTML}",
-                getCustomFieldOptionsHTML()
-            );
-            var tempDiv = document.createElement("div");
-            tempDiv.innerHTML = newConditionHtml;
-
-            var newConditionNode = tempDiv.firstElementChild;
-            conditionsContainer.appendChild(newConditionNode);
-            nextIndex++;
-            updateConditionCount();
-
-            // Attach event listeners to the new remove button
-            attachRemoveConditionEvent(
-                newConditionNode.querySelector(".remove-condition")
-            );
+            addNewCondition()
         });
     }
 
@@ -399,14 +415,14 @@
 
             // Validate rule name
             if (!ruleName) {
-                alert("Please enter a rule name.");
+                alert('<%= LanguageUtil.get(request, "please-enter-a-rule-name") %>');
                 event.preventDefault();
                 return false;
             }
 
             // Validate at least one condition exists
             if (conditionCount === 0) {
-                alert("Please add at least one condition to the rule.");
+                alert('<%= LanguageUtil.get(request, "please-add-at-least-one-condition") %>');
                 event.preventDefault();
                 return false;
             }
@@ -443,21 +459,21 @@
 
                 if (!fieldSelect || !fieldSelect.value) {
                     alert(
-                        "Please select a custom field for condition " + (parseInt(i) + 1)
+                        '<%= LanguageUtil.get(request, "please-select-a-custom-field") %> ' + (parseInt(i) + 1)
                     );
                     event.preventDefault();
                     return false;
                 }
 
                 if (!operatorSelect || !operatorSelect.value) {
-                    alert("Please select an operator for condition " + (parseInt(i) + 1));
+                    alert('<%= LanguageUtil.get(request, "please-select-an-operator") %> ' + (parseInt(i) + 1));
                     event.preventDefault();
                     return false;
                 }
 
                 if (!referenceInput || !referenceInput.value.trim()) {
                     alert(
-                        "Please enter a reference value for condition " + (parseInt(i) + 1)
+                        '<%= LanguageUtil.get(request, "please-enter-a-reference-field-name") %> ' + (parseInt(i) + 1)
                     );
                     event.preventDefault();
                     return false;
