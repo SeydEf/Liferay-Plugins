@@ -65,16 +65,16 @@
                     value="<%= description %>"
             />
 
-            <aui:select name="logicOperator" label="logic-operator">
+            <aui:select name="logicOperator" label="logic-operator" helpMessage="logic-operator-hint">
                 <aui:option
                         value="<%= FormCounterRulesAdminPortletKeys.LOGIC_AND %>"
-                        label="AND (All conditions must match)"
-                        selected='<%= "AND".equals(logicOperator) %>'
+                        label="and-description"
+                        selected='<%= FormCounterRulesAdminPortletKeys.LOGIC_AND.equals(logicOperator) %>'
                 />
                 <aui:option
                         value="<%= FormCounterRulesAdminPortletKeys.LOGIC_OR %>"
-                        label="OR (Any condition can match)"
-                        selected='<%= "OR".equals(logicOperator) %>'
+                        label="or-description"
+                        selected='<%= FormCounterRulesAdminPortletKeys.LOGIC_OR.equals(logicOperator) %>'
                 />
             </aui:select>
 
