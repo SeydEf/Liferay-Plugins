@@ -142,7 +142,7 @@
                                         class="btn btn-danger remove-condition"
                                         data-index="<%= i %>"
                                 >
-                                    <i class="trash"></i>
+                                    <i class="icon-trash"></i>
                                 </button>
                             </div>
                         </div>
@@ -182,7 +182,7 @@
         var optionsHTML = '';
         for (var i = 0; i < customFieldsOptions.length; i++) {
             optionsHTML += '<option value="' + customFieldsOptions[i].name + '">' +
-                customFieldsOptions[i].displayName + ' (' + customFieldsOptions[i].type + ')</option>';
+                customFieldsOptions[i].displayName + '</option>';
         }
         return optionsHTML;
     }
