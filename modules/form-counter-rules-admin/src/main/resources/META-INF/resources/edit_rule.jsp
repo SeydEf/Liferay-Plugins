@@ -16,7 +16,7 @@
     String logicOperator = FormCounterRulesAdminPortletKeys.LOGIC_OR;
 
     List<RuleCondition> conditions = new ArrayList<>();
-    List<ExpandoFieldInfo> customFields = ExpandoFieldUtil.getUserCustomFields(themeDisplay.getCompanyId());
+    List<ExpandoFieldInfo> customFields = ExpandoFieldUtil.getAllCustomFields(themeDisplay.getCompanyId());
 
     if (formCounterRule != null) {
         ruleId = formCounterRule.getFormCounterRuleId();

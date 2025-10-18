@@ -24,7 +24,7 @@ public class ExpandoFieldUtil {
 
     private static final Log _log = LogFactoryUtil.getLog(ExpandoFieldUtil.class);
 
-    public static List<ExpandoFieldInfo> getUserCustomFields(long companyId) {
+    public static List<ExpandoFieldInfo> getAllCustomFields(long companyId) {
         List<ExpandoFieldInfo> customFields = new ArrayList<>();
 
         try {
@@ -46,7 +46,7 @@ public class ExpandoFieldUtil {
                 customFields.add(fieldInfo);
             }
         } catch (Exception e) {
-            _log.error("Error fetching user custom fields", e);
+            _log.error("Error fetching custom fields", e);
         }
 
         return customFields;
