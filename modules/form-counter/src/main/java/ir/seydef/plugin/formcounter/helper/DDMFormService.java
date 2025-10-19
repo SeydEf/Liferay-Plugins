@@ -18,53 +18,97 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
-import ir.seydef.plugin.formcounter.constants.FormCounterPortletKeys;
+import ir.seydef.plugin.formcounter.model.FormCounterRule;
 import ir.seydef.plugin.formcounter.model.FormSubmissionStatus;
 import ir.seydef.plugin.formcounter.model.SearchCriteria;
+import ir.seydef.plugin.formcounter.service.FormCounterRuleLocalServiceUtil;
 import ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalServiceUtil;
 import ir.seydef.plugin.formcounter.util.PersianTextUtil;
 
 import java.util.*;
 
 /**
+ * Service class for DDM Form operations with dynamic rule-based filtering
+ *
  * @author S.Abolfazl Eftekhari
  */
 public class DDMFormService {
 
     private static final Log _log = LogFactoryUtil.getLog(DDMFormService.class);
 
-    public static List<DDMFormInstance> getFormInstancesWithBranchId(long groupId) {
-        List<DDMFormInstance> formInstancesWithBranchId = new ArrayList<>();
+    /**
+     * Get form instances that have fields matching the user's custom field rules
+     *
+     * @param userCustomFields map of user's custom field names to values
+     * @return list of matching form instances
+     */
+    public static List<DDMFormInstance> getFormInstancesForUser(Map<String, List<String>> userCustomFields) {
+        List<DDMFormInstance> matchingFormInstances = new ArrayList<>();
 
         try {
-            List<DDMFormInstance> allFormInstances = DDMFormInstanceLocalServiceUtil.getFormInstances(groupId);
+            if (userCustomFields == null || userCustomFields.isEmpty()) {
+                return matchingFormInstances;
+            }
+
+            // Get all active rules
+            List<FormCounterRule> activeRules = FormCounterRuleLocalServiceUtil.findByActive(true);
+            if (activeRules.isEmpty()) {
+                return matchingFormInstances;
+            }
+
+            // Get all reference fields for user's custom fields
+            Map<String, Set<String>> referenceFieldsMap = RuleFilterHelper.getReferenceFieldsForCustomFields(
+                    activeRules, userCustomFields.keySet());
+
+            if (referenceFieldsMap.isEmpty()) {
+                return matchingFormInstances;
+            }
+
+            // Collect all reference fields
+            Set<String> allReferenceFields = new HashSet<>();
+            for (Set<String> refs : referenceFieldsMap.values()) {
+                allReferenceFields.addAll(refs);
+            }
+
+            // Get all form instances and check which have matching reference fields
+            List<DDMFormInstance> allFormInstances = DDMFormInstanceLocalServiceUtil.getDDMFormInstances(-1, -1);
 
             for (DDMFormInstance formInstance : allFormInstances) {
                 try {
                     DDMStructure structure = formInstance.getStructure();
                     if (structure != null) {
-                        if (hasFormField(structure)) {
-                            formInstancesWithBranchId.add(formInstance);
+                        if (hasAnyReferenceField(structure, allReferenceFields)) {
+                            matchingFormInstances.add(formInstance);
                         }
                     }
                 } catch (Exception e) {
-                    _log.warn("Error checking form structure for form instance: " + formInstance.getFormInstanceId(),
-                            e);
+                    _log.warn("Error checking form structure for form instance: " + formInstance.getFormInstanceId(), e);
                 }
             }
 
         } catch (Exception e) {
-            _log.error("Error retrieving form instances with branchId field", e);
+            _log.error("Error retrieving form instances for user custom fields", e);
         }
 
-        return formInstancesWithBranchId;
+        return matchingFormInstances;
     }
 
+    /**
+     * Get filtered form records based on user's custom fields and rules
+     *
+     * @param formInstanceId   the form instance ID (0 for all forms)
+     * @param userCustomFields map of user's custom field names to values
+     * @param start            start index
+     * @param end              end index
+     * @param orderByCol       order by column
+     * @param orderByType      order type (asc/desc)
+     * @return list of filtered records
+     */
     public static List<DDMFormInstanceRecord> getFilteredFormRecords(
-            long formInstanceId, String userBranchId, int start, int end,
+            long formInstanceId, Map<String, List<String>> userCustomFields, int start, int end,
             String orderByCol, String orderByType) {
 
-        if (Validator.isNull(userBranchId)) {
+        if (userCustomFields == null || userCustomFields.isEmpty()) {
             return new ArrayList<>();
         }
 
@@ -83,22 +127,24 @@ public class DDMFormService {
                 }
             }
 
-            List<DDMFormInstanceRecord> allRecords = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery(
-                    dynamicQuery, start, end);
+            List<DDMFormInstanceRecord> allRecords = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery(dynamicQuery);
 
             List<DDMFormInstanceRecord> filteredRecords = new ArrayList<>();
             for (DDMFormInstanceRecord record : allRecords) {
                 try {
-                    String recordBranchId = extractBranchIdFromRecord(record);
-                    if (userBranchId.equals(recordBranchId)) {
+                    if (matchesUserCustomFields(record, userCustomFields)) {
                         filteredRecords.add(record);
                     }
                 } catch (Exception e) {
-                    _log.warn("Error extracting branch ID from record: " + record.getFormInstanceRecordId(), e);
+                    _log.warn("Error filtering record: " + record.getFormInstanceRecordId(), e);
                 }
             }
 
-            return filteredRecords;
+            // Apply pagination
+            int fromIndex = Math.min(start, filteredRecords.size());
+            int toIndex = Math.min(end, filteredRecords.size());
+
+            return filteredRecords.subList(fromIndex, toIndex);
 
         } catch (Exception e) {
             _log.error("Error retrieving filtered form records", e);
@@ -106,8 +152,15 @@ public class DDMFormService {
         }
     }
 
-    public static int getFilteredFormRecordsCount(long formInstanceId, String userBranchId) {
-        if (Validator.isNull(userBranchId)) {
+    /**
+     * Get count of filtered form records based on user's custom fields
+     *
+     * @param formInstanceId   the form instance ID (0 for all forms)
+     * @param userCustomFields map of user's custom field names to values
+     * @return count of filtered records
+     */
+    public static int getFilteredFormRecordsCount(long formInstanceId, Map<String, List<String>> userCustomFields) {
+        if (userCustomFields == null || userCustomFields.isEmpty()) {
             return 0;
         }
 
@@ -123,13 +176,11 @@ public class DDMFormService {
             int count = 0;
             for (DDMFormInstanceRecord record : allRecords) {
                 try {
-                    String recordBranchId = extractBranchIdFromRecord(record);
-
-                    if (userBranchId.equals(recordBranchId)) {
+                    if (matchesUserCustomFields(record, userCustomFields)) {
                         count++;
                     }
                 } catch (Exception e) {
-                    _log.warn("Error extracting branch ID from record: " + record.getFormInstanceRecordId(), e);
+                    _log.warn("Error checking record match: " + record.getFormInstanceRecordId(), e);
                 }
             }
 
@@ -141,171 +192,76 @@ public class DDMFormService {
         }
     }
 
-    public static String extractBranchIdFromRecord(DDMFormInstanceRecord record) {
+    /**
+     * Check if a record matches the user's custom fields based on active rules
+     *
+     * @param record           the form instance record
+     * @param userCustomFields map of user's custom field names to values
+     * @return true if record matches, false otherwise
+     */
+    private static boolean matchesUserCustomFields(DDMFormInstanceRecord record, Map<String, List<String>> userCustomFields) {
         try {
+            // Get all active rules
+            List<FormCounterRule> activeRules = FormCounterRuleLocalServiceUtil.findByActive(true);
+            if (activeRules.isEmpty()) {
+                return false;
+            }
+
+            // Get form field values from the record
             DDMFormValues formValues = record.getDDMFormValues();
-            if (formValues != null) {
-                List<DDMFormFieldValue> formFieldValues = formValues.getDDMFormFieldValues();
-                return extractBranchIdRecursively(record, formFieldValues);
+            if (formValues == null) {
+                return false;
             }
+
+            List<DDMFormFieldValue> formFieldValues = formValues.getDDMFormFieldValues();
+            if (formFieldValues == null || formFieldValues.isEmpty()) {
+                return false;
+            }
+
+            // Check each custom field
+            for (Map.Entry<String, List<String>> entry : userCustomFields.entrySet()) {
+                String customFieldName = entry.getKey();
+                List<String> customFieldValues = entry.getValue();
+
+                // Get rules for this custom field
+                List<FormCounterRule> applicableRules = RuleFilterHelper.getRulesForCustomField(activeRules, customFieldName);
+
+                if (!applicableRules.isEmpty()) {
+                    // Get reference fields from rules
+                    Set<String> referenceFields = RuleFilterHelper.getReferenceFieldsForCustomField(applicableRules, customFieldName);
+
+                    // Check if any of the record's fields match
+                    for (String referenceField : referenceFields) {
+                        for (String customFieldValue : customFieldValues) {
+                            // Get the operator from the rule
+                            String operator = "contains"; // default
+                            for (FormCounterRule rule : applicableRules) {
+                                String ruleOperator = RuleFilterHelper.getOperatorForCondition(rule, customFieldName, referenceField);
+                                if (Validator.isNotNull(ruleOperator)) {
+                                    operator = ruleOperator;
+                                    break;
+                                }
+                            }
+
+                            // Check if the record has this reference field with matching value
+                            if (hasMatchingFieldValue(record, formFieldValues, referenceField, customFieldValue, operator)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
+
         } catch (Exception e) {
-            _log.error("Error extracting branch ID from record: " + record.getFormInstanceRecordId(), e);
+            _log.error("Error checking if record matches user custom fields: " + record.getFormInstanceRecordId(), e);
+            return false;
         }
-
-        return null;
     }
 
-    private static String extractBranchIdRecursively(DDMFormInstanceRecord record,
-                                                     List<DDMFormFieldValue> formFieldValues) {
-        if (formFieldValues == null || formFieldValues.isEmpty()) {
-            return null;
-        }
 
-        for (DDMFormFieldValue fieldValue : formFieldValues) {
-            try {
-                String fieldRef = fieldValue.getFieldReference() != null
-                        ? fieldValue.getFieldReference().toLowerCase()
-                        : "";
-
-                if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID.contains(fieldRef)) {
-                    if (fieldValue.getValue() != null && fieldValue.getValue().getDefaultLocale() != null) {
-                        String optionValue = GetterUtil.getString(
-                                fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
-
-                        if (Validator.isNotNull(optionValue)) {
-                            return extractDisplayValueFromStructure(record, fieldValue, optionValue);
-                        }
-                    }
-                }
-
-                List<DDMFormFieldValue> nestedFieldValues = fieldValue.getNestedDDMFormFieldValues();
-                if (nestedFieldValues != null && !nestedFieldValues.isEmpty()) {
-                    String nestedBranchId = extractBranchIdRecursively(record, nestedFieldValues);
-                    if (Validator.isNotNull(nestedBranchId)) {
-                        return nestedBranchId;
-                    }
-                }
-
-            } catch (Exception e) {
-                _log.warn("Error extracting branch ID from field", e);
-            }
-        }
-
-        return null;
-    }
-
-    private static String extractDisplayValueFromStructure(DDMFormInstanceRecord record,
-                                                           DDMFormFieldValue fieldValue,
-                                                           String optionValue) {
-        try {
-            DDMFormInstance formInstance = DDMFormInstanceLocalServiceUtil
-                    .fetchDDMFormInstance(record.getFormInstanceId());
-            if (formInstance != null) {
-                DDMStructure structure = formInstance.getStructure();
-                if (structure != null) {
-                    String definition = structure.getDefinition().toLowerCase();
-
-                    if (definition.contains(FormCounterPortletKeys.DDM_FIELD_BRANCH_ID)) {
-                        return parseOptionValueFromDefinition(definition, fieldValue.getFieldReference(), optionValue);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            _log.error("Error extracting display value from structure for option: " + optionValue, e);
-        }
-
-        return optionValue;
-    }
-
-    private static String parseOptionValueFromDefinition(String definition, String fieldReference, String optionValue) {
-        try {
-            JSONObject jsonDefinition = JSONFactoryUtil.createJSONObject(definition);
-
-            JSONArray fields = jsonDefinition.getJSONArray("fields");
-            if (fields != null) {
-                String result = parseOptionValueRecursively(fields, fieldReference.toLowerCase(), optionValue);
-                if (result != null && !result.equals(optionValue)) {
-                    return result;
-                }
-            }
-        } catch (Exception e) {
-            _log.error("Error parsing option value from definition using JSON: " + optionValue, e);
-        }
-
-        return optionValue;
-    }
-
-    private static String parseOptionValueRecursively(JSONArray fields, String fieldReference, String optionValue) {
-        if (fields == null) {
-            return null;
-        }
-
-        for (int i = 0; i < fields.length(); i++) {
-            try {
-                JSONObject field = fields.getJSONObject(i);
-                String currentFieldReference = field.getString("fieldreference");
-
-                if (fieldReference.contains(currentFieldReference)) {
-                    JSONArray options = field.getJSONArray("options");
-                    if (options != null) {
-                        String label = findOptionLabel(options, optionValue);
-                        if (label != null && !label.equals(optionValue)) {
-                            return label;
-                        }
-                    }
-                }
-
-                if (field.has("nestedfields")) {
-                    JSONArray nestedFields = field.getJSONArray("nestedfields");
-                    if (nestedFields != null && nestedFields.length() > 0) {
-                        String result = parseOptionValueRecursively(nestedFields, fieldReference, optionValue);
-                        if (result != null && !result.equals(optionValue)) {
-                            return result;
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                _log.warn("Error processing field in option value parsing", e);
-            }
-        }
-
-        return null;
-    }
-
-    private static String findOptionLabel(JSONArray options, String optionValue) {
-        try {
-            for (int i = 0; i < options.length(); i++) {
-                JSONObject option = options.getJSONObject(i);
-                String value = option.getString("value");
-                optionValue = optionValue.toLowerCase();
-
-                if (optionValue.contains(value)) {
-                    JSONObject label = option.getJSONObject("label");
-                    if (label != null) {
-                        String labelText = null;
-
-                        Iterator<String> keys = label.keys();
-                        if (keys.hasNext()) {
-                            String firstKey = keys.next();
-                            labelText = label.getString(firstKey);
-                        }
-
-                        if (Validator.isNotNull(labelText)) {
-                            _log.debug("Found option label '" + labelText + "' for value: " + optionValue);
-                            return labelText;
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            _log.error("Error finding option label for value: " + optionValue, e);
-        }
-
-        _log.debug("No label found for option value: " + optionValue + ", returning original value");
-        return optionValue;
-    }
-
-    private static boolean hasFormField(DDMStructure structure) {
+    private static boolean hasAnyReferenceField(DDMStructure structure, Set<String> referenceFields) {
         try {
             String definition = structure.getDefinition();
             if (definition != null) {
@@ -313,18 +269,19 @@ public class DDMFormService {
                 JSONArray fields = jsonDefinition.getJSONArray("fields");
 
                 if (fields != null) {
-                    return hasFormFieldRecursively(fields);
+                    return hasAnyReferenceFieldRecursively(fields, referenceFields);
                 }
             }
         } catch (Exception e) {
-            _log.error("Error checking form field: " + FormCounterPortletKeys.DDM_FIELD_BRANCH_ID, e);
+            _log.error("Error checking form reference fields", e);
         }
 
         return false;
     }
 
-    private static boolean hasFormFieldRecursively(JSONArray fields) {
-        if (fields == null) {
+
+    private static boolean hasAnyReferenceFieldRecursively(JSONArray fields, Set<String> referenceFields) {
+        if (fields == null || referenceFields == null || referenceFields.isEmpty()) {
             return false;
         }
 
@@ -333,20 +290,60 @@ public class DDMFormService {
                 JSONObject field = fields.getJSONObject(i);
                 String fieldReference = field.getString("fieldReference");
 
-                if (FormCounterPortletKeys.DDM_FIELD_BRANCH_ID.contains(fieldReference.toLowerCase())) {
-                    return true;
+                for (String refField : referenceFields) {
+                    if (refField.equalsIgnoreCase(fieldReference)) {
+                        return true;
+                    }
                 }
 
                 if (field.has("nestedFields")) {
                     JSONArray nestedFields = field.getJSONArray("nestedFields");
                     if (nestedFields != null && nestedFields.length() > 0) {
-                        if (hasFormFieldRecursively(nestedFields)) {
+                        if (hasAnyReferenceFieldRecursively(nestedFields, referenceFields)) {
                             return true;
                         }
                     }
                 }
             } catch (Exception e) {
-                _log.warn("Error processing field in branch ID search", e);
+                _log.warn("Error processing field in reference field search", e);
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean hasMatchingFieldValue(DDMFormInstanceRecord record, List<DDMFormFieldValue> fieldValues, String referenceField,
+                                                 String customFieldValue, String operator) {
+        if (fieldValues == null || fieldValues.isEmpty()) {
+            return false;
+        }
+
+        for (DDMFormFieldValue fieldValue : fieldValues) {
+            try {
+                String fieldRef = fieldValue.getFieldReference();
+
+                if (referenceField.equalsIgnoreCase(fieldRef)) {
+                    if (fieldValue.getValue() != null && fieldValue.getValue().getDefaultLocale() != null) {
+                        String recordFieldValue = GetterUtil.getString(
+                                fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
+
+                        if (Validator.isNotNull(recordFieldValue)) {
+                            if (RuleFilterHelper.matchesCondition(recordFieldValue, customFieldValue, operator)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+                List<DDMFormFieldValue> nestedFieldValues = fieldValue.getNestedDDMFormFieldValues();
+                if (nestedFieldValues != null && !nestedFieldValues.isEmpty()) {
+                    if (hasMatchingFieldValue(record, nestedFieldValues, referenceField, customFieldValue, operator)) {
+                        return true;
+                    }
+                }
+
+            } catch (Exception e) {
+                _log.warn("Error checking field value match", e);
             }
         }
 
@@ -362,11 +359,15 @@ public class DDMFormService {
         }
     }
 
+    /**
+     * Search form records based on search criteria and user custom fields
+     */
     public static List<DDMFormInstanceRecord> searchFormRecords(
             SearchCriteria searchCriteria, int start, int end,
             String orderByCol, String orderByType) {
 
-        if (Validator.isNull(searchCriteria.getUserBranchId())) {
+        Map<String, List<String>> userCustomFields = searchCriteria.getUserCustomFields();
+        if (userCustomFields == null || userCustomFields.isEmpty()) {
             return new ArrayList<>();
         }
 
@@ -399,8 +400,7 @@ public class DDMFormService {
             List<DDMFormInstanceRecord> filteredRecords = new ArrayList<>();
             for (DDMFormInstanceRecord record : allRecords) {
                 try {
-                    String recordBranchId = extractBranchIdFromRecord(record);
-                    if (!searchCriteria.getUserBranchId().equals(recordBranchId)) {
+                    if (!matchesUserCustomFields(record, userCustomFields)) {
                         continue;
                     }
 
@@ -426,8 +426,12 @@ public class DDMFormService {
         }
     }
 
+    /**
+     * Get count of search results based on search criteria and user custom fields
+     */
     public static int getSearchFormRecordsCount(SearchCriteria searchCriteria) {
-        if (Validator.isNull(searchCriteria.getUserBranchId())) {
+        Map<String, List<String>> userCustomFields = searchCriteria.getUserCustomFields();
+        if (userCustomFields == null || userCustomFields.isEmpty()) {
             return 0;
         }
 
@@ -452,8 +456,7 @@ public class DDMFormService {
             int count = 0;
             for (DDMFormInstanceRecord record : allRecords) {
                 try {
-                    String recordBranchId = extractBranchIdFromRecord(record);
-                    if (searchCriteria.getUserBranchId().equals(recordBranchId) &&
+                    if (matchesUserCustomFields(record, userCustomFields) &&
                             matchesSeenStatus(record, searchCriteria.getStatus()) &&
                             matchesTextCriteria(record, searchCriteria)) {
                         count++;
