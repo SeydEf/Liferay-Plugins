@@ -13,7 +13,10 @@ import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author S.Abolfazl Eftekhari
@@ -57,7 +60,7 @@ public class UserCustomFieldUtil {
 
                     if (expandoValue != null) {
                         String value = GetterUtil.getString(expandoValue.getData());
-                        
+
                         if (Validator.isNotNull(value)) {
                             List<String> values = splitCustomFieldValue(value);
                             if (!values.isEmpty()) {
@@ -77,38 +80,6 @@ public class UserCustomFieldUtil {
         return customFieldsMap;
     }
 
-    public static List<String> getUserCustomFieldValue(long userId, String fieldName) {
-        if (userId <= 0 || Validator.isNull(fieldName)) {
-            return new ArrayList<>();
-        }
-
-        try {
-            User user = UserLocalServiceUtil.fetchUser(userId);
-            if (user == null || user.isDefaultUser()) {
-                return new ArrayList<>();
-            }
-
-            ExpandoValue expandoValue = ExpandoValueLocalServiceUtil.getValue(
-                    user.getCompanyId(),
-                    User.class.getName(),
-                    "CUSTOM_FIELDS",
-                    fieldName,
-                    userId);
-
-            if (expandoValue != null) {
-                String value = GetterUtil.getString(expandoValue.getData());
-                if (Validator.isNotNull(value)) {
-                    return splitCustomFieldValue(value);
-                }
-            }
-
-        } catch (Exception e) {
-            _log.error("Error getting custom field value for field: " + fieldName + ", user: " + userId, e);
-        }
-
-        return new ArrayList<>();
-    }
-
     public static List<String> splitCustomFieldValue(String value) {
         List<String> values = new ArrayList<>();
 
@@ -124,8 +95,7 @@ public class UserCustomFieldUtil {
                     values.add(trimmed);
                 }
             }
-        }
-        else if (value.contains("-")) {
+        } else if (value.contains("-")) {
             String[] parts = value.split("-");
             for (String part : parts) {
                 String trimmed = part.trim();
@@ -133,8 +103,7 @@ public class UserCustomFieldUtil {
                     values.add(trimmed);
                 }
             }
-        }
-        else {
+        } else {
             String trimmed = value.trim();
             if (Validator.isNotNull(trimmed)) {
                 values.add(trimmed);
@@ -142,10 +111,5 @@ public class UserCustomFieldUtil {
         }
 
         return values;
-    }
-
-    public static boolean hasCustomFieldsWithValues(long userId) {
-        Map<String, List<String>> customFields = getUserCustomFieldsWithValues(userId);
-        return !customFields.isEmpty();
     }
 }

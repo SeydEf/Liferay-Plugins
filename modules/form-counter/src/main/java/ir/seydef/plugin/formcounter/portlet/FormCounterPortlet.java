@@ -14,27 +14,21 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import ir.seydef.plugin.formcounter.constants.FormCounterPortletKeys;
+import ir.seydef.plugin.formcounter.helper.DDMFormService;
+import ir.seydef.plugin.formcounter.helper.FormStatusSyncService;
 import ir.seydef.plugin.formcounter.model.FormInstanceDisplayDTO;
 import ir.seydef.plugin.formcounter.model.FormRecordDisplayDTO;
 import ir.seydef.plugin.formcounter.model.SearchCriteria;
-import ir.seydef.plugin.formcounter.helper.DDMFormService;
-import ir.seydef.plugin.formcounter.helper.FormStatusSyncService;
+import ir.seydef.plugin.formcounter.util.UserCustomFieldUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 
-import javax.portlet.Portlet;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.PortletSession;
-import javax.portlet.PortletException;
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
+import javax.portlet.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import ir.seydef.plugin.formcounter.util.UserCustomFieldUtil;
 
 /**
  * @author S.Abolfazl Eftekhari
@@ -112,7 +106,7 @@ public class FormCounterPortlet extends MVCPortlet {
             String orderByType = ParamUtil.getString(renderRequest, "orderByType",
                     FormCounterPortletKeys.DEFAULT_ORDER_BY_TYPE);
 
-            renderRequest.setAttribute("hasValidCustomFields", UserCustomFieldUtil.hasCustomFieldsWithValues(userId));
+            renderRequest.setAttribute("hasValidCustomFields", !userCustomFields.isEmpty());
             renderRequest.setAttribute("selectedFormInstanceId", searchCriteria.getFormInstanceId());
             renderRequest.setAttribute("searchCriteria", searchCriteria);
             renderRequest.setAttribute("delta", delta);
