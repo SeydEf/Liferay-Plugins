@@ -7,6 +7,8 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -17,7 +19,6 @@ import ir.seydef.plugin.formcounter.model.FormRecordDisplayDTO;
 import ir.seydef.plugin.formcounter.model.SearchCriteria;
 import ir.seydef.plugin.formcounter.helper.DDMFormService;
 import ir.seydef.plugin.formcounter.helper.FormStatusSyncService;
-import ir.seydef.plugin.formcounter.util.UserBranchUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -32,10 +33,8 @@ import javax.portlet.ActionResponse;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import ir.seydef.plugin.formcounter.util.UserCustomFieldUtil;
 
 /**
  * @author S.Abolfazl Eftekhari
@@ -73,10 +72,9 @@ public class FormCounterPortlet extends MVCPortlet {
             ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
             Locale locale = themeDisplay.getLocale();
             long userId = themeDisplay.getUserId();
-            long groupId = themeDisplay.getScopeGroupId();
 
-            String userBranchId = UserBranchUtil.getUserBranchId(userId);
-            List<DDMFormInstance> formInstances = DDMFormService.getFormInstancesWithBranchId(groupId);
+            Map<String, List<String>> userCustomFields = UserCustomFieldUtil.getUserCustomFieldsWithValues(userId);
+            List<DDMFormInstance> formInstances = DDMFormService.getFormInstancesForUser(userCustomFields);
 
             try {
                 ServiceContext serviceContext = ServiceContextFactory.getInstance(renderRequest);
@@ -96,7 +94,8 @@ public class FormCounterPortlet extends MVCPortlet {
 
             if (searchCriteria == null) {
                 searchCriteria = new SearchCriteria();
-                searchCriteria.setUserBranchId(userBranchId);
+                searchCriteria.setUserCustomFields(userCustomFields);
+
                 long selectedFormInstanceId = ParamUtil.getLong(renderRequest,
                         FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID, 0);
                 searchCriteria.setFormInstanceId(selectedFormInstanceId);
@@ -104,14 +103,16 @@ public class FormCounterPortlet extends MVCPortlet {
 
             int delta = ParamUtil.getInteger(renderRequest, FormCounterPortletKeys.PARAM_DELTA,
                     FormCounterPortletKeys.DEFAULT_DELTA);
+
             int cur = ParamUtil.getInteger(renderRequest, "cur", 1);
+
             String orderByCol = ParamUtil.getString(renderRequest, "orderByCol",
                     FormCounterPortletKeys.DEFAULT_ORDER_BY_COL);
+
             String orderByType = ParamUtil.getString(renderRequest, "orderByType",
                     FormCounterPortletKeys.DEFAULT_ORDER_BY_TYPE);
 
-            renderRequest.setAttribute("userBranchId", userBranchId);
-            renderRequest.setAttribute("hasValidBranchId", UserBranchUtil.hasValidBranchId(userId));
+            renderRequest.setAttribute("hasValidCustomFields", UserCustomFieldUtil.hasCustomFieldsWithValues(userId));
             renderRequest.setAttribute("selectedFormInstanceId", searchCriteria.getFormInstanceId());
             renderRequest.setAttribute("searchCriteria", searchCriteria);
             renderRequest.setAttribute("delta", delta);
@@ -120,31 +121,35 @@ public class FormCounterPortlet extends MVCPortlet {
             renderRequest.setAttribute("orderByType", orderByType);
 
             List<FormInstanceDisplayDTO> formInstanceDTOs = convertToFormInstanceDTOs(formInstances, locale,
-                    userBranchId);
+                    userCustomFields);
             renderRequest.setAttribute("formInstances", formInstanceDTOs);
 
             List<FormRecordDisplayDTO> formRecords = new ArrayList<>();
             int totalCount = 0;
 
-            if (UserBranchUtil.hasValidBranchId(userId)) {
-                if (searchCriteria.hasSearchCriteria() || searchCriteria.getFormInstanceId() > 0) {
-                    totalCount = DDMFormService.getSearchFormRecordsCount(searchCriteria);
-                } else {
-                    totalCount = DDMFormService.getFilteredFormRecordsCount(
-                            searchCriteria.getFormInstanceId(), userBranchId);
-                }
-
+            if (!userCustomFields.isEmpty()) {
                 int start = (cur - 1) * delta;
                 int end = start + delta;
 
                 if (searchCriteria.hasSearchCriteria() || searchCriteria.getFormInstanceId() > 0) {
+
                     List<DDMFormInstanceRecord> records = DDMFormService.searchFormRecords(
                             searchCriteria, start, end, orderByCol, orderByType);
+
                     formRecords = convertToFormRecordDTOs(records, locale);
+
+                    totalCount = records.size();
+                    if (totalCount == 0) {
+                        SessionErrors.add(renderRequest, "no-records-found");
+                    }
+
                 } else {
+
                     List<DDMFormInstanceRecord> records = DDMFormService.getFilteredFormRecords(
-                            searchCriteria.getFormInstanceId(), userBranchId, start, end, orderByCol, orderByType);
+                            searchCriteria.getFormInstanceId(), userCustomFields, start, end, orderByCol, orderByType);
+
                     formRecords = convertToFormRecordDTOs(records, locale);
+                    totalCount = records.size();
                 }
             }
 
@@ -157,6 +162,7 @@ public class FormCounterPortlet extends MVCPortlet {
             int totalPages = (int) Math.ceil((double) totalCount / delta);
             renderRequest.setAttribute("totalPages", totalPages);
             renderRequest.setAttribute("currentPage", cur);
+            SessionMessages.add(renderRequest, SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
 
         } catch (Exception e) {
             renderRequest.setAttribute("errorMessage", "An error occurred while loading the form records.");
@@ -171,10 +177,10 @@ public class FormCounterPortlet extends MVCPortlet {
         try {
             ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
             long userId = themeDisplay.getUserId();
-            String userBranchId = UserBranchUtil.getUserBranchId(userId);
+            Map<String, List<String>> userCustomFields = UserCustomFieldUtil.getUserCustomFieldsWithValues(userId);
 
             SearchCriteria searchCriteria = new SearchCriteria();
-            searchCriteria.setUserBranchId(userBranchId);
+            searchCriteria.setUserCustomFields(userCustomFields);
 
             long formInstanceId = ParamUtil.getLong(actionRequest, FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID, 0);
             searchCriteria.setFormInstanceId(formInstanceId);
@@ -225,6 +231,7 @@ public class FormCounterPortlet extends MVCPortlet {
 
             PortletSession session = actionRequest.getPortletSession();
             session.setAttribute("searchCriteria", searchCriteria);
+            SessionMessages.add(actionRequest, SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_SUCCESS_MESSAGE);
 
         } catch (Exception e) {
             _log.error("Error processing search action", e);
@@ -233,14 +240,14 @@ public class FormCounterPortlet extends MVCPortlet {
     }
 
     private List<FormInstanceDisplayDTO> convertToFormInstanceDTOs(List<DDMFormInstance> formInstances,
-                                                                   Locale locale, String userBranchId) {
+                                                                   Locale locale, Map<String, List<String>> userCustomFields) {
         List<FormInstanceDisplayDTO> dtos = new ArrayList<>();
 
         for (DDMFormInstance formInstance : formInstances) {
-            FormInstanceDisplayDTO dto = new FormInstanceDisplayDTO(formInstance, locale, true);
+            FormInstanceDisplayDTO dto = new FormInstanceDisplayDTO(formInstance, locale);
 
-            if (Validator.isNotNull(userBranchId)) {
-                int count = DDMFormService.getFilteredFormRecordsCount(formInstance.getFormInstanceId(), userBranchId);
+            if (userCustomFields != null && !userCustomFields.isEmpty()) {
+                int count = DDMFormService.getFilteredFormRecordsCount(formInstance.getFormInstanceId(), userCustomFields);
                 if (count == 0) {
                     continue;
                 }
@@ -260,9 +267,7 @@ public class FormCounterPortlet extends MVCPortlet {
             try {
                 DDMFormInstance formInstance = DDMFormService.getFormInstance(record.getFormInstanceId());
 
-                String branchId = DDMFormService.extractBranchIdFromRecord(record);
-
-                FormRecordDisplayDTO dto = new FormRecordDisplayDTO(record, formInstance, branchId, locale);
+                FormRecordDisplayDTO dto = new FormRecordDisplayDTO(record, formInstance, locale);
                 dtos.add(dto);
 
             } catch (Exception e) {

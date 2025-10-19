@@ -7,10 +7,7 @@ import com.liferay.dynamic.data.mapping.service.DDMFormInstanceLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
-import com.liferay.portal.kernel.dao.orm.OrderFactoryUtil;
-import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
-import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.*;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -28,20 +25,12 @@ import ir.seydef.plugin.formcounter.util.PersianTextUtil;
 import java.util.*;
 
 /**
- * Service class for DDM Form operations with dynamic rule-based filtering
- *
  * @author S.Abolfazl Eftekhari
  */
 public class DDMFormService {
 
     private static final Log _log = LogFactoryUtil.getLog(DDMFormService.class);
 
-    /**
-     * Get form instances that have fields matching the user's custom field rules
-     *
-     * @param userCustomFields map of user's custom field names to values
-     * @return list of matching form instances
-     */
     public static List<DDMFormInstance> getFormInstancesForUser(Map<String, List<String>> userCustomFields) {
         List<DDMFormInstance> matchingFormInstances = new ArrayList<>();
 
@@ -50,13 +39,11 @@ public class DDMFormService {
                 return matchingFormInstances;
             }
 
-            // Get all active rules
             List<FormCounterRule> activeRules = FormCounterRuleLocalServiceUtil.findByActive(true);
             if (activeRules.isEmpty()) {
                 return matchingFormInstances;
             }
 
-            // Get all reference fields for user's custom fields
             Map<String, Set<String>> referenceFieldsMap = RuleFilterHelper.getReferenceFieldsForCustomFields(
                     activeRules, userCustomFields.keySet());
 
@@ -64,14 +51,13 @@ public class DDMFormService {
                 return matchingFormInstances;
             }
 
-            // Collect all reference fields
             Set<String> allReferenceFields = new HashSet<>();
             for (Set<String> refs : referenceFieldsMap.values()) {
                 allReferenceFields.addAll(refs);
             }
 
-            // Get all form instances and check which have matching reference fields
-            List<DDMFormInstance> allFormInstances = DDMFormInstanceLocalServiceUtil.getDDMFormInstances(-1, -1);
+            List<DDMFormInstance> allFormInstances = DDMFormInstanceLocalServiceUtil.
+                    getDDMFormInstances(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 
             for (DDMFormInstance formInstance : allFormInstances) {
                 try {
@@ -82,7 +68,8 @@ public class DDMFormService {
                         }
                     }
                 } catch (Exception e) {
-                    _log.warn("Error checking form structure for form instance: " + formInstance.getFormInstanceId(), e);
+                    _log.warn("Error checking form structure for form instance: " +
+                            formInstance.getFormInstanceId(), e);
                 }
             }
 
@@ -93,17 +80,6 @@ public class DDMFormService {
         return matchingFormInstances;
     }
 
-    /**
-     * Get filtered form records based on user's custom fields and rules
-     *
-     * @param formInstanceId   the form instance ID (0 for all forms)
-     * @param userCustomFields map of user's custom field names to values
-     * @param start            start index
-     * @param end              end index
-     * @param orderByCol       order by column
-     * @param orderByType      order type (asc/desc)
-     * @return list of filtered records
-     */
     public static List<DDMFormInstanceRecord> getFilteredFormRecords(
             long formInstanceId, Map<String, List<String>> userCustomFields, int start, int end,
             String orderByCol, String orderByType) {
@@ -140,7 +116,6 @@ public class DDMFormService {
                 }
             }
 
-            // Apply pagination
             int fromIndex = Math.min(start, filteredRecords.size());
             int toIndex = Math.min(end, filteredRecords.size());
 
@@ -152,13 +127,6 @@ public class DDMFormService {
         }
     }
 
-    /**
-     * Get count of filtered form records based on user's custom fields
-     *
-     * @param formInstanceId   the form instance ID (0 for all forms)
-     * @param userCustomFields map of user's custom field names to values
-     * @return count of filtered records
-     */
     public static int getFilteredFormRecordsCount(long formInstanceId, Map<String, List<String>> userCustomFields) {
         if (userCustomFields == null || userCustomFields.isEmpty()) {
             return 0;
@@ -192,22 +160,13 @@ public class DDMFormService {
         }
     }
 
-    /**
-     * Check if a record matches the user's custom fields based on active rules
-     *
-     * @param record           the form instance record
-     * @param userCustomFields map of user's custom field names to values
-     * @return true if record matches, false otherwise
-     */
     private static boolean matchesUserCustomFields(DDMFormInstanceRecord record, Map<String, List<String>> userCustomFields) {
         try {
-            // Get all active rules
             List<FormCounterRule> activeRules = FormCounterRuleLocalServiceUtil.findByActive(true);
             if (activeRules.isEmpty()) {
                 return false;
             }
 
-            // Get form field values from the record
             DDMFormValues formValues = record.getDDMFormValues();
             if (formValues == null) {
                 return false;
@@ -218,23 +177,18 @@ public class DDMFormService {
                 return false;
             }
 
-            // Check each custom field
             for (Map.Entry<String, List<String>> entry : userCustomFields.entrySet()) {
                 String customFieldName = entry.getKey();
                 List<String> customFieldValues = entry.getValue();
 
-                // Get rules for this custom field
                 List<FormCounterRule> applicableRules = RuleFilterHelper.getRulesForCustomField(activeRules, customFieldName);
 
                 if (!applicableRules.isEmpty()) {
-                    // Get reference fields from rules
                     Set<String> referenceFields = RuleFilterHelper.getReferenceFieldsForCustomField(applicableRules, customFieldName);
 
-                    // Check if any of the record's fields match
                     for (String referenceField : referenceFields) {
                         for (String customFieldValue : customFieldValues) {
-                            // Get the operator from the rule
-                            String operator = "contains"; // default
+                            String operator = "contains";
                             for (FormCounterRule rule : applicableRules) {
                                 String ruleOperator = RuleFilterHelper.getOperatorForCondition(rule, customFieldName, referenceField);
                                 if (Validator.isNotNull(ruleOperator)) {
@@ -243,7 +197,6 @@ public class DDMFormService {
                                 }
                             }
 
-                            // Check if the record has this reference field with matching value
                             if (hasMatchingFieldValue(record, formFieldValues, referenceField, customFieldValue, operator)) {
                                 return true;
                             }
@@ -312,8 +265,8 @@ public class DDMFormService {
         return false;
     }
 
-    private static boolean hasMatchingFieldValue(DDMFormInstanceRecord record, List<DDMFormFieldValue> fieldValues, String referenceField,
-                                                 String customFieldValue, String operator) {
+    private static boolean hasMatchingFieldValue(DDMFormInstanceRecord record, List<DDMFormFieldValue> fieldValues,
+                                                 String referenceField, String customFieldValue, String operator) {
         if (fieldValues == null || fieldValues.isEmpty()) {
             return false;
         }
@@ -326,6 +279,9 @@ public class DDMFormService {
                     if (fieldValue.getValue() != null && fieldValue.getValue().getDefaultLocale() != null) {
                         String recordFieldValue = GetterUtil.getString(
                                 fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
+
+                        recordFieldValue = extractDisplayValueFromStructure(
+                                record, fieldValue, recordFieldValue, referenceField);
 
                         if (Validator.isNotNull(recordFieldValue)) {
                             if (RuleFilterHelper.matchesCondition(recordFieldValue, customFieldValue, operator)) {
@@ -350,6 +306,117 @@ public class DDMFormService {
         return false;
     }
 
+    private static String extractDisplayValueFromStructure(DDMFormInstanceRecord record,
+                                                           DDMFormFieldValue fieldValue,
+                                                           String optionValue, String referenceField) {
+        try {
+            DDMFormInstance formInstance = DDMFormInstanceLocalServiceUtil
+                    .fetchDDMFormInstance(record.getFormInstanceId());
+            if (formInstance != null) {
+                DDMStructure structure = formInstance.getStructure();
+                if (structure != null) {
+                    String definition = structure.getDefinition().toLowerCase();
+
+                    if (definition.contains(referenceField.toLowerCase())) {
+                        return parseOptionValueFromDefinition(definition, fieldValue.getFieldReference(), optionValue);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            _log.error("Error extracting display value from structure for option: " + optionValue, e);
+        }
+
+        return optionValue;
+    }
+
+    private static String parseOptionValueFromDefinition(String definition, String fieldReference, String optionValue) {
+        try {
+            JSONObject jsonDefinition = JSONFactoryUtil.createJSONObject(definition);
+
+            JSONArray fields = jsonDefinition.getJSONArray("fields");
+            if (fields != null) {
+                String result = parseOptionValueRecursively(fields, fieldReference.toLowerCase(), optionValue);
+                if (result != null && !result.equals(optionValue)) {
+                    return result;
+                }
+            }
+        } catch (Exception e) {
+            _log.error("Error parsing option value from definition using JSON: " + optionValue, e);
+        }
+
+        return optionValue;
+    }
+
+    private static String parseOptionValueRecursively(JSONArray fields, String fieldReference, String optionValue) {
+        if (fields == null) {
+            return null;
+        }
+
+        for (int i = 0; i < fields.length(); i++) {
+            try {
+                JSONObject field = fields.getJSONObject(i);
+                String currentFieldReference = field.getString("fieldreference");
+
+                if (fieldReference.contains(currentFieldReference)) {
+                    JSONArray options = field.getJSONArray("options");
+                    if (options != null) {
+                        String label = findOptionLabel(options, optionValue);
+                        if (label != null && !label.equals(optionValue)) {
+                            return label;
+                        }
+                    }
+                }
+
+                if (field.has("nestedfields")) {
+                    JSONArray nestedFields = field.getJSONArray("nestedfields");
+                    if (nestedFields != null && nestedFields.length() > 0) {
+                        String result = parseOptionValueRecursively(nestedFields, fieldReference, optionValue);
+                        if (result != null && !result.equals(optionValue)) {
+                            return result;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                _log.warn("Error processing field in option value parsing", e);
+            }
+        }
+
+        return null;
+    }
+
+    private static String findOptionLabel(JSONArray options, String optionValue) {
+        try {
+            for (int i = 0; i < options.length(); i++) {
+                JSONObject option = options.getJSONObject(i);
+                String value = option.getString("value");
+                optionValue = optionValue.toLowerCase();
+
+                if (optionValue.contains(value)) {
+                    JSONObject label = option.getJSONObject("label");
+                    if (label != null) {
+                        String labelText = null;
+
+                        Iterator<String> keys = label.keys();
+                        if (keys.hasNext()) {
+                            String firstKey = keys.next();
+                            labelText = label.getString(firstKey);
+                        }
+
+                        if (Validator.isNotNull(labelText)) {
+                            _log.debug("Found option label '" + labelText + "' for value: " + optionValue);
+                            return labelText;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            _log.error("Error finding option label for value: " + optionValue, e);
+        }
+
+        _log.debug("No label found for option value: " + optionValue + ", returning original value");
+        return optionValue;
+    }
+
     public static DDMFormInstance getFormInstance(long formInstanceId) {
         try {
             return DDMFormInstanceLocalServiceUtil.fetchDDMFormInstance(formInstanceId);
@@ -359,9 +426,6 @@ public class DDMFormService {
         }
     }
 
-    /**
-     * Search form records based on search criteria and user custom fields
-     */
     public static List<DDMFormInstanceRecord> searchFormRecords(
             SearchCriteria searchCriteria, int start, int end,
             String orderByCol, String orderByType) {
@@ -375,11 +439,13 @@ public class DDMFormService {
             DynamicQuery dynamicQuery = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery();
 
             if (searchCriteria.getFormInstanceId() > 0) {
-                dynamicQuery.add(PropertyFactoryUtil.forName("formInstanceId").eq(searchCriteria.getFormInstanceId()));
+                dynamicQuery.add(PropertyFactoryUtil.forName("formInstanceId").
+                        eq(searchCriteria.getFormInstanceId()));
             }
 
             if (searchCriteria.getStartDate() != null) {
-                dynamicQuery.add(PropertyFactoryUtil.forName("createDate").ge(searchCriteria.getStartDate()));
+                dynamicQuery.add(PropertyFactoryUtil.forName("createDate").
+                        ge(searchCriteria.getStartDate()));
             }
 
             if (searchCriteria.getEndDate() != null) {
@@ -423,53 +489,6 @@ public class DDMFormService {
 
         } catch (Exception e) {
             return new ArrayList<>();
-        }
-    }
-
-    /**
-     * Get count of search results based on search criteria and user custom fields
-     */
-    public static int getSearchFormRecordsCount(SearchCriteria searchCriteria) {
-        Map<String, List<String>> userCustomFields = searchCriteria.getUserCustomFields();
-        if (userCustomFields == null || userCustomFields.isEmpty()) {
-            return 0;
-        }
-
-        try {
-            DynamicQuery dynamicQuery = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery();
-
-            if (searchCriteria.getFormInstanceId() > 0) {
-                dynamicQuery.add(PropertyFactoryUtil.forName("formInstanceId").eq(searchCriteria.getFormInstanceId()));
-            }
-
-            if (searchCriteria.getStartDate() != null) {
-                dynamicQuery.add(PropertyFactoryUtil.forName("createDate").ge(searchCriteria.getStartDate()));
-            }
-
-            if (searchCriteria.getEndDate() != null) {
-                Date endDate = new Date(searchCriteria.getEndDate().getTime() + 24 * 60 * 60 * 1000);
-                dynamicQuery.add(PropertyFactoryUtil.forName("createDate").lt(endDate));
-            }
-
-            List<DDMFormInstanceRecord> allRecords = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery(dynamicQuery);
-
-            int count = 0;
-            for (DDMFormInstanceRecord record : allRecords) {
-                try {
-                    if (matchesUserCustomFields(record, userCustomFields) &&
-                            matchesSeenStatus(record, searchCriteria.getStatus()) &&
-                            matchesTextCriteria(record, searchCriteria)) {
-                        count++;
-                    }
-                } catch (Exception e) {
-                    _log.warn("Error counting record: " + record.getFormInstanceRecordId(), e);
-                }
-            }
-
-            return count;
-
-        } catch (Exception e) {
-            return 0;
         }
     }
 
