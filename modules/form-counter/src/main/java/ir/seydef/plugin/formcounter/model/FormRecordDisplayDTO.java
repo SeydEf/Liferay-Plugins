@@ -17,7 +17,6 @@ public class FormRecordDisplayDTO {
     private long recordId;
     private long formInstanceId;
     private String formInstanceName;
-    private String branchId;
     private Date createDate;
     private Date modifiedDate;
     private String userName;
@@ -29,12 +28,10 @@ public class FormRecordDisplayDTO {
     public FormRecordDisplayDTO() {
     }
 
-    public FormRecordDisplayDTO(DDMFormInstanceRecord record, DDMFormInstance formInstance,
-            String branchId, Locale locale) {
+    public FormRecordDisplayDTO(DDMFormInstanceRecord record, DDMFormInstance formInstance, Locale locale) {
         this.recordId = record.getFormInstanceRecordId();
         this.formInstanceId = record.getFormInstanceId();
         this.formInstanceName = formInstance != null ? formInstance.getName(locale) : "";
-        this.branchId = branchId;
         this.createDate = record.getCreateDate();
         this.modifiedDate = record.getModifiedDate();
         this.userName = record.getUserName();
@@ -83,14 +80,6 @@ public class FormRecordDisplayDTO {
 
     public void setFormInstanceName(String formInstanceName) {
         this.formInstanceName = formInstanceName;
-    }
-
-    public String getBranchId() {
-        return branchId;
-    }
-
-    public void setBranchId(String branchId) {
-        this.branchId = branchId;
     }
 
     public Date getCreateDate() {
@@ -149,10 +138,6 @@ public class FormRecordDisplayDTO {
         this.statusLabel = statusLabel;
     }
 
-    public boolean hasValidBranchId() {
-        return Validator.isNotNull(branchId);
-    }
-
     public String getFormattedCreateDate() {
         if (createDate != null) {
             return createDate.toString();
@@ -166,7 +151,6 @@ public class FormRecordDisplayDTO {
                 "recordId=" + recordId +
                 ", formInstanceId=" + formInstanceId +
                 ", formInstanceName='" + formInstanceName + '\'' +
-                ", branchId='" + branchId + '\'' +
                 ", createDate=" + createDate +
                 ", userName='" + userName + '\'' +
                 ", seen=" + seen +

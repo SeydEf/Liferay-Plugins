@@ -22,10 +22,6 @@ public class FormCounterPortletKeys {
     public static final String DEFAULT_ORDER_BY_COL = "createDate";
     public static final String DEFAULT_ORDER_BY_TYPE = "desc";
 
-    public static final String DDM_FIELD_BRANCH_ID = "branch_id";
-
-    public static final String USER_EXPANDO_BRANCH_ID = "branchId";
-
     public static final String ACTION_SEARCH = "searchRecords";
 
 }

@@ -12,17 +12,15 @@ public class FormInstanceDisplayDTO {
     private long formInstanceId;
     private String name;
     private String description;
-    private boolean hasBranchIdField;
     private int recordCount;
 
     public FormInstanceDisplayDTO() {
     }
 
-    public FormInstanceDisplayDTO(DDMFormInstance formInstance, Locale locale, boolean hasBranchIdField) {
+    public FormInstanceDisplayDTO(DDMFormInstance formInstance, Locale locale) {
         this.formInstanceId = formInstance.getFormInstanceId();
         this.name = formInstance.getName(locale);
         this.description = formInstance.getDescription(locale);
-        this.hasBranchIdField = hasBranchIdField;
         this.recordCount = 0;
     }
 
@@ -50,14 +48,6 @@ public class FormInstanceDisplayDTO {
         this.description = description;
     }
 
-    public boolean isHasBranchIdField() {
-        return hasBranchIdField;
-    }
-
-    public void setHasBranchIdField(boolean hasBranchIdField) {
-        this.hasBranchIdField = hasBranchIdField;
-    }
-
     public int getRecordCount() {
         return recordCount;
     }
@@ -75,7 +65,6 @@ public class FormInstanceDisplayDTO {
         return "FormInstanceDisplayDTO{" +
                 "formInstanceId=" + formInstanceId +
                 ", name='" + name + '\'' +
-                ", hasBranchIdField=" + hasBranchIdField +
                 ", recordCount=" + recordCount +
                 '}';
     }

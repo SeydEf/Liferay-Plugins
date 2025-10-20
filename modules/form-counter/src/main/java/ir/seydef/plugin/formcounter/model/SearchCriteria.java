@@ -2,6 +2,8 @@ package ir.seydef.plugin.formcounter.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author S.Abolfazl Eftekhari
@@ -17,7 +19,7 @@ public class SearchCriteria implements Serializable {
     private Date endDate;
     private String status;
     private long formInstanceId;
-    private String userBranchId;
+    private Map<String, List<String>> userCustomFields;
 
     public SearchCriteria() {
     }
@@ -86,12 +88,12 @@ public class SearchCriteria implements Serializable {
         this.formInstanceId = formInstanceId;
     }
 
-    public String getUserBranchId() {
-        return userBranchId;
+    public Map<String, List<String>> getUserCustomFields() {
+        return userCustomFields;
     }
 
-    public void setUserBranchId(String userBranchId) {
-        this.userBranchId = userBranchId;
+    public void setUserCustomFields(Map<String, List<String>> userCustomFields) {
+        this.userCustomFields = userCustomFields;
     }
 
     public boolean hasSearchCriteria() {
