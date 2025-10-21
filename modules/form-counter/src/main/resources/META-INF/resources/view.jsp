@@ -3,19 +3,22 @@
 <%@ include file="/init.jsp" %>
 
 <%
-    boolean hasValidBranchId = (Boolean) request.getAttribute("hasValidBranchId");
-    String userBranchId = (String) request.getAttribute("userBranchId");
+    boolean hasValidCustomFields = (Boolean) request.getAttribute("hasValidCustomFields");
     long selectedFormInstanceId = (Long) request.getAttribute("selectedFormInstanceId");
+
     List<FormInstanceDisplayDTO> formInstances = (List<FormInstanceDisplayDTO>) request.getAttribute("formInstances");
     List<FormRecordDisplayDTO> formRecords = (List<FormRecordDisplayDTO>) request.getAttribute("formRecords");
+    SearchCriteria searchCriteria = (SearchCriteria) request.getAttribute("searchCriteria");
+
     int totalCount = (Integer) request.getAttribute("totalCount");
     Long unseenCountObj = (Long) request.getAttribute("unseenCount");
+
     long unseenCount = unseenCountObj != null ? unseenCountObj : 0;
-    SearchCriteria searchCriteria = (SearchCriteria) request.getAttribute("searchCriteria");
 
     if (searchCriteria == null) {
         searchCriteria = new SearchCriteria();
     }
+
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 %>
 <portlet:actionURL
@@ -23,6 +26,8 @@
         var="searchURL"
 >
 </portlet:actionURL>
+
+<liferay-ui:error key="no-records-found" message="no-records-found" embed="false" />
 
 <div class="ddm-form-records-portlet">
     <div class="portlet-header">
@@ -38,9 +43,9 @@
     </div>
     </c:when>
 
-    <c:when test="<%= !hasValidBranchId %>">
+    <c:when test="<%= !hasValidCustomFields %>">
     <div class="alert alert-warning">
-        <liferay-ui:message key="no.branch.id.assigned"/>
+        <liferay-ui:message key="no.custom.fields.assigned"/>
     </div>
     </c:when>
 
@@ -285,70 +290,71 @@
         </div>
     </div>
     </c:if>
+</div>
 
-    <script>
-        function clearSearchForm() {
-            document.getElementById(
-                "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_REGISTRANT_NAME %>"
-            ).value = "";
-            document.getElementById(
-                "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_TRACKING_CODE %>"
-            ).value = "";
-            document.getElementById(
-                "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_START_DATE %>"
-            ).value = "";
-            document.getElementById(
-                "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_END_DATE %>"
-            ).value = "";
-            document.getElementById(
-                "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_STATUS %>"
-            ).value = "all";
-            document.getElementById(
-                "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID %>"
-            ).value = "0";
+<aui:script>
+    function clearSearchForm() {
+        document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_REGISTRANT_NAME %>"
+        ).value = "";
+        document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_TRACKING_CODE %>"
+        ).value = "";
+        document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_START_DATE %>"
+        ).value = "";
+        document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_END_DATE %>"
+        ).value = "";
+        document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_STATUS %>"
+        ).value = "all";
+        document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID %>"
+        ).value = "0";
 
+        document.getElementById("<portlet:namespace />searchForm").submit();
+    }
+
+    function selectFormInstance(formInstanceId) {
+        var formInstanceSelect = document.getElementById(
+            "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID %>"
+        );
+        if (formInstanceSelect) {
+            formInstanceSelect.value = formInstanceId;
             document.getElementById("<portlet:namespace />searchForm").submit();
         }
+    }
 
-        function selectFormInstance(formInstanceId) {
-            var formInstanceSelect = document.getElementById(
-                "<portlet:namespace /><%= FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID %>"
-            );
-            if (formInstanceSelect) {
-                formInstanceSelect.value = formInstanceId;
-                document.getElementById("<portlet:namespace />searchForm").submit();
-            }
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchForm = document.getElementById(
+            "<portlet:namespace />searchForm"
+        );
+        if (searchForm) {
+            searchForm.addEventListener("submit", function () {
+                const submitButton = searchForm.querySelector(
+                    'button[type="submit"]'
+                );
+                if (submitButton) {
+                    submitButton.innerHTML =
+                        '<span class="loading-animation"></span> <liferay-ui:message key="searching" />...';
+                    submitButton.disabled = true;
+                }
+            });
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const searchForm = document.getElementById(
-                "<portlet:namespace />searchForm"
-            );
-            if (searchForm) {
-                searchForm.addEventListener("submit", function () {
-                    const submitButton = searchForm.querySelector(
-                        'button[type="submit"]'
-                    );
-                    if (submitButton) {
-                        submitButton.innerHTML =
-                            '<span class="loading-animation"></span> <liferay-ui:message key="searching" />...';
-                        submitButton.disabled = true;
-                    }
-                });
-            }
+        const notification = document.getElementById("unseenNotification");
+        if (notification) {
+            notification.classList.add("show");
 
-            const notification = document.getElementById("unseenNotification");
-            if (notification) {
-                notification.classList.add("show");
+            setTimeout(function () {
+                notification.classList.add("hide");
+                notification.classList.remove("show");
 
                 setTimeout(function () {
-                    notification.classList.add("hide");
-                    notification.classList.remove("show");
-
-                    setTimeout(function () {
-                        notification.style.display = "none";
-                    }, 300);
-                }, 5000);
-            }
-        });
-    </script>
+                    notification.style.display = "none";
+                }, 300);
+            }, 5000);
+        }
+    });
+</aui:script>
