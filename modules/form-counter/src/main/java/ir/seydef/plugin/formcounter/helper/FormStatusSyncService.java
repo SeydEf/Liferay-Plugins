@@ -6,7 +6,6 @@ import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordLocalServic
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.util.Validator;
 import ir.seydef.plugin.formcounter.model.FormSubmissionStatus;
 import ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalServiceUtil;
 import org.osgi.service.component.annotations.Component;
@@ -33,8 +32,7 @@ public class FormStatusSyncService {
 
                     for (DDMFormInstanceRecord record : records) {
                         try {
-                            String branchId = DDMFormService.extractBranchIdFromRecord(record);
-                            if (Validator.isNotNull(branchId)) {
+                            if (DDMFormService.recordHasRuleReferenceFields(record)) {
                                 FormSubmissionStatus existingStatus = FormSubmissionStatusLocalServiceUtil
                                         .getByFormInstanceRecordId(record.getFormInstanceRecordId());
 
@@ -64,11 +62,6 @@ public class FormStatusSyncService {
 
             if (record == null) {
                 _log.warn("Form record not found with ID: " + formInstanceRecordId);
-                return;
-            }
-
-            String branchId = DDMFormService.extractBranchIdFromRecord(record);
-            if (Validator.isNull(branchId)) {
                 return;
             }
 

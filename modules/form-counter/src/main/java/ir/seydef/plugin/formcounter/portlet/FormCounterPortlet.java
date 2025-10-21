@@ -5,8 +5,6 @@ import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
-import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -15,14 +13,11 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import ir.seydef.plugin.formcounter.constants.FormCounterPortletKeys;
 import ir.seydef.plugin.formcounter.helper.DDMFormService;
-import ir.seydef.plugin.formcounter.helper.FormStatusSyncService;
 import ir.seydef.plugin.formcounter.model.FormInstanceDisplayDTO;
 import ir.seydef.plugin.formcounter.model.FormRecordDisplayDTO;
 import ir.seydef.plugin.formcounter.model.SearchCriteria;
 import ir.seydef.plugin.formcounter.util.UserCustomFieldUtil;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import javax.portlet.*;
 import java.io.IOException;
@@ -55,9 +50,6 @@ public class FormCounterPortlet extends MVCPortlet {
     private static final Log _log = LogFactoryUtil.getLog(FormCounterPortlet.class);
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-    protected volatile FormStatusSyncService formStatusSyncService;
-
     @Override
     public void doView(RenderRequest renderRequest, RenderResponse renderResponse)
             throws IOException, PortletException {
@@ -69,13 +61,6 @@ public class FormCounterPortlet extends MVCPortlet {
 
             Map<String, List<String>> userCustomFields = UserCustomFieldUtil.getUserCustomFieldsWithValues(userId);
             List<DDMFormInstance> formInstances = DDMFormService.getFormInstancesForUser(userCustomFields);
-
-            try {
-                ServiceContext serviceContext = ServiceContextFactory.getInstance(renderRequest);
-                formStatusSyncService.syncFormSubmissionStatuses(formInstances, serviceContext);
-            } catch (Exception e) {
-                _log.warn("Error during background form status synchronization", e);
-            }
 
             SearchCriteria searchCriteria;
 
@@ -165,8 +150,7 @@ public class FormCounterPortlet extends MVCPortlet {
         super.doView(renderRequest, renderResponse);
     }
 
-    public void searchRecords(ActionRequest actionRequest, ActionResponse actionResponse)
-            throws IOException, PortletException {
+    public void searchRecords(ActionRequest actionRequest, ActionResponse actionResponse) {
 
         try {
             ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);

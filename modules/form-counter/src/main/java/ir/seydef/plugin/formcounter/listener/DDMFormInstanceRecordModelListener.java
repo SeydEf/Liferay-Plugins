@@ -8,7 +8,6 @@ import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
-import com.liferay.portal.kernel.util.Validator;
 import ir.seydef.plugin.formcounter.helper.DDMFormService;
 import ir.seydef.plugin.formcounter.helper.FormStatusSyncService;
 import org.osgi.service.component.annotations.Component;
@@ -31,9 +30,7 @@ public class DDMFormInstanceRecordModelListener extends BaseModelListener<DDMFor
     @Override
     public void onAfterCreate(DDMFormInstanceRecordVersion model) throws ModelListenerException {
         try {
-            String branchId = DDMFormService.extractBranchIdFromRecord(model.getFormInstanceRecord());
-
-            if (Validator.isNotNull(branchId)) {
+            if (DDMFormService.recordHasRuleReferenceFields(model.getFormInstanceRecord())) {
                 ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
                 if (serviceContext == null) {
                     serviceContext = new ServiceContext();

@@ -693,4 +693,71 @@ public class DDMFormService {
 
         return nameFields;
     }
+
+    public static boolean recordHasRuleReferenceFields(DDMFormInstanceRecord record) {
+        try {
+            List<FormCounterRule> activeRules = FormCounterRuleLocalServiceUtil.findByActive(true);
+            if (activeRules.isEmpty()) {
+                return false;
+            }
+
+            Set<String> allReferenceFields = new HashSet<>();
+            for (FormCounterRule rule : activeRules) {
+                try {
+                    JSONObject jsonConditions = JSONFactoryUtil.createJSONObject(rule.getRuleConditions());
+                    JSONArray conditions = jsonConditions.getJSONArray("conditions");
+                    for (int i = 0; i < conditions.length(); i++) {
+                        JSONObject condition = conditions.getJSONObject(i);
+                        String referenceField = condition.getString("reference");
+                        if (Validator.isNotNull(referenceField)) {
+                            allReferenceFields.add(referenceField.toLowerCase().trim());
+                        }
+                    }
+                } catch (Exception e) {
+                    _log.warn("Error parsing rule conditions: " + rule.getFormCounterRuleId(), e);
+                }
+            }
+
+            if (allReferenceFields.isEmpty()) {
+                return false;
+            }
+
+            DDMFormValues formValues = record.getDDMFormValues();
+            if (formValues == null) {
+                return false;
+            }
+
+            List<DDMFormFieldValue> formFieldValues = formValues.getDDMFormFieldValues();
+            if (formFieldValues == null || formFieldValues.isEmpty()) {
+                return false;
+            }
+
+            return hasAnyReferenceFieldInValues(formFieldValues, allReferenceFields);
+
+        } catch (Exception e) {
+            _log.error("Error checking if record has rule reference fields", e);
+            return false;
+        }
+    }
+
+    private static boolean hasAnyReferenceFieldInValues(
+            List<DDMFormFieldValue> fieldValues, Set<String> referenceFields) {
+
+        for (DDMFormFieldValue fieldValue : fieldValues) {
+            String fieldRef = fieldValue.getFieldReference().toLowerCase().trim();
+
+            if (referenceFields.contains(fieldRef)) {
+                return true;
+            }
+
+            List<DDMFormFieldValue> nestedFieldValues = fieldValue.getNestedDDMFormFieldValues();
+            if (nestedFieldValues != null && !nestedFieldValues.isEmpty()) {
+                if (hasAnyReferenceFieldInValues(nestedFieldValues, referenceFields)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }
