@@ -177,31 +177,9 @@ public class DDMFormService {
                 return false;
             }
 
-            for (Map.Entry<String, List<String>> entry : userCustomFields.entrySet()) {
-                String customFieldName = entry.getKey();
-                List<String> customFieldValues = entry.getValue();
-
-                List<FormCounterRule> applicableRules = RuleFilterHelper.getRulesForCustomField(activeRules, customFieldName);
-
-                if (!applicableRules.isEmpty()) {
-                    Set<String> referenceFields = RuleFilterHelper.getReferenceFieldsForCustomField(applicableRules, customFieldName);
-
-                    for (String referenceField : referenceFields) {
-                        for (String customFieldValue : customFieldValues) {
-                            String operator = "contains";
-                            for (FormCounterRule rule : applicableRules) {
-                                String ruleOperator = RuleFilterHelper.getOperatorForCondition(rule, customFieldName, referenceField);
-                                if (Validator.isNotNull(ruleOperator)) {
-                                    operator = ruleOperator;
-                                    break;
-                                }
-                            }
-
-                            if (hasMatchingFieldValue(record, formFieldValues, referenceField, customFieldValue, operator)) {
-                                return true;
-                            }
-                        }
-                    }
+            for (FormCounterRule rule : activeRules) {
+                if (recordMatchesCompleteRule(record, formFieldValues, rule, userCustomFields)) {
+                    return true;
                 }
             }
 
@@ -209,6 +187,72 @@ public class DDMFormService {
 
         } catch (Exception e) {
             _log.error("Error checking if record matches user custom fields: " + record.getFormInstanceRecordId(), e);
+            return false;
+        }
+    }
+
+    private static boolean recordMatchesCompleteRule(DDMFormInstanceRecord record,
+                                                     List<DDMFormFieldValue> formFieldValues,
+                                                     FormCounterRule rule,
+                                                     Map<String, List<String>> userCustomFields) {
+        try {
+            String ruleConditions = rule.getRuleConditions();
+            if (Validator.isNull(ruleConditions)) {
+                return false;
+            }
+
+            JSONObject jsonConditions = JSONFactoryUtil.createJSONObject(ruleConditions);
+            JSONArray conditions = jsonConditions.getJSONArray("conditions");
+            String logicOperator = jsonConditions.has("logic") ? jsonConditions.getString("logic") : "AND";
+
+            if (conditions == null || conditions.length() == 0) {
+                return false;
+            }
+
+            int matchedConditions = 0;
+            int totalConditions = conditions.length();
+
+            for (int i = 0; i < conditions.length(); i++) {
+                JSONObject condition = conditions.getJSONObject(i);
+                String customFieldName = condition.getString("field");
+                String operator = condition.has("operator") ? condition.getString("operator") : "contains";
+                String referenceField = condition.getString("reference");
+
+                if (!userCustomFields.containsKey(customFieldName)) {
+                    continue;
+                }
+
+                List<String> customFieldValues = userCustomFields.get(customFieldName);
+
+                boolean conditionMatched = false;
+                for (String customFieldValue : customFieldValues) {
+                    if (hasMatchingFieldValue(record, formFieldValues, referenceField, customFieldValue, operator)) {
+                        conditionMatched = true;
+                        break;
+                    }
+                }
+
+                if (conditionMatched) {
+                    matchedConditions++;
+                }
+
+                if ("OR".equalsIgnoreCase(logicOperator) && conditionMatched) {
+                    return true;
+                }
+
+                if ("AND".equalsIgnoreCase(logicOperator) && !conditionMatched) {
+                    return false;
+                }
+            }
+
+            if ("AND".equalsIgnoreCase(logicOperator)) {
+                return matchedConditions == totalConditions;
+            } else {
+                return matchedConditions > 0;
+            }
+
+        } catch (Exception e) {
+            _log.warn("Error evaluating rule: " + rule.getFormCounterRuleId(), e);
             return false;
         }
     }
@@ -284,7 +328,7 @@ public class DDMFormService {
                                 record, fieldValue, recordFieldValue, referenceField);
 
                         if (Validator.isNotNull(recordFieldValue)) {
-                            if (RuleFilterHelper.matchesCondition(recordFieldValue, customFieldValue, operator)) {
+                            if (matchesCondition(recordFieldValue, customFieldValue, operator)) {
                                 return true;
                             }
                         }
@@ -304,6 +348,35 @@ public class DDMFormService {
         }
 
         return false;
+    }
+
+    /**
+     * Matches a record field value against a custom field value using the specified operator
+     *
+     * @param recordValue      The value from the form record
+     * @param customFieldValue The user's custom field value
+     * @param operator         The comparison operator: "contains", "equal", "not-equal"
+     * @return true if the condition matches, false otherwise
+     */
+    private static boolean matchesCondition(String recordValue, String customFieldValue, String operator) {
+        if (Validator.isNull(recordValue) || Validator.isNull(customFieldValue)) {
+            return false;
+        }
+
+        String recordValueLower = recordValue.toLowerCase().trim();
+        String customFieldValueLower = customFieldValue.toLowerCase().trim();
+
+        switch (operator.toLowerCase()) {
+            case "contains":
+                return recordValueLower.contains(customFieldValueLower);
+            case "equal":
+                return recordValueLower.equals(customFieldValueLower);
+            case "not-equal":
+                return !recordValueLower.equals(customFieldValueLower);
+            default:
+                _log.warn("Unknown operator: " + operator + ", defaulting to 'contains'");
+                return recordValueLower.contains(customFieldValueLower);
+        }
     }
 
     private static String extractDisplayValueFromStructure(DDMFormInstanceRecord record,
