@@ -148,7 +148,7 @@
                                         class="btn btn-danger remove-condition"
                                         data-index="<%= i %>"
                                 >
-                                    <i class="icon-trash"></i>
+                                    <span></span>
                                 </button>
                             </div>
                         </div>
@@ -224,7 +224,7 @@
             '<div class="col-md-1">' +
                 '<label>&nbsp;</label>' +
                 '<button type="button" class="btn btn-danger remove-condition" data-index="{index}" style="margin-top: 24px;">' +
-                    '<i class="icon-trash"></i>' +
+                    '<span>✖️</span>' +
                 '</button>' +
             '</div>' +
         '</div>' +
