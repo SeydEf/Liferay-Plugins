@@ -58,9 +58,10 @@ public class FormCounterPortlet extends MVCPortlet {
             ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
             Locale locale = themeDisplay.getLocale();
             long userId = themeDisplay.getUserId();
+            long groupId = themeDisplay.getScopeGroupId();
 
             Map<String, List<String>> userCustomFields = UserCustomFieldUtil.getUserCustomFieldsWithValues(userId);
-            List<DDMFormInstance> formInstances = DDMFormService.getFormInstancesForUser(userCustomFields);
+            List<DDMFormInstance> formInstances = DDMFormService.getFormInstancesForUser(userCustomFields, groupId);
 
             SearchCriteria searchCriteria;
 

@@ -5,6 +5,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordVersionLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.portal.kernel.dao.orm.*;
@@ -15,6 +16,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import ir.seydef.plugin.formcounter.model.FormCounterRule;
 import ir.seydef.plugin.formcounter.model.FormSubmissionStatus;
 import ir.seydef.plugin.formcounter.model.SearchCriteria;
@@ -31,7 +33,7 @@ public class DDMFormService {
 
     private static final Log _log = LogFactoryUtil.getLog(DDMFormService.class);
 
-    public static List<DDMFormInstance> getFormInstancesForUser(Map<String, List<String>> userCustomFields) {
+    public static List<DDMFormInstance> getFormInstancesForUser(Map<String, List<String>> userCustomFields, long groupId) {
         List<DDMFormInstance> matchingFormInstances = new ArrayList<>();
 
         try {
@@ -57,7 +59,7 @@ public class DDMFormService {
             }
 
             List<DDMFormInstance> allFormInstances = DDMFormInstanceLocalServiceUtil.
-                    getDDMFormInstances(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+                    getFormInstances(groupId);
 
             for (DDMFormInstance formInstance : allFormInstances) {
                 try {
@@ -89,7 +91,15 @@ public class DDMFormService {
         }
 
         try {
+            List<Long> approvedRecordIds = getApprovedRecordIds();
+
+            if (approvedRecordIds.isEmpty()) {
+                return new ArrayList<>();
+            }
+
             DynamicQuery dynamicQuery = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery();
+
+            dynamicQuery.add(RestrictionsFactoryUtil.in("formInstanceRecordId", approvedRecordIds));
 
             if (formInstanceId > 0) {
                 dynamicQuery.add(PropertyFactoryUtil.forName("formInstanceId").eq(formInstanceId));
@@ -133,7 +143,15 @@ public class DDMFormService {
         }
 
         try {
+            List<Long> approvedRecordIds = getApprovedRecordIds();
+
+            if (approvedRecordIds.isEmpty()) {
+                return 0;
+            }
+
             DynamicQuery dynamicQuery = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery();
+
+            dynamicQuery.add(RestrictionsFactoryUtil.in("formInstanceRecordId", approvedRecordIds));
 
             if (formInstanceId > 0) {
                 dynamicQuery.add(RestrictionsFactoryUtil.eq("formInstanceId", formInstanceId));
@@ -350,14 +368,6 @@ public class DDMFormService {
         return false;
     }
 
-    /**
-     * Matches a record field value against a custom field value using the specified operator
-     *
-     * @param recordValue      The value from the form record
-     * @param customFieldValue The user's custom field value
-     * @param operator         The comparison operator: "contains", "equal", "not-equal"
-     * @return true if the condition matches, false otherwise
-     */
     private static boolean matchesCondition(String recordValue, String customFieldValue, String operator) {
         if (Validator.isNull(recordValue) || Validator.isNull(customFieldValue)) {
             return false;
@@ -509,7 +519,15 @@ public class DDMFormService {
         }
 
         try {
+            List<Long> approvedRecordIds = getApprovedRecordIds();
+
+            if (approvedRecordIds.isEmpty()) {
+                return new ArrayList<>();
+            }
+
             DynamicQuery dynamicQuery = DDMFormInstanceRecordLocalServiceUtil.dynamicQuery();
+
+            dynamicQuery.add(RestrictionsFactoryUtil.in("formInstanceRecordId", approvedRecordIds));
 
             if (searchCriteria.getFormInstanceId() > 0) {
                 dynamicQuery.add(PropertyFactoryUtil.forName("formInstanceId").
@@ -563,6 +581,16 @@ public class DDMFormService {
         } catch (Exception e) {
             return new ArrayList<>();
         }
+    }
+
+    private static List<Long> getApprovedRecordIds() {
+        DynamicQuery versionQuery = DDMFormInstanceRecordVersionLocalServiceUtil.dynamicQuery();
+
+        versionQuery.add(PropertyFactoryUtil.forName("status").eq(WorkflowConstants.STATUS_APPROVED));
+        versionQuery.setProjection(ProjectionFactoryUtil.distinct(
+                ProjectionFactoryUtil.property("formInstanceRecordId")));
+
+        return DDMFormInstanceRecordVersionLocalServiceUtil.dynamicQuery(versionQuery);
     }
 
     private static boolean matchesSeenStatus(DDMFormInstanceRecord record, String statusCriteria) {
