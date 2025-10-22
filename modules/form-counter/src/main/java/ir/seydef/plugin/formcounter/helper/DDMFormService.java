@@ -753,7 +753,18 @@ public class DDMFormService {
                             fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
 
                     if (Validator.isNotNull(value)) {
-                        if (fieldRef.contains("first") || fieldRef.equals("firstname") ||
+                        if (fieldRef.contains("fullname") || fieldRef.equals("full_name") ||
+                                fieldRef.equals("name") || fieldRef.equals("personname") ||
+                                fieldRef.equals("person_name")) {
+
+                            String[] nameParts = value.trim().split("\\s+", 2);
+                            if (nameParts.length >= 1 && Validator.isNull(nameFields.get("firstName"))) {
+                                nameFields.put("firstName", nameParts[0]);
+                            }
+                            if (nameParts.length >= 2 && Validator.isNull(nameFields.get("lastName"))) {
+                                nameFields.put("lastName", nameParts[1]);
+                            }
+                        } else if (fieldRef.contains("first") || fieldRef.equals("firstname") ||
                                 fieldRef.equals("fname") || fieldRef.equals("first_name")) {
                             if (Validator.isNull(nameFields.get("firstName"))) {
                                 nameFields.put("firstName", value);
