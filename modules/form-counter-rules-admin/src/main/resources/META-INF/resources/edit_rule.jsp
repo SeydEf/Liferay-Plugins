@@ -143,13 +143,15 @@
                                 />
                             </div>
                             <div class="col-md-1">
-                                <button
-                                        type="button"
-                                        class="btn btn-danger remove-condition"
-                                        data-index="<%= i %>"
-                                >
-                                    <span></span>
-                                </button>
+                                <div class="form-group">
+                                    <button
+                                            type="button"
+                                            class="btn btn-danger remove-condition btn-block"
+                                            data-index="<%= i %>"
+                                    >
+                                        <span><liferay-ui:icon icon="trash" alt="remove" markupView="lexicon" /></span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -183,7 +185,6 @@
         %>
     ];
 
-    // Create a function that generates custom field options HTML dynamically
     function getCustomFieldOptionsHTML() {
         var optionsHTML = '';
         for (var i = 0; i < customFieldsOptions.length; i++) {
@@ -193,7 +194,6 @@
         return optionsHTML;
     }
 
-    // Initialize the condition template with a function that will insert options when needed
     var conditionTemplate =
     '<div class="condition-row" data-index="{index}">' +
         '<div class="row">' +
@@ -222,10 +222,13 @@
                 '</div>' +
             '</div>' +
             '<div class="col-md-1">' +
-                '<label>&nbsp;</label>' +
-                '<button type="button" class="btn btn-danger remove-condition" data-index="{index}" style="margin-top: 24px;">' +
-                    '<span>✖️</span>' +
-                '</button>' +
+                '<div class="form-group">' +
+                    '<button type="button" class="btn btn-danger remove-condition btn-block" data-index="{index}">' +
+                        '<span>' +
+                            '<svg class="lexicon-icon lexicon-icon-trash" ><use xlink:href="<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg#trash"></use></svg>' +
+                        '</span>'
+                    '</button>' +
+                '</div>' +
             '</div>' +
         '</div>' +
     '</div>';
@@ -235,7 +238,6 @@
     AUI().ready(function () {
     var conditionsContainer = document.getElementById("conditionsContainer");
     var addConditionButton = document.querySelector(".add-condition");
-    // Try multiple ways to get the conditionCount input element
     var conditionCountInput =
         document.getElementById("<portlet:namespace/>conditionCount") ||
         document.querySelector(
@@ -243,9 +245,7 @@
         ) ||
         document.querySelector("input[name='conditionCount']");
 
-    // Log whether we found the element
     if (!conditionCountInput) {
-        // Create a backup input if needed
         var formElement = document.querySelector("form");
         if (formElement) {
             conditionCountInput = document.createElement("input");
@@ -265,11 +265,11 @@
 
     function addNewCondition() {
         var newConditionHtml = conditionTemplate.replace(/{index}/g, nextIndex);
-        // Insert custom field options
         newConditionHtml = newConditionHtml.replace(
             "{CustomFieldOptionsHTML}",
             getCustomFieldOptionsHTML()
         );
+
         var tempDiv = document.createElement("div");
         tempDiv.innerHTML = newConditionHtml;
 
@@ -278,32 +278,27 @@
         nextIndex++;
         updateConditionCount();
 
-        // Attach event listeners to the new remove button
         attachRemoveConditionEvent(
             newConditionNode.querySelector(".remove-condition")
         );
     }
 
-    // Add default condition for new rules (when there are no conditions and ruleId is 0)
     var isNewRule ='<%= ruleId == 0 %>';
     if (isNewRule && nextIndex === 0) {
         addNewCondition();
     }
 
-    // Handle add condition button
     if (addConditionButton) {
         addConditionButton.addEventListener("click", function () {
             addNewCondition()
         });
     }
 
-    // Attach event listeners to existing remove buttons
     var removeButtons = document.querySelectorAll(".remove-condition");
     for (var i = 0; i < removeButtons.length; i++) {
         attachRemoveConditionEvent(removeButtons[i]);
     }
 
-    // Function to handle remove condition button click
     function attachRemoveConditionEvent(button) {
         button.addEventListener("click", function () {
             var conditionRow = this.closest(".condition-row");
@@ -313,7 +308,6 @@
         });
     }
 
-    // Function to reindex conditions after removal
     function reindexConditions() {
         var conditionRows = document.querySelectorAll(".condition-row");
         nextIndex = conditionRows.length;
@@ -322,10 +316,8 @@
             var currentIndex = conditionRows[i].getAttribute("data-index");
             var newIndex = i;
 
-            // Update data-index attribute
             conditionRows[i].setAttribute("data-index", newIndex);
 
-            // Update name attributes
             var fieldSelect = conditionRows[i].querySelector(
                 'select[name$="field' + currentIndex + '"]'
             );
@@ -349,14 +341,11 @@
         }
     }
 
-    // Update the condition count hidden input
     function updateConditionCount() {
         var count = document.querySelectorAll(".condition-row").length;
-        // Check if conditionCountInput exists before accessing its value property
         if (conditionCountInput) {
             conditionCountInput.value = count;
         } else {
-            // Try to find it again
             conditionCountInput =
                 document.getElementById("<portlet:namespace/>conditionCount") ||
                 document.querySelector(
@@ -367,7 +356,6 @@
             if (conditionCountInput) {
                 conditionCountInput.value = count;
             } else {
-                // Create a new input if needed
                 var formElement = document.querySelector("form");
                 if (formElement) {
                     conditionCountInput = document.createElement("input");
@@ -381,21 +369,17 @@
         }
     }
 
-    // Form validation before submit
     if (form) {
         form.addEventListener("submit", function (event) {
-            // Update condition count before validation
             updateConditionCount();
 
             var conditionCount = 0;
 
-            // Safely get the condition count
             if (conditionCountInput && conditionCountInput.value) {
                 conditionCount = parseInt(conditionCountInput.value);
             } else {
                 conditionCount = document.querySelectorAll(".condition-row").length;
 
-                // Make sure we have an input for the form submission
                 var hiddenInput = document.querySelector(
                     "input[name='<portlet:namespace/>conditionCount']"
                 );
@@ -413,25 +397,21 @@
                 .getElementById("<portlet:namespace/>ruleName")
                 .value.trim();
 
-            // Validate rule name
             if (!ruleName) {
                 alert('<%= LanguageUtil.get(request, "please-enter-a-rule-name") %>');
                 event.preventDefault();
                 return false;
             }
 
-            // Validate at least one condition exists
             if (conditionCount === 0) {
                 alert('<%= LanguageUtil.get(request, "please-add-at-least-one-condition") %>');
                 event.preventDefault();
                 return false;
             }
 
-            // Validate all condition fields are filled
             var conditionRows = document.querySelectorAll(".condition-row");
             for (var i = 0; i < conditionRows.length; i++) {
                 var index = conditionRows[i].getAttribute("data-index");
-                // Try multiple selector approaches to find the fields
                 var fieldSelect =
                     document.querySelector(
                         'select[name="<portlet:namespace/>field' + index + '"]'
@@ -480,7 +460,6 @@
                 }
             }
 
-            // Final update just to be sure
             document.querySelector(
                 "input[name='<portlet:namespace/>conditionCount']"
             ).value = conditionCount;
