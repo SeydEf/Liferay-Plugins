@@ -43,18 +43,22 @@ import ir.seydef.plugin.formcounter.service.FormCounterRuleServiceUtil;
  */
 public class FormCounterRuleServiceHttp {
 
-	public static java.util.List
-		<ir.seydef.plugin.formcounter.model.FormCounterRule>
-			getFormCounterRules(
-				HttpPrincipal httpPrincipal, int start, int end) {
+	public static ir.seydef.plugin.formcounter.model.FormCounterRule
+			addFormCounterRule(
+				HttpPrincipal httpPrincipal, String ruleName,
+				String description, String ruleConditions, String logicOperator,
+				boolean active,
+				com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				FormCounterRuleServiceUtil.class, "getFormCounterRules",
-				_getFormCounterRulesParameterTypes0);
+				FormCounterRuleServiceUtil.class, "addFormCounterRule",
+				_addFormCounterRuleParameterTypes0);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, start, end);
+				methodKey, ruleName, description, ruleConditions, logicOperator,
+				active, serviceContext);
 
 			Object returnObj = null;
 
@@ -62,12 +66,19 @@ public class FormCounterRuleServiceHttp {
 				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
 			}
 			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
 				throw new com.liferay.portal.kernel.exception.SystemException(
 					exception);
 			}
 
-			return (java.util.List
-				<ir.seydef.plugin.formcounter.model.FormCounterRule>)returnObj;
+			return (ir.seydef.plugin.formcounter.model.FormCounterRule)
+				returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException
 					systemException) {
@@ -78,21 +89,18 @@ public class FormCounterRuleServiceHttp {
 		}
 	}
 
-	public static java.util.List
-		<ir.seydef.plugin.formcounter.model.FormCounterRule>
-			getFormCounterRules(
-				HttpPrincipal httpPrincipal, int start, int end,
-				com.liferay.portal.kernel.util.OrderByComparator
-					<ir.seydef.plugin.formcounter.model.FormCounterRule>
-						orderByComparator) {
+	public static ir.seydef.plugin.formcounter.model.FormCounterRule
+			deleteFormCounterRule(
+				HttpPrincipal httpPrincipal, long formCounterRuleId)
+		throws com.liferay.portal.kernel.exception.PortalException {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				FormCounterRuleServiceUtil.class, "getFormCounterRules",
-				_getFormCounterRulesParameterTypes1);
+				FormCounterRuleServiceUtil.class, "deleteFormCounterRule",
+				_deleteFormCounterRuleParameterTypes1);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, start, end, orderByComparator);
+				methodKey, formCounterRuleId);
 
 			Object returnObj = null;
 
@@ -100,12 +108,19 @@ public class FormCounterRuleServiceHttp {
 				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
 			}
 			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
 				throw new com.liferay.portal.kernel.exception.SystemException(
 					exception);
 			}
 
-			return (java.util.List
-				<ir.seydef.plugin.formcounter.model.FormCounterRule>)returnObj;
+			return (ir.seydef.plugin.formcounter.model.FormCounterRule)
+				returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException
 					systemException) {
@@ -160,13 +175,86 @@ public class FormCounterRuleServiceHttp {
 
 	public static java.util.List
 		<ir.seydef.plugin.formcounter.model.FormCounterRule>
+			getFormCounterRules(
+				HttpPrincipal httpPrincipal, int start, int end) {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				FormCounterRuleServiceUtil.class, "getFormCounterRules",
+				_getFormCounterRulesParameterTypes3);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, start, end);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return (java.util.List
+				<ir.seydef.plugin.formcounter.model.FormCounterRule>)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
+	public static java.util.List
+		<ir.seydef.plugin.formcounter.model.FormCounterRule>
+			getFormCounterRules(
+				HttpPrincipal httpPrincipal, int start, int end,
+				com.liferay.portal.kernel.util.OrderByComparator
+					<ir.seydef.plugin.formcounter.model.FormCounterRule>
+						orderByComparator) {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				FormCounterRuleServiceUtil.class, "getFormCounterRules",
+				_getFormCounterRulesParameterTypes4);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, start, end, orderByComparator);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return (java.util.List
+				<ir.seydef.plugin.formcounter.model.FormCounterRule>)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
+	public static java.util.List
+		<ir.seydef.plugin.formcounter.model.FormCounterRule>
 			getFormCounterRulesByActive(
 				HttpPrincipal httpPrincipal, boolean active) {
 
 		try {
 			MethodKey methodKey = new MethodKey(
 				FormCounterRuleServiceUtil.class, "getFormCounterRulesByActive",
-				_getFormCounterRulesByActiveParameterTypes3);
+				_getFormCounterRulesByActiveParameterTypes5);
 
 			MethodHandler methodHandler = new MethodHandler(methodKey, active);
 
@@ -192,22 +280,13 @@ public class FormCounterRuleServiceHttp {
 		}
 	}
 
-	public static ir.seydef.plugin.formcounter.model.FormCounterRule
-			addFormCounterRule(
-				HttpPrincipal httpPrincipal, String ruleName,
-				String description, String ruleConditions, String logicOperator,
-				boolean active,
-				com.liferay.portal.kernel.service.ServiceContext serviceContext)
-		throws com.liferay.portal.kernel.exception.PortalException {
-
+	public static int getFormCounterRulesCount(HttpPrincipal httpPrincipal) {
 		try {
 			MethodKey methodKey = new MethodKey(
-				FormCounterRuleServiceUtil.class, "addFormCounterRule",
-				_addFormCounterRuleParameterTypes4);
+				FormCounterRuleServiceUtil.class, "getFormCounterRulesCount",
+				_getFormCounterRulesCountParameterTypes6);
 
-			MethodHandler methodHandler = new MethodHandler(
-				methodKey, ruleName, description, ruleConditions, logicOperator,
-				active, serviceContext);
+			MethodHandler methodHandler = new MethodHandler(methodKey);
 
 			Object returnObj = null;
 
@@ -215,19 +294,11 @@ public class FormCounterRuleServiceHttp {
 				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
 			}
 			catch (Exception exception) {
-				if (exception instanceof
-						com.liferay.portal.kernel.exception.PortalException) {
-
-					throw (com.liferay.portal.kernel.exception.PortalException)
-						exception;
-				}
-
 				throw new com.liferay.portal.kernel.exception.SystemException(
 					exception);
 			}
 
-			return (ir.seydef.plugin.formcounter.model.FormCounterRule)
-				returnObj;
+			return ((Integer)returnObj).intValue();
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException
 					systemException) {
@@ -249,7 +320,7 @@ public class FormCounterRuleServiceHttp {
 		try {
 			MethodKey methodKey = new MethodKey(
 				FormCounterRuleServiceUtil.class, "updateFormCounterRule",
-				_updateFormCounterRuleParameterTypes5);
+				_updateFormCounterRuleParameterTypes7);
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, formCounterRuleId, ruleName, description,
@@ -284,108 +355,37 @@ public class FormCounterRuleServiceHttp {
 		}
 	}
 
-	public static ir.seydef.plugin.formcounter.model.FormCounterRule
-			deleteFormCounterRule(
-				HttpPrincipal httpPrincipal, long formCounterRuleId)
-		throws com.liferay.portal.kernel.exception.PortalException {
-
-		try {
-			MethodKey methodKey = new MethodKey(
-				FormCounterRuleServiceUtil.class, "deleteFormCounterRule",
-				_deleteFormCounterRuleParameterTypes6);
-
-			MethodHandler methodHandler = new MethodHandler(
-				methodKey, formCounterRuleId);
-
-			Object returnObj = null;
-
-			try {
-				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
-			}
-			catch (Exception exception) {
-				if (exception instanceof
-						com.liferay.portal.kernel.exception.PortalException) {
-
-					throw (com.liferay.portal.kernel.exception.PortalException)
-						exception;
-				}
-
-				throw new com.liferay.portal.kernel.exception.SystemException(
-					exception);
-			}
-
-			return (ir.seydef.plugin.formcounter.model.FormCounterRule)
-				returnObj;
-		}
-		catch (com.liferay.portal.kernel.exception.SystemException
-					systemException) {
-
-			_log.error(systemException, systemException);
-
-			throw systemException;
-		}
-	}
-
-	public static int getFormCounterRulesCount(HttpPrincipal httpPrincipal) {
-		try {
-			MethodKey methodKey = new MethodKey(
-				FormCounterRuleServiceUtil.class, "getFormCounterRulesCount",
-				_getFormCounterRulesCountParameterTypes7);
-
-			MethodHandler methodHandler = new MethodHandler(methodKey);
-
-			Object returnObj = null;
-
-			try {
-				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
-			}
-			catch (Exception exception) {
-				throw new com.liferay.portal.kernel.exception.SystemException(
-					exception);
-			}
-
-			return ((Integer)returnObj).intValue();
-		}
-		catch (com.liferay.portal.kernel.exception.SystemException
-					systemException) {
-
-			_log.error(systemException, systemException);
-
-			throw systemException;
-		}
-	}
-
 	private static Log _log = LogFactoryUtil.getLog(
 		FormCounterRuleServiceHttp.class);
 
-	private static final Class<?>[] _getFormCounterRulesParameterTypes0 =
-		new Class[] {int.class, int.class};
-	private static final Class<?>[] _getFormCounterRulesParameterTypes1 =
-		new Class[] {
-			int.class, int.class,
-			com.liferay.portal.kernel.util.OrderByComparator.class
-		};
-	private static final Class<?>[] _getFormCounterRuleParameterTypes2 =
-		new Class[] {long.class};
-	private static final Class<?>[]
-		_getFormCounterRulesByActiveParameterTypes3 = new Class[] {
-			boolean.class
-		};
-	private static final Class<?>[] _addFormCounterRuleParameterTypes4 =
+	private static final Class<?>[] _addFormCounterRuleParameterTypes0 =
 		new Class[] {
 			String.class, String.class, String.class, String.class,
 			boolean.class,
 			com.liferay.portal.kernel.service.ServiceContext.class
 		};
-	private static final Class<?>[] _updateFormCounterRuleParameterTypes5 =
+	private static final Class<?>[] _deleteFormCounterRuleParameterTypes1 =
+		new Class[] {long.class};
+	private static final Class<?>[] _getFormCounterRuleParameterTypes2 =
+		new Class[] {long.class};
+	private static final Class<?>[] _getFormCounterRulesParameterTypes3 =
+		new Class[] {int.class, int.class};
+	private static final Class<?>[] _getFormCounterRulesParameterTypes4 =
+		new Class[] {
+			int.class, int.class,
+			com.liferay.portal.kernel.util.OrderByComparator.class
+		};
+	private static final Class<?>[]
+		_getFormCounterRulesByActiveParameterTypes5 = new Class[] {
+			boolean.class
+		};
+	private static final Class<?>[] _getFormCounterRulesCountParameterTypes6 =
+		new Class[] {};
+	private static final Class<?>[] _updateFormCounterRuleParameterTypes7 =
 		new Class[] {
 			long.class, String.class, String.class, String.class, String.class,
 			boolean.class,
 			com.liferay.portal.kernel.service.ServiceContext.class
 		};
-	private static final Class<?>[] _deleteFormCounterRuleParameterTypes6 =
-		new Class[] {long.class};
-	private static final Class<?>[] _getFormCounterRulesCountParameterTypes7 =
-		new Class[] {};
 
 }

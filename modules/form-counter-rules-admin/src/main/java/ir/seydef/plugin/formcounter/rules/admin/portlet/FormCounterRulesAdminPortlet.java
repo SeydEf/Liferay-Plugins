@@ -113,7 +113,6 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
 
         try {
             _formCounterRuleLocalService.addFormCounterRule(
-                    0,
                     ruleName,
                     description,
                     ruleModel.toJSONString(),

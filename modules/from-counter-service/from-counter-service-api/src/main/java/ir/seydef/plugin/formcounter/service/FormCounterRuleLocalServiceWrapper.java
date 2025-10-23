@@ -44,30 +44,17 @@ public class FormCounterRuleLocalServiceWrapper
 		return _formCounterRuleLocalService.addFormCounterRule(formCounterRule);
 	}
 
-	/**
-	 * Add a new form counter rule
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @param ruleName the rule name
-	 * @param description the rule description
-	 * @param ruleConditions JSON string representing the rule conditions
-	 * @param logicOperator the logic operator (AND, OR)
-	 * @param active whether the rule is active
-	 * @param serviceContext the service context
-	 * @return the new form counter rule
-	 * @throws PortalException
-	 */
 	@Override
 	public ir.seydef.plugin.formcounter.model.FormCounterRule
 			addFormCounterRule(
-				long formCounterRuleId, String ruleName, String description,
-				String ruleConditions, String logicOperator, boolean active,
+				String ruleName, String description, String ruleConditions,
+				String logicOperator, boolean active,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _formCounterRuleLocalService.addFormCounterRule(
-			formCounterRuleId, ruleName, description, ruleConditions,
-			logicOperator, active, serviceContext);
+			ruleName, description, ruleConditions, logicOperator, active,
+			serviceContext);
 	}
 
 	/**
@@ -246,12 +233,6 @@ public class FormCounterRuleLocalServiceWrapper
 			formCounterRuleId);
 	}
 
-	/**
-	 * Find form counter rules by active status
-	 *
-	 * @param active whether rules are active
-	 * @return list of matching rules
-	 */
 	@Override
 	public java.util.List<ir.seydef.plugin.formcounter.model.FormCounterRule>
 		findByActive(boolean active) {
@@ -359,19 +340,6 @@ public class FormCounterRuleLocalServiceWrapper
 			formCounterRule);
 	}
 
-	/**
-	 * Update an existing form counter rule
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @param ruleName the rule name
-	 * @param description the rule description
-	 * @param ruleConditions JSON string representing the rule conditions
-	 * @param logicOperator the logic operator (AND, OR)
-	 * @param active whether the rule is active
-	 * @param serviceContext the service context
-	 * @return the updated form counter rule
-	 * @throws PortalException
-	 */
 	@Override
 	public ir.seydef.plugin.formcounter.model.FormCounterRule
 			updateFormCounterRule(

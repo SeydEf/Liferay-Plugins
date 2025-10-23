@@ -55,127 +55,6 @@ import java.rmi.RemoteException;
 @Deprecated
 public class FormCounterRuleServiceSoap {
 
-	/**
-	 * Get all FormCounterRule entities
-	 *
-	 * @param start the start index
-	 * @param end the end index
-	 * @return list of FormCounterRule entities
-	 */
-	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap[]
-			getFormCounterRules(int start, int end)
-		throws RemoteException {
-
-		try {
-			java.util.List<ir.seydef.plugin.formcounter.model.FormCounterRule>
-				returnValue = FormCounterRuleServiceUtil.getFormCounterRules(
-					start, end);
-
-			return ir.seydef.plugin.formcounter.model.FormCounterRuleSoap.
-				toSoapModels(returnValue);
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	/**
-	 * Get all FormCounterRule entities with ordering
-	 *
-	 * @param start the start index
-	 * @param end the end index
-	 * @param orderByComparator the order by comparator
-	 * @return list of FormCounterRule entities
-	 */
-	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap[]
-			getFormCounterRules(
-				int start, int end,
-				com.liferay.portal.kernel.util.OrderByComparator
-					<ir.seydef.plugin.formcounter.model.FormCounterRule>
-						orderByComparator)
-		throws RemoteException {
-
-		try {
-			java.util.List<ir.seydef.plugin.formcounter.model.FormCounterRule>
-				returnValue = FormCounterRuleServiceUtil.getFormCounterRules(
-					start, end, orderByComparator);
-
-			return ir.seydef.plugin.formcounter.model.FormCounterRuleSoap.
-				toSoapModels(returnValue);
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	/**
-	 * Get FormCounterRule by primary key
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @return FormCounterRule entity
-	 * @throws PortalException
-	 */
-	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap
-			getFormCounterRule(long formCounterRuleId)
-		throws RemoteException {
-
-		try {
-			ir.seydef.plugin.formcounter.model.FormCounterRule returnValue =
-				FormCounterRuleServiceUtil.getFormCounterRule(
-					formCounterRuleId);
-
-			return ir.seydef.plugin.formcounter.model.FormCounterRuleSoap.
-				toSoapModel(returnValue);
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	/**
-	 * Get FormCounterRules by active status
-	 *
-	 * @param active the active status
-	 * @return list of active/inactive FormCounterRule entities
-	 */
-	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap[]
-			getFormCounterRulesByActive(boolean active)
-		throws RemoteException {
-
-		try {
-			java.util.List<ir.seydef.plugin.formcounter.model.FormCounterRule>
-				returnValue =
-					FormCounterRuleServiceUtil.getFormCounterRulesByActive(
-						active);
-
-			return ir.seydef.plugin.formcounter.model.FormCounterRuleSoap.
-				toSoapModels(returnValue);
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	/**
-	 * Add a new FormCounterRule
-	 *
-	 * @param ruleName the rule name
-	 * @param description the rule description
-	 * @param ruleConditions the rule conditions as JSON string
-	 * @param logicOperator the logic operator (AND/OR)
-	 * @param active whether the rule is active
-	 * @param serviceContext the service context
-	 * @return the new FormCounterRule
-	 * @throws PortalException
-	 */
 	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap
 			addFormCounterRule(
 				String ruleName, String description, String ruleConditions,
@@ -199,49 +78,6 @@ public class FormCounterRuleServiceSoap {
 		}
 	}
 
-	/**
-	 * Update an existing FormCounterRule
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @param ruleName the rule name
-	 * @param description the rule description
-	 * @param ruleConditions the rule conditions as JSON string
-	 * @param logicOperator the logic operator (AND/OR)
-	 * @param active whether the rule is active
-	 * @param serviceContext the service context
-	 * @return the updated FormCounterRule
-	 * @throws PortalException
-	 */
-	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap
-			updateFormCounterRule(
-				long formCounterRuleId, String ruleName, String description,
-				String ruleConditions, String logicOperator, boolean active,
-				com.liferay.portal.kernel.service.ServiceContext serviceContext)
-		throws RemoteException {
-
-		try {
-			ir.seydef.plugin.formcounter.model.FormCounterRule returnValue =
-				FormCounterRuleServiceUtil.updateFormCounterRule(
-					formCounterRuleId, ruleName, description, ruleConditions,
-					logicOperator, active, serviceContext);
-
-			return ir.seydef.plugin.formcounter.model.FormCounterRuleSoap.
-				toSoapModel(returnValue);
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	/**
-	 * Delete a FormCounterRule
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @return the deleted FormCounterRule
-	 * @throws PortalException
-	 */
 	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap
 			deleteFormCounterRule(long formCounterRuleId)
 		throws RemoteException {
@@ -261,17 +97,116 @@ public class FormCounterRuleServiceSoap {
 		}
 	}
 
-	/**
-	 * Count all FormCounterRules
-	 *
-	 * @return the count of all FormCounterRules
-	 */
+	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap
+			getFormCounterRule(long formCounterRuleId)
+		throws RemoteException {
+
+		try {
+			ir.seydef.plugin.formcounter.model.FormCounterRule returnValue =
+				FormCounterRuleServiceUtil.getFormCounterRule(
+					formCounterRuleId);
+
+			return ir.seydef.plugin.formcounter.model.FormCounterRuleSoap.
+				toSoapModel(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap[]
+			getFormCounterRules(int start, int end)
+		throws RemoteException {
+
+		try {
+			java.util.List<ir.seydef.plugin.formcounter.model.FormCounterRule>
+				returnValue = FormCounterRuleServiceUtil.getFormCounterRules(
+					start, end);
+
+			return ir.seydef.plugin.formcounter.model.FormCounterRuleSoap.
+				toSoapModels(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap[]
+			getFormCounterRules(
+				int start, int end,
+				com.liferay.portal.kernel.util.OrderByComparator
+					<ir.seydef.plugin.formcounter.model.FormCounterRule>
+						orderByComparator)
+		throws RemoteException {
+
+		try {
+			java.util.List<ir.seydef.plugin.formcounter.model.FormCounterRule>
+				returnValue = FormCounterRuleServiceUtil.getFormCounterRules(
+					start, end, orderByComparator);
+
+			return ir.seydef.plugin.formcounter.model.FormCounterRuleSoap.
+				toSoapModels(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap[]
+			getFormCounterRulesByActive(boolean active)
+		throws RemoteException {
+
+		try {
+			java.util.List<ir.seydef.plugin.formcounter.model.FormCounterRule>
+				returnValue =
+					FormCounterRuleServiceUtil.getFormCounterRulesByActive(
+						active);
+
+			return ir.seydef.plugin.formcounter.model.FormCounterRuleSoap.
+				toSoapModels(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
 	public static int getFormCounterRulesCount() throws RemoteException {
 		try {
 			int returnValue =
 				FormCounterRuleServiceUtil.getFormCounterRulesCount();
 
 			return returnValue;
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap
+			updateFormCounterRule(
+				long formCounterRuleId, String ruleName, String description,
+				String ruleConditions, String logicOperator, boolean active,
+				com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws RemoteException {
+
+		try {
+			ir.seydef.plugin.formcounter.model.FormCounterRule returnValue =
+				FormCounterRuleServiceUtil.updateFormCounterRule(
+					formCounterRuleId, ruleName, description, ruleConditions,
+					logicOperator, active, serviceContext);
+
+			return ir.seydef.plugin.formcounter.model.FormCounterRuleSoap.
+				toSoapModel(returnValue);
 		}
 		catch (Exception exception) {
 			_log.error(exception, exception);

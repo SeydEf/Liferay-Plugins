@@ -31,19 +31,6 @@ public class FormCounterRuleServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>ir.seydef.plugin.formcounter.service.impl.FormCounterRuleServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
-
-	/**
-	 * Add a new FormCounterRule
-	 *
-	 * @param ruleName the rule name
-	 * @param description the rule description
-	 * @param ruleConditions the rule conditions as JSON string
-	 * @param logicOperator the logic operator (AND/OR)
-	 * @param active whether the rule is active
-	 * @param serviceContext the service context
-	 * @return the new FormCounterRule
-	 * @throws PortalException
-	 */
 	public static FormCounterRule addFormCounterRule(
 			String ruleName, String description, String ruleConditions,
 			String logicOperator, boolean active,
@@ -55,53 +42,24 @@ public class FormCounterRuleServiceUtil {
 			serviceContext);
 	}
 
-	/**
-	 * Delete a FormCounterRule
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @return the deleted FormCounterRule
-	 * @throws PortalException
-	 */
 	public static FormCounterRule deleteFormCounterRule(long formCounterRuleId)
 		throws PortalException {
 
 		return getService().deleteFormCounterRule(formCounterRuleId);
 	}
 
-	/**
-	 * Get FormCounterRule by primary key
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @return FormCounterRule entity
-	 * @throws PortalException
-	 */
 	public static FormCounterRule getFormCounterRule(long formCounterRuleId)
 		throws PortalException {
 
 		return getService().getFormCounterRule(formCounterRuleId);
 	}
 
-	/**
-	 * Get all FormCounterRule entities
-	 *
-	 * @param start the start index
-	 * @param end the end index
-	 * @return list of FormCounterRule entities
-	 */
 	public static List<FormCounterRule> getFormCounterRules(
 		int start, int end) {
 
 		return getService().getFormCounterRules(start, end);
 	}
 
-	/**
-	 * Get all FormCounterRule entities with ordering
-	 *
-	 * @param start the start index
-	 * @param end the end index
-	 * @param orderByComparator the order by comparator
-	 * @return list of FormCounterRule entities
-	 */
 	public static List<FormCounterRule> getFormCounterRules(
 		int start, int end,
 		OrderByComparator<FormCounterRule> orderByComparator) {
@@ -109,23 +67,12 @@ public class FormCounterRuleServiceUtil {
 		return getService().getFormCounterRules(start, end, orderByComparator);
 	}
 
-	/**
-	 * Get FormCounterRules by active status
-	 *
-	 * @param active the active status
-	 * @return list of active/inactive FormCounterRule entities
-	 */
 	public static List<FormCounterRule> getFormCounterRulesByActive(
 		boolean active) {
 
 		return getService().getFormCounterRulesByActive(active);
 	}
 
-	/**
-	 * Count all FormCounterRules
-	 *
-	 * @return the count of all FormCounterRules
-	 */
 	public static int getFormCounterRulesCount() {
 		return getService().getFormCounterRulesCount();
 	}
@@ -139,19 +86,6 @@ public class FormCounterRuleServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	/**
-	 * Update an existing FormCounterRule
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @param ruleName the rule name
-	 * @param description the rule description
-	 * @param ruleConditions the rule conditions as JSON string
-	 * @param logicOperator the logic operator (AND/OR)
-	 * @param active whether the rule is active
-	 * @param serviceContext the service context
-	 * @return the updated FormCounterRule
-	 * @throws PortalException
-	 */
 	public static FormCounterRule updateFormCounterRule(
 			long formCounterRuleId, String ruleName, String description,
 			String ruleConditions, String logicOperator, boolean active,

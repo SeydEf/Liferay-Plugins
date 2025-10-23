@@ -52,28 +52,15 @@ public class FormCounterRuleLocalServiceUtil {
 		return getService().addFormCounterRule(formCounterRule);
 	}
 
-	/**
-	 * Add a new form counter rule
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @param ruleName the rule name
-	 * @param description the rule description
-	 * @param ruleConditions JSON string representing the rule conditions
-	 * @param logicOperator the logic operator (AND, OR)
-	 * @param active whether the rule is active
-	 * @param serviceContext the service context
-	 * @return the new form counter rule
-	 * @throws PortalException
-	 */
 	public static FormCounterRule addFormCounterRule(
-			long formCounterRuleId, String ruleName, String description,
-			String ruleConditions, String logicOperator, boolean active,
+			String ruleName, String description, String ruleConditions,
+			String logicOperator, boolean active,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
 
 		return getService().addFormCounterRule(
-			formCounterRuleId, ruleName, description, ruleConditions,
-			logicOperator, active, serviceContext);
+			ruleName, description, ruleConditions, logicOperator, active,
+			serviceContext);
 	}
 
 	/**
@@ -222,12 +209,6 @@ public class FormCounterRuleLocalServiceUtil {
 		return getService().fetchFormCounterRule(formCounterRuleId);
 	}
 
-	/**
-	 * Find form counter rules by active status
-	 *
-	 * @param active whether rules are active
-	 * @return list of matching rules
-	 */
 	public static List<FormCounterRule> findByActive(boolean active) {
 		return getService().findByActive(active);
 	}
@@ -318,19 +299,6 @@ public class FormCounterRuleLocalServiceUtil {
 		return getService().updateFormCounterRule(formCounterRule);
 	}
 
-	/**
-	 * Update an existing form counter rule
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @param ruleName the rule name
-	 * @param description the rule description
-	 * @param ruleConditions JSON string representing the rule conditions
-	 * @param logicOperator the logic operator (AND, OR)
-	 * @param active whether the rule is active
-	 * @param serviceContext the service context
-	 * @return the updated form counter rule
-	 * @throws PortalException
-	 */
 	public static FormCounterRule updateFormCounterRule(
 			long formCounterRuleId, String ruleName, String description,
 			String ruleConditions, String logicOperator, boolean active,

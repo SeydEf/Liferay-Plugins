@@ -45,82 +45,29 @@ public interface FormCounterRuleService extends BaseService {
 	 *
 	 * Never modify this interface directly. Add custom service methods to <code>ir.seydef.plugin.formcounter.service.impl.FormCounterRuleServiceImpl</code> and rerun ServiceBuilder to automatically copy the method declarations to this interface. Consume the form counter rule remote service via injection or a <code>org.osgi.util.tracker.ServiceTracker</code>. Use {@link FormCounterRuleServiceUtil} if injection and service tracking are not available.
 	 */
-
-	/**
-	 * Add a new FormCounterRule
-	 *
-	 * @param ruleName the rule name
-	 * @param description the rule description
-	 * @param ruleConditions the rule conditions as JSON string
-	 * @param logicOperator the logic operator (AND/OR)
-	 * @param active whether the rule is active
-	 * @param serviceContext the service context
-	 * @return the new FormCounterRule
-	 * @throws PortalException
-	 */
 	public FormCounterRule addFormCounterRule(
 			String ruleName, String description, String ruleConditions,
 			String logicOperator, boolean active, ServiceContext serviceContext)
 		throws PortalException;
 
-	/**
-	 * Delete a FormCounterRule
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @return the deleted FormCounterRule
-	 * @throws PortalException
-	 */
 	public FormCounterRule deleteFormCounterRule(long formCounterRuleId)
 		throws PortalException;
 
-	/**
-	 * Get FormCounterRule by primary key
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @return FormCounterRule entity
-	 * @throws PortalException
-	 */
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public FormCounterRule getFormCounterRule(long formCounterRuleId)
 		throws PortalException;
 
-	/**
-	 * Get all FormCounterRule entities
-	 *
-	 * @param start the start index
-	 * @param end the end index
-	 * @return list of FormCounterRule entities
-	 */
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<FormCounterRule> getFormCounterRules(int start, int end);
 
-	/**
-	 * Get all FormCounterRule entities with ordering
-	 *
-	 * @param start the start index
-	 * @param end the end index
-	 * @param orderByComparator the order by comparator
-	 * @return list of FormCounterRule entities
-	 */
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<FormCounterRule> getFormCounterRules(
 		int start, int end,
 		OrderByComparator<FormCounterRule> orderByComparator);
 
-	/**
-	 * Get FormCounterRules by active status
-	 *
-	 * @param active the active status
-	 * @return list of active/inactive FormCounterRule entities
-	 */
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<FormCounterRule> getFormCounterRulesByActive(boolean active);
 
-	/**
-	 * Count all FormCounterRules
-	 *
-	 * @return the count of all FormCounterRules
-	 */
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getFormCounterRulesCount();
 
@@ -131,19 +78,6 @@ public interface FormCounterRuleService extends BaseService {
 	 */
 	public String getOSGiServiceIdentifier();
 
-	/**
-	 * Update an existing FormCounterRule
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @param ruleName the rule name
-	 * @param description the rule description
-	 * @param ruleConditions the rule conditions as JSON string
-	 * @param logicOperator the logic operator (AND/OR)
-	 * @param active whether the rule is active
-	 * @param serviceContext the service context
-	 * @return the updated FormCounterRule
-	 * @throws PortalException
-	 */
 	public FormCounterRule updateFormCounterRule(
 			long formCounterRuleId, String ruleName, String description,
 			String ruleConditions, String logicOperator, boolean active,

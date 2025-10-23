@@ -67,23 +67,9 @@ public interface FormCounterRuleLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public FormCounterRule addFormCounterRule(FormCounterRule formCounterRule);
 
-	/**
-	 * Add a new form counter rule
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @param ruleName the rule name
-	 * @param description the rule description
-	 * @param ruleConditions JSON string representing the rule conditions
-	 * @param logicOperator the logic operator (AND, OR)
-	 * @param active whether the rule is active
-	 * @param serviceContext the service context
-	 * @return the new form counter rule
-	 * @throws PortalException
-	 */
 	public FormCounterRule addFormCounterRule(
-			long formCounterRuleId, String ruleName, String description,
-			String ruleConditions, String logicOperator, boolean active,
-			ServiceContext serviceContext)
+			String ruleName, String description, String ruleConditions,
+			String logicOperator, boolean active, ServiceContext serviceContext)
 		throws PortalException;
 
 	/**
@@ -206,12 +192,6 @@ public interface FormCounterRuleLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public FormCounterRule fetchFormCounterRule(long formCounterRuleId);
 
-	/**
-	 * Find form counter rules by active status
-	 *
-	 * @param active whether rules are active
-	 * @return list of matching rules
-	 */
 	public List<FormCounterRule> findByActive(boolean active);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -282,19 +262,6 @@ public interface FormCounterRuleLocalService
 	public FormCounterRule updateFormCounterRule(
 		FormCounterRule formCounterRule);
 
-	/**
-	 * Update an existing form counter rule
-	 *
-	 * @param formCounterRuleId the primary key
-	 * @param ruleName the rule name
-	 * @param description the rule description
-	 * @param ruleConditions JSON string representing the rule conditions
-	 * @param logicOperator the logic operator (AND, OR)
-	 * @param active whether the rule is active
-	 * @param serviceContext the service context
-	 * @return the updated form counter rule
-	 * @throws PortalException
-	 */
 	public FormCounterRule updateFormCounterRule(
 			long formCounterRuleId, String ruleName, String description,
 			String ruleConditions, String logicOperator, boolean active,
