@@ -46,49 +46,9 @@ public class ExpandoFieldUtil {
                 customFields.add(fieldInfo);
             }
         } catch (Exception e) {
-            _log.error("Error fetching custom fields", e);
+            _log.error("Error fetching custom fields. Maybe no custom fields exist yet.");
         }
 
         return customFields;
-    }
-
-    public static String getUserCustomFieldValue(long companyId, long userId, String fieldName) {
-        try {
-            ExpandoValue expandoValue = ExpandoValueLocalServiceUtil.getValue(
-                    companyId,
-                    User.class.getName(),
-                    ExpandoTableConstants.DEFAULT_TABLE_NAME,
-                    fieldName,
-                    userId);
-
-            if (expandoValue != null) {
-                return expandoValue.getString();
-            }
-        } catch (PortalException e) {
-            _log.error("Error getting custom field value: " + fieldName + " for user: " + userId, e);
-        }
-
-        return null;
-    }
-
-    public static boolean checkCondition(String value, String operator, String reference) {
-        if (Validator.isNull(value)) {
-            value = "";
-        }
-
-        if (Validator.isNull(reference)) {
-            reference = "";
-        }
-
-        switch (operator) {
-            case "contains":
-                return value.contains(reference);
-            case "equal":
-                return value.equals(reference);
-            case "not-equal":
-                return !value.equals(reference);
-            default:
-                return false;
-        }
     }
 }

@@ -23,9 +23,10 @@
         ruleName = formCounterRule.getRuleName();
         description = formCounterRule.getDescription();
         active = formCounterRule.getActive();
-        logicOperator = formCounterRule.getLogicOperator();
+        logicOperator = FormCounterRulesAdminPortletKeys.LOGIC_AND;
 
         if (ruleModel != null) {
+            logicOperator = ruleModel.getLogicOperator();
             conditions = ruleModel.getConditions();
         }
     }

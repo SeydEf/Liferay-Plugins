@@ -7,6 +7,7 @@ import java.util.Map;
 
 /**
  * @author S.Abolfazl Eftekhari
+ * @generated
  */
 public class FormCounterRuleTable {
 
@@ -43,5 +44,13 @@ public class FormCounterRuleTable {
 		"create table FormCounterRule (formCounterRuleId LONG not null primary key,ruleName VARCHAR(75) null,description VARCHAR(75) null,ruleConditions VARCHAR(75) null,logicOperator VARCHAR(75) null,active BOOLEAN,companyId LONG,groupId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table FormCounterRule";
+
+	public static final String[] TABLE_SQL_ADD_INDEXES = {
+			"create index IX_610391EF on FormCounterRule (active_);" +
+			"create index IX_1E1F4C80 on FormSubmissionStatus (companyId);" +
+			"create index IX_837B541 on FormSubmissionStatus (formInstanceRecordId);" +
+			"create index IX_2D729131 on FormSubmissionStatus (groupId, seen);" +
+			"create index IX_756C4857 on FormSubmissionStatus (seen);"
+	};
 
 }
