@@ -116,7 +116,6 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
                     ruleName,
                     description,
                     ruleModel.toJSONString(),
-                    logicOperator,
                     active,
                     serviceContext);
 
@@ -175,7 +174,6 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
             rule.setRuleName(ruleName);
             rule.setDescription(description);
             rule.setRuleConditions(ruleModel.toJSONString());
-            rule.setLogicOperator(logicOperator);
             rule.setActive(active);
             rule.setModifiedDate(new Date());
 
