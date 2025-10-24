@@ -33,13 +33,12 @@ public class FormCounterRuleServiceUtil {
 	 */
 	public static FormCounterRule addFormCounterRule(
 			String ruleName, String description, String ruleConditions,
-			String logicOperator, boolean active,
+			boolean active,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
 
 		return getService().addFormCounterRule(
-			ruleName, description, ruleConditions, logicOperator, active,
-			serviceContext);
+			ruleName, description, ruleConditions, active, serviceContext);
 	}
 
 	public static FormCounterRule deleteFormCounterRule(long formCounterRuleId)
@@ -88,13 +87,13 @@ public class FormCounterRuleServiceUtil {
 
 	public static FormCounterRule updateFormCounterRule(
 			long formCounterRuleId, String ruleName, String description,
-			String ruleConditions, String logicOperator, boolean active,
+			String ruleConditions, boolean active,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
 
 		return getService().updateFormCounterRule(
-			formCounterRuleId, ruleName, description, ruleConditions,
-			logicOperator, active, serviceContext);
+			formCounterRuleId, ruleName, description, ruleConditions, active,
+			serviceContext);
 	}
 
 	public static FormCounterRuleService getService() {

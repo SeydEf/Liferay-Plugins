@@ -68,10 +68,10 @@ public class FormCounterRuleModelImpl
 	public static final Object[][] TABLE_COLUMNS = {
 		{"formCounterRuleId", Types.BIGINT}, {"ruleName", Types.VARCHAR},
 		{"description", Types.VARCHAR}, {"ruleConditions", Types.VARCHAR},
-		{"logicOperator", Types.VARCHAR}, {"active_", Types.BOOLEAN},
-		{"companyId", Types.BIGINT}, {"groupId", Types.BIGINT},
-		{"userId", Types.BIGINT}, {"userName", Types.VARCHAR},
-		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP}
+		{"active_", Types.BOOLEAN}, {"companyId", Types.BIGINT},
+		{"groupId", Types.BIGINT}, {"userId", Types.BIGINT},
+		{"userName", Types.VARCHAR}, {"createDate", Types.TIMESTAMP},
+		{"modifiedDate", Types.TIMESTAMP}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -82,7 +82,6 @@ public class FormCounterRuleModelImpl
 		TABLE_COLUMNS_MAP.put("ruleName", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("ruleConditions", Types.VARCHAR);
-		TABLE_COLUMNS_MAP.put("logicOperator", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("active_", Types.BOOLEAN);
 		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("groupId", Types.BIGINT);
@@ -93,7 +92,7 @@ public class FormCounterRuleModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table FormCounterRule (formCounterRuleId LONG not null primary key,ruleName VARCHAR(75) null,description VARCHAR(75) null,ruleConditions VARCHAR(75) null,logicOperator VARCHAR(75) null,active_ BOOLEAN,companyId LONG,groupId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null)";
+		"create table FormCounterRule (formCounterRuleId LONG not null primary key,ruleName VARCHAR(75) null,description VARCHAR(75) null,ruleConditions VARCHAR(75) null,active_ BOOLEAN,companyId LONG,groupId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table FormCounterRule";
 
@@ -155,7 +154,6 @@ public class FormCounterRuleModelImpl
 		model.setRuleName(soapModel.getRuleName());
 		model.setDescription(soapModel.getDescription());
 		model.setRuleConditions(soapModel.getRuleConditions());
-		model.setLogicOperator(soapModel.getLogicOperator());
 		model.setActive(soapModel.isActive());
 		model.setCompanyId(soapModel.getCompanyId());
 		model.setGroupId(soapModel.getGroupId());
@@ -292,8 +290,6 @@ public class FormCounterRuleModelImpl
 			"description", FormCounterRule::getDescription);
 		attributeGetterFunctions.put(
 			"ruleConditions", FormCounterRule::getRuleConditions);
-		attributeGetterFunctions.put(
-			"logicOperator", FormCounterRule::getLogicOperator);
 		attributeGetterFunctions.put("active", FormCounterRule::getActive);
 		attributeGetterFunctions.put(
 			"companyId", FormCounterRule::getCompanyId);
@@ -331,10 +327,6 @@ public class FormCounterRuleModelImpl
 			"ruleConditions",
 			(BiConsumer<FormCounterRule, String>)
 				FormCounterRule::setRuleConditions);
-		attributeSetterBiConsumers.put(
-			"logicOperator",
-			(BiConsumer<FormCounterRule, String>)
-				FormCounterRule::setLogicOperator);
 		attributeSetterBiConsumers.put(
 			"active",
 			(BiConsumer<FormCounterRule, Boolean>)FormCounterRule::setActive);
@@ -435,26 +427,6 @@ public class FormCounterRuleModelImpl
 		}
 
 		_ruleConditions = ruleConditions;
-	}
-
-	@JSON
-	@Override
-	public String getLogicOperator() {
-		if (_logicOperator == null) {
-			return "";
-		}
-		else {
-			return _logicOperator;
-		}
-	}
-
-	@Override
-	public void setLogicOperator(String logicOperator) {
-		if (_columnOriginalValues == Collections.EMPTY_MAP) {
-			_setColumnOriginalValues();
-		}
-
-		_logicOperator = logicOperator;
 	}
 
 	@JSON
@@ -665,7 +637,6 @@ public class FormCounterRuleModelImpl
 		formCounterRuleImpl.setRuleName(getRuleName());
 		formCounterRuleImpl.setDescription(getDescription());
 		formCounterRuleImpl.setRuleConditions(getRuleConditions());
-		formCounterRuleImpl.setLogicOperator(getLogicOperator());
 		formCounterRuleImpl.setActive(isActive());
 		formCounterRuleImpl.setCompanyId(getCompanyId());
 		formCounterRuleImpl.setGroupId(getGroupId());
@@ -777,14 +748,6 @@ public class FormCounterRuleModelImpl
 
 		if ((ruleConditions != null) && (ruleConditions.length() == 0)) {
 			formCounterRuleCacheModel.ruleConditions = null;
-		}
-
-		formCounterRuleCacheModel.logicOperator = getLogicOperator();
-
-		String logicOperator = formCounterRuleCacheModel.logicOperator;
-
-		if ((logicOperator != null) && (logicOperator.length() == 0)) {
-			formCounterRuleCacheModel.logicOperator = null;
 		}
 
 		formCounterRuleCacheModel.active = isActive();
@@ -917,7 +880,6 @@ public class FormCounterRuleModelImpl
 	private String _ruleName;
 	private String _description;
 	private String _ruleConditions;
-	private String _logicOperator;
 	private boolean _active;
 	private long _companyId;
 	private long _groupId;
@@ -960,7 +922,6 @@ public class FormCounterRuleModelImpl
 		_columnOriginalValues.put("ruleName", _ruleName);
 		_columnOriginalValues.put("description", _description);
 		_columnOriginalValues.put("ruleConditions", _ruleConditions);
-		_columnOriginalValues.put("logicOperator", _logicOperator);
 		_columnOriginalValues.put("active_", _active);
 		_columnOriginalValues.put("companyId", _companyId);
 		_columnOriginalValues.put("groupId", _groupId);
@@ -999,21 +960,19 @@ public class FormCounterRuleModelImpl
 
 		columnBitmasks.put("ruleConditions", 8L);
 
-		columnBitmasks.put("logicOperator", 16L);
+		columnBitmasks.put("active_", 16L);
 
-		columnBitmasks.put("active_", 32L);
+		columnBitmasks.put("companyId", 32L);
 
-		columnBitmasks.put("companyId", 64L);
+		columnBitmasks.put("groupId", 64L);
 
-		columnBitmasks.put("groupId", 128L);
+		columnBitmasks.put("userId", 128L);
 
-		columnBitmasks.put("userId", 256L);
+		columnBitmasks.put("userName", 256L);
 
-		columnBitmasks.put("userName", 512L);
+		columnBitmasks.put("createDate", 512L);
 
-		columnBitmasks.put("createDate", 1024L);
-
-		columnBitmasks.put("modifiedDate", 2048L);
+		columnBitmasks.put("modifiedDate", 1024L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

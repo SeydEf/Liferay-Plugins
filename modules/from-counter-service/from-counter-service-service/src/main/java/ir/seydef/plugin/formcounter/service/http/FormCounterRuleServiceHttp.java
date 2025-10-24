@@ -46,8 +46,7 @@ public class FormCounterRuleServiceHttp {
 	public static ir.seydef.plugin.formcounter.model.FormCounterRule
 			addFormCounterRule(
 				HttpPrincipal httpPrincipal, String ruleName,
-				String description, String ruleConditions, String logicOperator,
-				boolean active,
+				String description, String ruleConditions, boolean active,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
@@ -57,8 +56,8 @@ public class FormCounterRuleServiceHttp {
 				_addFormCounterRuleParameterTypes0);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, ruleName, description, ruleConditions, logicOperator,
-				active, serviceContext);
+				methodKey, ruleName, description, ruleConditions, active,
+				serviceContext);
 
 			Object returnObj = null;
 
@@ -313,7 +312,7 @@ public class FormCounterRuleServiceHttp {
 			updateFormCounterRule(
 				HttpPrincipal httpPrincipal, long formCounterRuleId,
 				String ruleName, String description, String ruleConditions,
-				String logicOperator, boolean active,
+				boolean active,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
@@ -324,7 +323,7 @@ public class FormCounterRuleServiceHttp {
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, formCounterRuleId, ruleName, description,
-				ruleConditions, logicOperator, active, serviceContext);
+				ruleConditions, active, serviceContext);
 
 			Object returnObj = null;
 
@@ -360,8 +359,7 @@ public class FormCounterRuleServiceHttp {
 
 	private static final Class<?>[] _addFormCounterRuleParameterTypes0 =
 		new Class[] {
-			String.class, String.class, String.class, String.class,
-			boolean.class,
+			String.class, String.class, String.class, boolean.class,
 			com.liferay.portal.kernel.service.ServiceContext.class
 		};
 	private static final Class<?>[] _deleteFormCounterRuleParameterTypes1 =
@@ -383,8 +381,7 @@ public class FormCounterRuleServiceHttp {
 		new Class[] {};
 	private static final Class<?>[] _updateFormCounterRuleParameterTypes7 =
 		new Class[] {
-			long.class, String.class, String.class, String.class, String.class,
-			boolean.class,
+			long.class, String.class, String.class, String.class, boolean.class,
 			com.liferay.portal.kernel.service.ServiceContext.class
 		};
 

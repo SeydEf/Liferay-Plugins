@@ -109,21 +109,6 @@ public interface FormCounterRuleModel
 	public void setRuleConditions(String ruleConditions);
 
 	/**
-	 * Returns the logic operator of this form counter rule.
-	 *
-	 * @return the logic operator of this form counter rule
-	 */
-	@AutoEscape
-	public String getLogicOperator();
-
-	/**
-	 * Sets the logic operator of this form counter rule.
-	 *
-	 * @param logicOperator the logic operator of this form counter rule
-	 */
-	public void setLogicOperator(String logicOperator);
-
-	/**
 	 * Returns the active of this form counter rule.
 	 *
 	 * @return the active of this form counter rule

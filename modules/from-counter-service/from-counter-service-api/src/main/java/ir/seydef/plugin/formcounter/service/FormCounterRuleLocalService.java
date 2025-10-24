@@ -69,7 +69,7 @@ public interface FormCounterRuleLocalService
 
 	public FormCounterRule addFormCounterRule(
 			String ruleName, String description, String ruleConditions,
-			String logicOperator, boolean active, ServiceContext serviceContext)
+			boolean active, ServiceContext serviceContext)
 		throws PortalException;
 
 	/**
@@ -264,7 +264,7 @@ public interface FormCounterRuleLocalService
 
 	public FormCounterRule updateFormCounterRule(
 			long formCounterRuleId, String ruleName, String description,
-			String ruleConditions, String logicOperator, boolean active,
+			String ruleConditions, boolean active,
 			ServiceContext serviceContext)
 		throws PortalException;
 

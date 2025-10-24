@@ -28,7 +28,6 @@ public class FormCounterRuleSoap implements Serializable {
 		soapModel.setRuleName(model.getRuleName());
 		soapModel.setDescription(model.getDescription());
 		soapModel.setRuleConditions(model.getRuleConditions());
-		soapModel.setLogicOperator(model.getLogicOperator());
 		soapModel.setActive(model.isActive());
 		soapModel.setCompanyId(model.getCompanyId());
 		soapModel.setGroupId(model.getGroupId());
@@ -127,14 +126,6 @@ public class FormCounterRuleSoap implements Serializable {
 		_ruleConditions = ruleConditions;
 	}
 
-	public String getLogicOperator() {
-		return _logicOperator;
-	}
-
-	public void setLogicOperator(String logicOperator) {
-		_logicOperator = logicOperator;
-	}
-
 	public boolean getActive() {
 		return _active;
 	}
@@ -199,7 +190,6 @@ public class FormCounterRuleSoap implements Serializable {
 	private String _ruleName;
 	private String _description;
 	private String _ruleConditions;
-	private String _logicOperator;
 	private boolean _active;
 	private long _companyId;
 	private long _groupId;

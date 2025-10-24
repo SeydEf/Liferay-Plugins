@@ -48,13 +48,12 @@ public class FormCounterRuleLocalServiceWrapper
 	public ir.seydef.plugin.formcounter.model.FormCounterRule
 			addFormCounterRule(
 				String ruleName, String description, String ruleConditions,
-				String logicOperator, boolean active,
+				boolean active,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _formCounterRuleLocalService.addFormCounterRule(
-			ruleName, description, ruleConditions, logicOperator, active,
-			serviceContext);
+			ruleName, description, ruleConditions, active, serviceContext);
 	}
 
 	/**
@@ -344,13 +343,13 @@ public class FormCounterRuleLocalServiceWrapper
 	public ir.seydef.plugin.formcounter.model.FormCounterRule
 			updateFormCounterRule(
 				long formCounterRuleId, String ruleName, String description,
-				String ruleConditions, String logicOperator, boolean active,
+				String ruleConditions, boolean active,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _formCounterRuleLocalService.updateFormCounterRule(
-			formCounterRuleId, ruleName, description, ruleConditions,
-			logicOperator, active, serviceContext);
+			formCounterRuleId, ruleName, description, ruleConditions, active,
+			serviceContext);
 	}
 
 	@Override

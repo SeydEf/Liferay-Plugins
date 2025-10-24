@@ -34,8 +34,7 @@ import org.osgi.service.component.annotations.Reference;
 public class FormCounterRuleServiceImpl extends FormCounterRuleServiceBaseImpl {
 
 	public FormCounterRule addFormCounterRule(
-			String ruleName, String description, String ruleConditions,
-			String logicOperator, boolean active,
+			String ruleName, String description, String ruleConditions, boolean active,
 			ServiceContext serviceContext)
 		throws PortalException {
 
@@ -45,7 +44,7 @@ public class FormCounterRuleServiceImpl extends FormCounterRuleServiceBaseImpl {
 
 		return formCounterRuleLocalService.addFormCounterRule(
 			ruleName, description, ruleConditions,
-			logicOperator, active, serviceContext);
+			active, serviceContext);
 	}
 
 	public FormCounterRule deleteFormCounterRule(long formCounterRuleId)
@@ -94,7 +93,7 @@ public class FormCounterRuleServiceImpl extends FormCounterRuleServiceBaseImpl {
 
 	public FormCounterRule updateFormCounterRule(
 			long formCounterRuleId, String ruleName, String description,
-			String ruleConditions, String logicOperator, boolean active,
+			String ruleConditions, boolean active,
 			ServiceContext serviceContext)
 		throws PortalException {
 
@@ -106,7 +105,7 @@ public class FormCounterRuleServiceImpl extends FormCounterRuleServiceBaseImpl {
 
 		return formCounterRuleLocalService.updateFormCounterRule(
 			formCounterRuleId, ruleName, description, ruleConditions,
-			logicOperator, active, serviceContext);
+			active, serviceContext);
 	}
 
 	@Reference

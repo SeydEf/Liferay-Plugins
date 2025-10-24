@@ -37,7 +37,6 @@ public class FormCounterRuleWrapper
 		attributes.put("ruleName", getRuleName());
 		attributes.put("description", getDescription());
 		attributes.put("ruleConditions", getRuleConditions());
-		attributes.put("logicOperator", getLogicOperator());
 		attributes.put("active", isActive());
 		attributes.put("companyId", getCompanyId());
 		attributes.put("groupId", getGroupId());
@@ -73,12 +72,6 @@ public class FormCounterRuleWrapper
 
 		if (ruleConditions != null) {
 			setRuleConditions(ruleConditions);
-		}
-
-		String logicOperator = (String)attributes.get("logicOperator");
-
-		if (logicOperator != null) {
-			setLogicOperator(logicOperator);
 		}
 
 		Boolean active = (Boolean)attributes.get("active");
@@ -182,16 +175,6 @@ public class FormCounterRuleWrapper
 	@Override
 	public long getGroupId() {
 		return model.getGroupId();
-	}
-
-	/**
-	 * Returns the logic operator of this form counter rule.
-	 *
-	 * @return the logic operator of this form counter rule
-	 */
-	@Override
-	public String getLogicOperator() {
-		return model.getLogicOperator();
 	}
 
 	/**
@@ -337,16 +320,6 @@ public class FormCounterRuleWrapper
 	@Override
 	public void setGroupId(long groupId) {
 		model.setGroupId(groupId);
-	}
-
-	/**
-	 * Sets the logic operator of this form counter rule.
-	 *
-	 * @param logicOperator the logic operator of this form counter rule
-	 */
-	@Override
-	public void setLogicOperator(String logicOperator) {
-		model.setLogicOperator(logicOperator);
 	}
 
 	/**

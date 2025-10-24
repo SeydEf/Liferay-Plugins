@@ -54,7 +54,7 @@ public class FormCounterRuleCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(25);
+		StringBundler sb = new StringBundler(23);
 
 		sb.append("{formCounterRuleId=");
 		sb.append(formCounterRuleId);
@@ -64,8 +64,6 @@ public class FormCounterRuleCacheModel
 		sb.append(description);
 		sb.append(", ruleConditions=");
 		sb.append(ruleConditions);
-		sb.append(", logicOperator=");
-		sb.append(logicOperator);
 		sb.append(", active=");
 		sb.append(active);
 		sb.append(", companyId=");
@@ -112,13 +110,6 @@ public class FormCounterRuleCacheModel
 			formCounterRuleImpl.setRuleConditions(ruleConditions);
 		}
 
-		if (logicOperator == null) {
-			formCounterRuleImpl.setLogicOperator("");
-		}
-		else {
-			formCounterRuleImpl.setLogicOperator(logicOperator);
-		}
-
 		formCounterRuleImpl.setActive(active);
 		formCounterRuleImpl.setCompanyId(companyId);
 		formCounterRuleImpl.setGroupId(groupId);
@@ -156,7 +147,6 @@ public class FormCounterRuleCacheModel
 		ruleName = objectInput.readUTF();
 		description = objectInput.readUTF();
 		ruleConditions = objectInput.readUTF();
-		logicOperator = objectInput.readUTF();
 
 		active = objectInput.readBoolean();
 
@@ -195,13 +185,6 @@ public class FormCounterRuleCacheModel
 			objectOutput.writeUTF(ruleConditions);
 		}
 
-		if (logicOperator == null) {
-			objectOutput.writeUTF("");
-		}
-		else {
-			objectOutput.writeUTF(logicOperator);
-		}
-
 		objectOutput.writeBoolean(active);
 
 		objectOutput.writeLong(companyId);
@@ -225,7 +208,6 @@ public class FormCounterRuleCacheModel
 	public String ruleName;
 	public String description;
 	public String ruleConditions;
-	public String logicOperator;
 	public boolean active;
 	public long companyId;
 	public long groupId;

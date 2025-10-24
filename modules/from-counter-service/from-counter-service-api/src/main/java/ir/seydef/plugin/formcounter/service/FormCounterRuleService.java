@@ -47,7 +47,7 @@ public interface FormCounterRuleService extends BaseService {
 	 */
 	public FormCounterRule addFormCounterRule(
 			String ruleName, String description, String ruleConditions,
-			String logicOperator, boolean active, ServiceContext serviceContext)
+			boolean active, ServiceContext serviceContext)
 		throws PortalException;
 
 	public FormCounterRule deleteFormCounterRule(long formCounterRuleId)
@@ -80,7 +80,7 @@ public interface FormCounterRuleService extends BaseService {
 
 	public FormCounterRule updateFormCounterRule(
 			long formCounterRuleId, String ruleName, String description,
-			String ruleConditions, String logicOperator, boolean active,
+			String ruleConditions, boolean active,
 			ServiceContext serviceContext)
 		throws PortalException;
 

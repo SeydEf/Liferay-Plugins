@@ -3,7 +3,6 @@ create table FormCounterRule (
 	ruleName VARCHAR(75) null,
 	description VARCHAR(75) null,
 	ruleConditions VARCHAR(75) null,
-	logicOperator VARCHAR(75) null,
 	active_ BOOLEAN,
 	companyId LONG,
 	groupId LONG,

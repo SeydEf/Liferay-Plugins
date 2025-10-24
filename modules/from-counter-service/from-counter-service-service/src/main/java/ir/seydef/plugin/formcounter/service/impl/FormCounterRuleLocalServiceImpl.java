@@ -26,7 +26,7 @@ public class FormCounterRuleLocalServiceImpl
 
     public FormCounterRule addFormCounterRule(
             String ruleName, String description,
-            String ruleConditions, String logicOperator, boolean active,
+            String ruleConditions, boolean active,
             ServiceContext serviceContext)
             throws PortalException {
 
@@ -50,7 +50,6 @@ public class FormCounterRuleLocalServiceImpl
         rule.setRuleName(ruleName);
         rule.setDescription(description);
         rule.setRuleConditions(ruleConditions);
-        rule.setLogicOperator(logicOperator);
         rule.setActive(active);
 
         return formCounterRulePersistence.update(rule);
@@ -62,7 +61,7 @@ public class FormCounterRuleLocalServiceImpl
 
     public FormCounterRule updateFormCounterRule(
             long formCounterRuleId, String ruleName, String description,
-            String ruleConditions, String logicOperator, boolean active,
+            String ruleConditions, boolean active,
             ServiceContext serviceContext)
             throws PortalException {
 
@@ -82,7 +81,6 @@ public class FormCounterRuleLocalServiceImpl
         rule.setRuleName(ruleName);
         rule.setDescription(description);
         rule.setRuleConditions(ruleConditions);
-        rule.setLogicOperator(logicOperator);
         rule.setActive(active);
 
         return formCounterRulePersistence.update(rule);

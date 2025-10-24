@@ -58,15 +58,15 @@ public class FormCounterRuleServiceSoap {
 	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap
 			addFormCounterRule(
 				String ruleName, String description, String ruleConditions,
-				String logicOperator, boolean active,
+				boolean active,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws RemoteException {
 
 		try {
 			ir.seydef.plugin.formcounter.model.FormCounterRule returnValue =
 				FormCounterRuleServiceUtil.addFormCounterRule(
-					ruleName, description, ruleConditions, logicOperator,
-					active, serviceContext);
+					ruleName, description, ruleConditions, active,
+					serviceContext);
 
 			return ir.seydef.plugin.formcounter.model.FormCounterRuleSoap.
 				toSoapModel(returnValue);
@@ -195,7 +195,7 @@ public class FormCounterRuleServiceSoap {
 	public static ir.seydef.plugin.formcounter.model.FormCounterRuleSoap
 			updateFormCounterRule(
 				long formCounterRuleId, String ruleName, String description,
-				String ruleConditions, String logicOperator, boolean active,
+				String ruleConditions, boolean active,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws RemoteException {
 
@@ -203,7 +203,7 @@ public class FormCounterRuleServiceSoap {
 			ir.seydef.plugin.formcounter.model.FormCounterRule returnValue =
 				FormCounterRuleServiceUtil.updateFormCounterRule(
 					formCounterRuleId, ruleName, description, ruleConditions,
-					logicOperator, active, serviceContext);
+					active, serviceContext);
 
 			return ir.seydef.plugin.formcounter.model.FormCounterRuleSoap.
 				toSoapModel(returnValue);

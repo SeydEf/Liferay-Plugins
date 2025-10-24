@@ -56,7 +56,6 @@
 		<column name="ruleName" type="String" />
 		<column name="description" type="String" />
 		<column name="ruleConditions" type="String" />
-		<column name="logicOperator" type="String" />
 		<column name="active" type="boolean" />
 
 		<!-- Audit fields -->
