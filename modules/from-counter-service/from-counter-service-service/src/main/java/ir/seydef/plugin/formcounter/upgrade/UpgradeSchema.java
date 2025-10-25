@@ -11,7 +11,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	immediate = true,
-	service = UpgradeStepRegistrator.class
+	service = {UpgradeSchema.class, UpgradeStepRegistrator.class}
 )
 public class UpgradeSchema implements UpgradeStepRegistrator {
 
