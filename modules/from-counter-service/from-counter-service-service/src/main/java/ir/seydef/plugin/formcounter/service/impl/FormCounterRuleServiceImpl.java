@@ -91,7 +91,7 @@ public class FormCounterRuleServiceImpl extends FormCounterRuleServiceBaseImpl {
 
 	public FormCounterRule updateFormCounterRule(
 			long formCounterRuleId, String ruleName, String description,
-			String ruleConditions, String logicOperator, boolean active,
+			String ruleConditions, boolean active,
 			ServiceContext serviceContext)
 		throws PortalException {
 

@@ -67,8 +67,8 @@
 		</finder>
 
 		<finder name="G_S" return-type="Collection">
-			<finder-column name="seen" />
 			<finder-column name="groupId" />
+			<finder-column name="seen" />
 		</finder>
 	</entity>
 </service-builder>
