@@ -129,8 +129,8 @@ public class Rule {
             jsonObject.put("logic", logicOperator);
 
             return jsonObject.toString();
-        } catch (Exception e) {
-            _log.error("Error converting rule to JSON string", e);
+        } catch (Exception exception) {
+            _log.error("Error converting rule to JSON string", exception);
             return "{}";
         }
     }

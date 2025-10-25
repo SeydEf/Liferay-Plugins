@@ -45,7 +45,7 @@ public class ExpandoFieldUtil {
 
                 customFields.add(fieldInfo);
             }
-        } catch (Exception e) {
+        } catch (Exception exception) {
             _log.error("Error fetching custom fields. Maybe no custom fields exist yet.");
         }
 

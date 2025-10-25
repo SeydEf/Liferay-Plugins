@@ -5,8 +5,8 @@
 
 package ir.seydef.plugin.formcounter.util;
 
-
 import com.liferay.portal.kernel.util.Validator;
+
 import ir.seydef.plugin.formcounter.constants.FormCounterPersianTextConstants;
 
 /**
@@ -14,110 +14,124 @@ import ir.seydef.plugin.formcounter.constants.FormCounterPersianTextConstants;
  */
 public class PersianTextUtil {
 
-    public static String normalize(String text) {
-        if ((text == null) || text.isEmpty()) {
-            return text;
-        }
+	public static boolean contains(String text, String searchTerm) {
+		if (Validator.isNull(searchTerm)) {
+			return true;
+		}
 
-        text = text.toLowerCase();
+		if (Validator.isNull(text)) {
+			return false;
+		}
 
-        text = _normalizeSpaces(text);
+		return normalize(
+			text
+		).contains(
+			normalize(searchTerm)
+		);
+	}
 
-        text = _convertPersianNumbers(text);
+	public static String normalize(String text) {
+		if ((text == null) || text.isEmpty()) {
+			return text;
+		}
 
-        text = _standardizeCharacters(text);
+		text = text.toLowerCase();
 
-        text = _removeDiacritics(text);
+		text = _normalizeSpaces(text);
 
-        return text.trim();
-    }
+		text = _convertPersianNumbers(text);
 
-    private static String _convertPersianNumbers(String text) {
-        StringBuilder result = new StringBuilder(text.length());
+		text = _standardizeCharacters(text);
 
-        for (int i = 0; i < text.length(); i++) {
-            char ch = text.charAt(i);
+		text = _removeDiacritics(text);
 
-            if ((ch >= FormCounterPersianTextConstants.PERSIAN_ZERO) &&
-                    (ch <= FormCounterPersianTextConstants.PERSIAN_NINE)) {
+		return text.trim();
+	}
 
-                result.append(
-                        (char) ('0' + (ch - FormCounterPersianTextConstants.PERSIAN_ZERO)));
-            } else if ((ch >= FormCounterPersianTextConstants.ARABIC_ZERO) &&
-                    (ch <= FormCounterPersianTextConstants.ARABIC_NINE)) {
+	private static String _convertPersianNumbers(String text) {
+		StringBuilder result = new StringBuilder(text.length());
 
-                result.append(
-                        (char) ('0' + (ch - FormCounterPersianTextConstants.ARABIC_ZERO)));
-            } else {
-                result.append(ch);
-            }
-        }
+		for (int i = 0; i < text.length(); i++) {
+			char ch = text.charAt(i);
 
-        return result.toString();
-    }
+			if ((ch >= FormCounterPersianTextConstants.PERSIAN_ZERO) &&
+				(ch <= FormCounterPersianTextConstants.PERSIAN_NINE)) {
 
-    private static String _normalizeSpaces(String text) {
-        text = text.replaceAll(
-                FormCounterPersianTextConstants.SPACES_AND_ZWNJ_PATTERN, " ");
+				result.append(
+					(char)
+						('0' +
+							(ch -
+								FormCounterPersianTextConstants.PERSIAN_ZERO)));
+			}
+			else if ((ch >= FormCounterPersianTextConstants.ARABIC_ZERO) &&
+					 (ch <= FormCounterPersianTextConstants.ARABIC_NINE)) {
 
-        text = text.replaceAll(
-                FormCounterPersianTextConstants.PERSIAN_PREFIXES_PATTERN,
-                FormCounterPersianTextConstants.PREFIX_REPLACEMENT);
+				result.append(
+					(char)
+						('0' +
+							(ch -
+								FormCounterPersianTextConstants.ARABIC_ZERO)));
+			}
+			else {
+				result.append(ch);
+			}
+		}
 
-        text = text.replaceAll(
-                FormCounterPersianTextConstants.PERSIAN_PLURAL_PATTERN,
-                FormCounterPersianTextConstants.COMPARATIVE_REPLACEMENT);
+		return result.toString();
+	}
 
-        return text;
-    }
+	private static String _normalizeSpaces(String text) {
+		text = text.replaceAll(
+			FormCounterPersianTextConstants.SPACES_AND_ZWNJ_PATTERN, " ");
 
-    private static String _removeDiacritics(String text) {
-        return text.replaceAll(FormCounterPersianTextConstants.DIACRITICS_PATTERN, "");
-    }
+		text = text.replaceAll(
+			FormCounterPersianTextConstants.PERSIAN_PREFIXES_PATTERN,
+			FormCounterPersianTextConstants.PREFIX_REPLACEMENT);
 
-    private static String _standardizeCharacters(String text) {
-        text = text.replace(
-                FormCounterPersianTextConstants.ARABIC_KAF,
-                FormCounterPersianTextConstants.PERSIAN_KAF);
+		text = text.replaceAll(
+			FormCounterPersianTextConstants.PERSIAN_PLURAL_PATTERN,
+			FormCounterPersianTextConstants.COMPARATIVE_REPLACEMENT);
 
-        text = text.replace(
-                FormCounterPersianTextConstants.ARABIC_YEH,
-                FormCounterPersianTextConstants.PERSIAN_YEH);
+		return text;
+	}
 
-        text = text.replace(
-                FormCounterPersianTextConstants.ALEF_WITH_HAMZA_ABOVE,
-                FormCounterPersianTextConstants.ALEF);
-        text = text.replace(
-                FormCounterPersianTextConstants.ALEF_WITH_HAMZA_BELOW,
-                FormCounterPersianTextConstants.ALEF);
-        text = text.replace(
-                FormCounterPersianTextConstants.ALEF_WITH_MADDA_ABOVE,
-                FormCounterPersianTextConstants.ALEF);
+	private static String _removeDiacritics(String text) {
+		return text.replaceAll(
+			FormCounterPersianTextConstants.DIACRITICS_PATTERN, "");
+	}
 
-        text = text.replace(
-                FormCounterPersianTextConstants.TEH_MARBUTA, FormCounterPersianTextConstants.HEH);
+	private static String _standardizeCharacters(String text) {
+		text = text.replace(
+			FormCounterPersianTextConstants.ARABIC_KAF,
+			FormCounterPersianTextConstants.PERSIAN_KAF);
 
-        text = text.replace(
-                FormCounterPersianTextConstants.WAW_WITH_HAMZA_ABOVE,
-                FormCounterPersianTextConstants.WAW);
+		text = text.replace(
+			FormCounterPersianTextConstants.ARABIC_YEH,
+			FormCounterPersianTextConstants.PERSIAN_YEH);
 
-        text = text.replace(
-                FormCounterPersianTextConstants.YEH_WITH_HAMZA_ABOVE,
-                FormCounterPersianTextConstants.PERSIAN_YEH);
+		text = text.replace(
+			FormCounterPersianTextConstants.ALEF_WITH_HAMZA_ABOVE,
+			FormCounterPersianTextConstants.ALEF);
+		text = text.replace(
+			FormCounterPersianTextConstants.ALEF_WITH_HAMZA_BELOW,
+			FormCounterPersianTextConstants.ALEF);
+		text = text.replace(
+			FormCounterPersianTextConstants.ALEF_WITH_MADDA_ABOVE,
+			FormCounterPersianTextConstants.ALEF);
 
-        return text;
-    }
+		text = text.replace(
+			FormCounterPersianTextConstants.TEH_MARBUTA,
+			FormCounterPersianTextConstants.HEH);
 
-    public static boolean contains(String text, String searchTerm) {
-        if (Validator.isNull(searchTerm)) {
-            return true;
-        }
+		text = text.replace(
+			FormCounterPersianTextConstants.WAW_WITH_HAMZA_ABOVE,
+			FormCounterPersianTextConstants.WAW);
 
-        if (Validator.isNull(text)) {
-            return false;
-        }
+		text = text.replace(
+			FormCounterPersianTextConstants.YEH_WITH_HAMZA_ABOVE,
+			FormCounterPersianTextConstants.PERSIAN_YEH);
 
-        return normalize(text).contains(normalize(searchTerm));
-    }
+		return text;
+	}
 
 }

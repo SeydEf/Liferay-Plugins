@@ -14,9 +14,6 @@
 
 package ir.seydef.plugin.formcounter.util;
 
-import java.util.Date;
-import java.util.Locale;
-
 import org.osgi.annotation.versioning.ProviderType;
 
 /**

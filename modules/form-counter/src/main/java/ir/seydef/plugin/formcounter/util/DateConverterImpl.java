@@ -14,15 +14,11 @@
 
 package ir.seydef.plugin.formcounter.util;
 
-import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.StringUtil;
 
 import java.text.SimpleDateFormat;
 
 import java.util.Date;
-import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -44,12 +40,12 @@ public class DateConverterImpl implements DateConverters {
 		String[] strings = strDateMiladi.split("/");
 
 		dateConverterImpl.gregorianToPersian(
-				GetterUtil.getInteger(strings[2]),
-				GetterUtil.getInteger(strings[1]),
-				GetterUtil.getInteger(strings[0]));
+			GetterUtil.getInteger(strings[2]),
+			GetterUtil.getInteger(strings[1]),
+			GetterUtil.getInteger(strings[0]));
 
 		return dateConverterImpl.getYear() + "/" +
-				dateConverterImpl.getMonth() + "/" + dateConverterImpl.getDay() +
+			dateConverterImpl.getMonth() + "/" + dateConverterImpl.getDay() +
 				" " + strTime;
 	}
 
@@ -117,8 +113,8 @@ public class DateConverterImpl implements DateConverters {
 		_leap = 0;
 
 		int[] breaks = {
-				-61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210, 1635, 2060,
-				2097, 2192, 2262, 2324, 2394, 2456, 3178
+			-61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210, 1635, 2060,
+			2097, 2192, 2262, 2324, 2394, 2456, 3178
 		};
 
 		_gYear = jY + 621;
@@ -192,7 +188,8 @@ public class DateConverterImpl implements DateConverters {
 			}
 
 			k = k - 186;
-		} else {
+		}
+		else {
 			_jYear = _jYear - 1;
 
 			k = k + 179;
@@ -258,10 +255,11 @@ public class DateConverterImpl implements DateConverters {
 	 */
 	@Override
 	public int jG2JD(int year, int month, int day, int j1G0) {
-		int jd = ((1461 * (year + 4800 + ((month - 14) / 12))) / 4) +
+		int jd =
+			((1461 * (year + 4800 + ((month - 14) / 12))) / 4) +
 				((367 * (month - 2 - (12 * ((month - 14) / 12)))) / 12) -
-				((3 * ((year + 4900 + ((month - 14) / 12)) / 100)) / 4) +
-				day - 32075;
+					((3 * ((year + 4900 + ((month - 14) / 12)) / 100)) / 4) +
+						day - 32075;
 
 		if (j1G0 == 0) {
 			jd = jd - ((year + 100100 + ((month - 8) / 6)) / 100 * 3 / 4) + 752;

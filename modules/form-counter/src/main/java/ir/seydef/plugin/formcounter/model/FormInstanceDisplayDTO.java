@@ -9,63 +9,65 @@ import java.util.Locale;
  */
 public class FormInstanceDisplayDTO {
 
-    private long formInstanceId;
-    private String name;
-    private String description;
-    private int recordCount;
+	public FormInstanceDisplayDTO() {
+	}
 
-    public FormInstanceDisplayDTO() {
-    }
+	public FormInstanceDisplayDTO(DDMFormInstance formInstance, Locale locale) {
+		_formInstanceId = formInstance.getFormInstanceId();
+		_name = formInstance.getName(locale);
+		_description = formInstance.getDescription(locale);
+		_recordCount = 0;
+	}
 
-    public FormInstanceDisplayDTO(DDMFormInstance formInstance, Locale locale) {
-        this.formInstanceId = formInstance.getFormInstanceId();
-        this.name = formInstance.getName(locale);
-        this.description = formInstance.getDescription(locale);
-        this.recordCount = 0;
-    }
+	public String getDescription() {
+		return _description;
+	}
 
-    public long getFormInstanceId() {
-        return formInstanceId;
-    }
+	public String getDisplayName() {
+		if (_name != null) {
+			return _name;
+		}
 
-    public void setFormInstanceId(long formInstanceId) {
-        this.formInstanceId = formInstanceId;
-    }
+		return "Form #" + _formInstanceId;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public long getFormInstanceId() {
+		return _formInstanceId;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return _name;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public int getRecordCount() {
+		return _recordCount;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		_description = description;
+	}
 
-    public int getRecordCount() {
-        return recordCount;
-    }
+	public void setFormInstanceId(long formInstanceId) {
+		_formInstanceId = formInstanceId;
+	}
 
-    public void setRecordCount(int recordCount) {
-        this.recordCount = recordCount;
-    }
+	public void setName(String name) {
+		_name = name;
+	}
 
-    public String getDisplayName() {
-        return name != null ? name : "Form #" + formInstanceId;
-    }
+	public void setRecordCount(int recordCount) {
+		_recordCount = recordCount;
+	}
 
-    @Override
-    public String toString() {
-        return "FormInstanceDisplayDTO{" +
-                "formInstanceId=" + formInstanceId +
-                ", name='" + name + '\'' +
-                ", recordCount=" + recordCount +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "FormInstanceDisplayDTO{formInstanceId=" + _formInstanceId +
+			", name='" + _name + '\'' + ", recordCount=" + _recordCount + '}';
+	}
+
+	private String _description;
+	private long _formInstanceId;
+	private String _name;
+	private int _recordCount;
+
 }

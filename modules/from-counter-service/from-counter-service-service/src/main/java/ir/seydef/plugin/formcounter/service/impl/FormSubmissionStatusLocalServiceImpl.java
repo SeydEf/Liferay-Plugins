@@ -94,7 +94,7 @@ public class FormSubmissionStatusLocalServiceImpl
 			return formSubmissionStatusPersistence.findByFormInstanceRecordId(
 				formInstanceRecordId);
 		}
-		catch (Exception e) {
+		catch (Exception exception) {
 			return null;
 		}
 	}
@@ -139,14 +139,14 @@ public class FormSubmissionStatusLocalServiceImpl
 						result.add(status);
 					}
 				}
-				catch (Exception e) {
+				catch (Exception exception) {
 					continue;
 				}
 			}
 
 			return result;
 		}
-		catch (Exception e) {
+		catch (Exception exception) {
 			return java.util.Collections.emptyList();
 		}
 	}

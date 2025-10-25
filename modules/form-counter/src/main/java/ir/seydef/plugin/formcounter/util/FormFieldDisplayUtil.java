@@ -18,248 +18,367 @@ import java.util.List;
  */
 public class FormFieldDisplayUtil {
 
-    private static final Log _log = LogFactoryUtil.getLog(FormFieldDisplayUtil.class);
+	public static String findOptionLabel(
+		JSONArray options, String optionValue) {
 
-    public static String getFieldLabel(DDMStructure structure, String fieldName) {
-        try {
-            String definition = structure.getDefinition();
-            if (definition != null) {
-                JSONObject jsonDefinition = JSONFactoryUtil.createJSONObject(definition);
-                JSONArray fields = jsonDefinition.getJSONArray("fields");
+		try {
+			for (int i = 0; i < options.length(); i++) {
+				JSONObject option = options.getJSONObject(i);
 
-                if (fields != null) {
-                    String label = findFieldLabelRecursively(fields, fieldName);
-                    if (label != null) {
-                        return label;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            _log.error("Error getting field label for field: " + fieldName, e);
-        }
-        return fieldName;
-    }
+				String value = option.getString("value");
 
-    private static String findFieldLabelRecursively(JSONArray fields, String fieldName) {
-        if (fields == null) {
-            return null;
-        }
+				if (optionValue.contains(value)) {
+					JSONObject label = option.getJSONObject("label");
 
-        for (int i = 0; i < fields.length(); i++) {
-            try {
-                JSONObject field = fields.getJSONObject(i);
-                String currentFieldName = field.getString("name");
+					if (label != null) {
+						Iterator<String> keys = label.keys();
 
-                if (fieldName.equals(currentFieldName)) {
-                    JSONObject label = field.getJSONObject("label");
-                    if (label != null) {
-                        Iterator<String> keys = label.keys();
-                        if (keys.hasNext()) {
-                            return label.getString(keys.next());
-                        }
-                    }
-                }
+						if (keys.hasNext()) {
+							return label.getString(keys.next());
+						}
+					}
+				}
+			}
+		}
+		catch (Exception exception) {
+			_log.error(
+				"Error finding option label for value: " + optionValue,
+				exception);
+		}
 
-                if (field.has("nestedFields")) {
-                    JSONArray nestedFields = field.getJSONArray("nestedFields");
-                    if (nestedFields != null && nestedFields.length() > 0) {
-                        String nestedLabel = findFieldLabelRecursively(nestedFields, fieldName);
-                        if (nestedLabel != null) {
-                            return nestedLabel;
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                _log.warn("Error processing field in label search", e);
-            }
-        }
+		return optionValue;
+	}
 
-        return null;
-    }
+	public static String getDisplayValue(
+		DDMStructure structure, DDMFormFieldValue fieldValue, String rawValue) {
 
-    public static String getDisplayValue(DDMStructure structure, DDMFormFieldValue fieldValue, String rawValue) {
-        try {
-            String cleanValue = rawValue;
-            if (rawValue.startsWith("[\"") && rawValue.endsWith("\"]")) {
-                cleanValue = rawValue.substring(2, rawValue.length() - 2);
-            } else if (rawValue.startsWith("[") && rawValue.endsWith("]")) {
-                cleanValue = rawValue.substring(1, rawValue.length() - 1).replaceAll("\"", "");
-            }
+		try {
+			String cleanValue = rawValue;
 
-            String definition = structure.getDefinition();
-            if (definition != null) {
-                JSONObject jsonDefinition = JSONFactoryUtil.createJSONObject(definition);
-                JSONArray fields = jsonDefinition.getJSONArray("fields");
+			if (rawValue.startsWith("[\"") && rawValue.endsWith("\"]")) {
+				cleanValue = rawValue.substring(2, rawValue.length() - 2);
+			}
+			else if (rawValue.startsWith("[") && rawValue.endsWith("]")) {
+				cleanValue = rawValue.substring(
+					1, rawValue.length() - 1
+				).replaceAll(
+					"\"", ""
+				);
+			}
 
-                if (fields != null) {
-                    // Search all fields recursively (both top-level and nested)
-                    String optionLabel = findOptionLabelRecursively(fields, fieldValue.getName(), cleanValue);
-                    if (optionLabel != null) {
-                        return optionLabel;
-                    }
-                }
-            }
+			String definition = structure.getDefinition();
 
-            return cleanValue;
-        } catch (Exception e) {
-            _log.error("Error getting display value for field: " + fieldValue.getName() + ", value: " + rawValue, e);
-            return rawValue;
-        }
-    }
+			if (definition != null) {
+				JSONObject jsonDefinition = JSONFactoryUtil.createJSONObject(
+					definition);
 
-    private static String findOptionLabelRecursively(JSONArray fields, String fieldName, String cleanValue) {
-        if (fields == null) {
-            return null;
-        }
+				JSONArray fields = jsonDefinition.getJSONArray("fields");
 
-        for (int i = 0; i < fields.length(); i++) {
-            try {
-                JSONObject field = fields.getJSONObject(i);
-                String currentFieldName = field.getString("name");
+				if (fields != null) {
 
-                // Check if this is the field we're looking for
-                if (fieldName.equals(currentFieldName) && field.has("options")) {
-                    JSONArray options = field.getJSONArray("options");
-                    String label = findOptionLabel(options, cleanValue);
-                    if (label != null && !label.equals(cleanValue)) {
-                        return label;
-                    }
-                }
+					// Search all fields recursively (both top-level and nested)
 
-                // Check nested fields recursively
-                if (field.has("nestedFields")) {
-                    JSONArray nestedFields = field.getJSONArray("nestedFields");
-                    String result = findOptionLabelRecursively(nestedFields, fieldName, cleanValue);
-                    if (result != null) {
-                        return result;
-                    }
-                }
-            } catch (Exception e) {
-                _log.warn("Error processing field in option search: " + fieldName, e);
-            }
-        }
+					String optionLabel = findOptionLabelRecursively(
+						fields, fieldValue.getName(), cleanValue);
 
-        return null;
-    }
+					if (optionLabel != null) {
+						return optionLabel;
+					}
+				}
+			}
 
-    public static String findOptionLabel(JSONArray options, String optionValue) {
-        try {
-            for (int i = 0; i < options.length(); i++) {
-                JSONObject option = options.getJSONObject(i);
-                String value = option.getString("value");
+			return cleanValue;
+		}
+		catch (Exception exception) {
+			_log.error(
+				"Error getting display value for field: " +
+					fieldValue.getName() + ", value: " + rawValue,
+				exception);
 
-                if (optionValue.contains(value)) {
-                    JSONObject label = option.getJSONObject("label");
-                    if (label != null) {
-                        Iterator<String> keys = label.keys();
-                        if (keys.hasNext()) {
-                            return label.getString(keys.next());
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            _log.error("Error finding option label for value: " + optionValue, e);
-        }
-        return optionValue;
-    }
+			return rawValue;
+		}
+	}
 
-    public static String renderFormFieldsAsHtml(List<DDMFormFieldValue> formFieldValues, DDMStructure structure,
-                                                int level) {
-        StringBuilder html = new StringBuilder();
+	public static String getFieldLabel(
+		DDMStructure structure, String fieldName) {
 
-        if (formFieldValues == null || formFieldValues.isEmpty()) {
-            return html.toString();
-        }
+		try {
+			String definition = structure.getDefinition();
 
-        String indentClass = level > 0 ? " nested-level-" + level : "";
+			if (definition != null) {
+				JSONObject jsonDefinition = JSONFactoryUtil.createJSONObject(
+					definition);
 
-        for (DDMFormFieldValue fieldValue : formFieldValues) {
-            try {
-                String fieldName = fieldValue.getName();
-                String fieldLabel = fieldName;
+				JSONArray fields = jsonDefinition.getJSONArray("fields");
 
-                if (structure != null) {
-                    fieldLabel = getFieldLabel(structure, fieldName);
-                }
+				if (fields != null) {
+					String label = findFieldLabelRecursively(fields, fieldName);
 
-                String value = "";
-                boolean isMultiline = false;
-                boolean hasValue = false;
+					if (label != null) {
+						return label;
+					}
+				}
+			}
+		}
+		catch (Exception exception) {
+			_log.error(
+				"Error getting field label for field: " + fieldName, exception);
+		}
 
-                try {
-                    if (fieldValue.getValue() != null && fieldValue.getValue().getDefaultLocale() != null) {
-                        String rawValue = GetterUtil.getString(
-                                fieldValue.getValue().getString(fieldValue.getValue().getDefaultLocale()));
+		return fieldName;
+	}
 
-                        if (Validator.isNotNull(rawValue)) {
-                            hasValue = true;
-                            String type = fieldValue.getType();
-                            if (structure != null && type.equals("select")) {
-                                value = getDisplayValue(structure, fieldValue, rawValue);
-                            } else {
-                                value = rawValue;
-                            }
+	public static String renderFormFieldsAsHtml(
+		List<DDMFormFieldValue> formFieldValues, DDMStructure structure,
+		int level) {
 
-                            isMultiline = value.contains("\n") || value.length() > 100;
-                        }
-                    }
-                } catch (Exception e) {
-                    value = "N/A";
-                    hasValue = true;
-                }
+		StringBuilder html = new StringBuilder();
 
-                List<DDMFormFieldValue> nestedFields = fieldValue.getNestedDDMFormFieldValues();
-                boolean hasNestedFields = nestedFields != null && !nestedFields.isEmpty();
+		if ((formFieldValues == null) || formFieldValues.isEmpty()) {
+			return html.toString();
+		}
 
-                if (hasValue || hasNestedFields) {
-                    html.append("<div class='form-field-group").append(indentClass).append("'>");
+		String indentClass = level > 0 ? " nested-level-" + level : "";
 
-                    if (hasValue) {
-                        html.append("<label class='form-field-label'>").append(escapeHtml(fieldLabel))
-                                .append("</label>");
+		for (DDMFormFieldValue fieldValue : formFieldValues) {
+			try {
+				String fieldName = fieldValue.getName();
 
-                        if (isMultiline) {
-                            html.append(
-                                    "<textarea class='form-control form-field-input form-field-textarea' disabled readonly rows='4'>");
-                            html.append(escapeHtml(Validator.isNotNull(value) ? value : "N/A"));
-                            html.append("</textarea>");
-                        } else {
-                            html.append("<input type='text' class='form-control form-field-input' value='")
-                                    .append(escapeHtml(Validator.isNotNull(value) ? value : "N/A"))
-                                    .append("' disabled readonly />");
-                        }
-                    }
+				String fieldLabel = fieldName;
 
-                    // Recursively render nested fields
-                    if (hasNestedFields) {
-                        if (hasValue) {
-                            html.append("<div class='nested-fields-container'>");
-                        }
-                        html.append(renderFormFieldsAsHtml(nestedFields, structure, level + 1));
-                        if (hasValue) {
-                            html.append("</div>");
-                        }
-                    }
+				if (structure != null) {
+					fieldLabel = getFieldLabel(structure, fieldName);
+				}
 
-                    html.append("</div>");
-                }
-            } catch (Exception e) {
-                _log.error("Error rendering field", e);
-            }
-        }
+				String value = "";
+				boolean isMultiline = false;
+				boolean hasValue = false;
 
-        return html.toString();
-    }
+				try {
+					if ((fieldValue.getValue() != null) &&
+						(fieldValue.getValue(
+						).getDefaultLocale() != null)) {
 
-    private static String escapeHtml(String text) {
-        if (text == null) {
-            return "";
-        }
-        return text.replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace("\"", "&quot;")
-                .replace("'", "&#39;");
-    }
+						String rawValue = GetterUtil.getString(
+							fieldValue.getValue(
+							).getString(
+								fieldValue.getValue(
+								).getDefaultLocale()
+							));
+
+						if (Validator.isNotNull(rawValue)) {
+							hasValue = true;
+							String type = fieldValue.getType();
+
+							if ((structure != null) && type.equals("select")) {
+								value = getDisplayValue(
+									structure, fieldValue, rawValue);
+							}
+							else {
+								value = rawValue;
+							}
+
+							isMultiline =
+								value.contains("\n") || (value.length() > 100);
+						}
+					}
+				}
+				catch (Exception exception) {
+					value = "N/A";
+					hasValue = true;
+				}
+
+				List<DDMFormFieldValue> nestedFields =
+					fieldValue.getNestedDDMFormFieldValues();
+
+				boolean hasNestedFields = false;
+
+				if ((nestedFields != null) && !nestedFields.isEmpty()) {
+					hasNestedFields = true;
+				}
+
+				if (hasValue || hasNestedFields) {
+					html.append(
+						"<div class='form-field-group"
+					).append(
+						indentClass
+					).append(
+						"'>"
+					);
+
+					if (hasValue) {
+						html.append(
+							"<label class='form-field-label'>"
+						).append(
+							escapeHtml(fieldLabel)
+						).append(
+							"</label>"
+						);
+
+						if (isMultiline) {
+							html.append(
+								"<textarea class='form-control form-field-input form-field-textarea' disabled readonly rows='4'>");
+							html.append(
+								escapeHtml(
+									Validator.isNotNull(value) ? value :
+										"N/A"));
+							html.append("</textarea>");
+						}
+						else {
+							html.append(
+								"<input type='text' class='form-control form-field-input' value='"
+							).append(
+								escapeHtml(
+									Validator.isNotNull(value) ? value : "N/A")
+							).append(
+								"' disabled readonly />"
+							);
+						}
+					}
+
+					// Recursively render nested fields
+
+					if (hasNestedFields) {
+						if (hasValue) {
+							html.append(
+								"<div class='nested-fields-container'>");
+						}
+
+						html.append(
+							renderFormFieldsAsHtml(
+								nestedFields, structure, level + 1));
+
+						if (hasValue) {
+							html.append("</div>");
+						}
+					}
+
+					html.append("</div>");
+				}
+			}
+			catch (Exception exception) {
+				_log.error("Error rendering field", exception);
+			}
+		}
+
+		return html.toString();
+	}
+
+	private static String escapeHtml(String text) {
+		if (text == null) {
+			return "";
+		}
+
+		return text.replace(
+			"&", "&amp;"
+		).replace(
+			"<", "&lt;"
+		).replace(
+			">", "&gt;"
+		).replace(
+			"\"", "&quot;"
+		).replace(
+			"'", "&#39;"
+		);
+	}
+
+	private static String findFieldLabelRecursively(
+		JSONArray fields, String fieldName) {
+
+		if (fields == null) {
+			return null;
+		}
+
+		for (int i = 0; i < fields.length(); i++) {
+			try {
+				JSONObject field = fields.getJSONObject(i);
+
+				String currentFieldName = field.getString("name");
+
+				if (fieldName.equals(currentFieldName)) {
+					JSONObject label = field.getJSONObject("label");
+
+					if (label != null) {
+						Iterator<String> keys = label.keys();
+
+						if (keys.hasNext()) {
+							return label.getString(keys.next());
+						}
+					}
+				}
+
+				if (field.has("nestedFields")) {
+					JSONArray nestedFields = field.getJSONArray("nestedFields");
+
+					if ((nestedFields != null) && (nestedFields.length() > 0)) {
+						String nestedLabel = findFieldLabelRecursively(
+							nestedFields, fieldName);
+
+						if (nestedLabel != null) {
+							return nestedLabel;
+						}
+					}
+				}
+			}
+			catch (Exception exception) {
+				_log.warn("Error processing field in label search", exception);
+			}
+		}
+
+		return null;
+	}
+
+	private static String findOptionLabelRecursively(
+		JSONArray fields, String fieldName, String cleanValue) {
+
+		if (fields == null) {
+			return null;
+		}
+
+		for (int i = 0; i < fields.length(); i++) {
+			try {
+				JSONObject field = fields.getJSONObject(i);
+
+				String currentFieldName = field.getString("name");
+
+				// Check if this is the field we're looking for
+
+				if (fieldName.equals(currentFieldName) &&
+					field.has("options")) {
+
+					JSONArray options = field.getJSONArray("options");
+
+					String label = findOptionLabel(options, cleanValue);
+
+					if ((label != null) && !label.equals(cleanValue)) {
+						return label;
+					}
+				}
+
+				// Check nested fields recursively
+
+				if (field.has("nestedFields")) {
+					JSONArray nestedFields = field.getJSONArray("nestedFields");
+
+					String result = findOptionLabelRecursively(
+						nestedFields, fieldName, cleanValue);
+
+					if (result != null) {
+						return result;
+					}
+				}
+			}
+			catch (Exception exception) {
+				_log.warn(
+					"Error processing field in option search: " + fieldName,
+					exception);
+			}
+		}
+
+		return null;
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		FormFieldDisplayUtil.class);
+
 }

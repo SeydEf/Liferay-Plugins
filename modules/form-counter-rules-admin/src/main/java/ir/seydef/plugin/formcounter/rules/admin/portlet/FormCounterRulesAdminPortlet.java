@@ -64,8 +64,8 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
                 }
             }
 
-        } catch (Exception e) {
-            _log.error("Error preparing rule admin portlet render", e);
+        } catch (Exception exception) {
+            _log.error("Error preparing rule admin portlet render", exception);
             SessionErrors.add(renderRequest, "error-loading-rules");
         }
 
@@ -120,8 +120,8 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
                     serviceContext);
 
             SessionMessages.add(actionRequest, "rule-added-successfully");
-        } catch (Exception e) {
-            _log.error("Error adding rule", e);
+        } catch (Exception exception) {
+            _log.error("Error adding rule", exception);
             SessionErrors.add(actionRequest, "error-adding-rule");
         }
     }
@@ -180,8 +180,8 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
             _formCounterRuleLocalService.updateFormCounterRule(rule);
 
             SessionMessages.add(actionRequest, "rule-updated-successfully");
-        } catch (Exception e) {
-            _log.error("Error updating rule", e);
+        } catch (Exception exception) {
+            _log.error("Error updating rule", exception);
             SessionErrors.add(actionRequest, "error-updating-rule");
         }
     }
@@ -200,8 +200,8 @@ public class FormCounterRulesAdminPortlet extends MVCPortlet {
         try {
             _formCounterRuleLocalService.deleteFormCounterRule(ruleId);
             SessionMessages.add(actionRequest, "rule-deleted-successfully");
-        } catch (Exception e) {
-            _log.error("Error deleting rule", e);
+        } catch (Exception exception) {
+            _log.error("Error deleting rule", exception);
             SessionErrors.add(actionRequest, "error-deleting-rule");
         }
     }

@@ -11,256 +11,347 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+
 import ir.seydef.plugin.formcounter.constants.FormCounterPortletKeys;
 import ir.seydef.plugin.formcounter.helper.DDMFormService;
 import ir.seydef.plugin.formcounter.model.FormInstanceDisplayDTO;
 import ir.seydef.plugin.formcounter.model.FormRecordDisplayDTO;
 import ir.seydef.plugin.formcounter.model.SearchCriteria;
 import ir.seydef.plugin.formcounter.util.UserCustomFieldUtil;
-import org.osgi.service.component.annotations.Component;
 
-import javax.portlet.*;
 import java.io.IOException;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import java.util.*;
+
+import javax.portlet.*;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author S.Abolfazl Eftekhari
  */
-@Component(property = {
-        "com.liferay.portlet.add-default-resource=true",
-        "com.liferay.portlet.display-category=category.hidden",
-        "com.liferay.portlet.header-portlet-css=/css/main.css",
-        "com.liferay.portlet.layout-cacheable=true",
-        "com.liferay.portlet.private-request-attributes=false",
-        "com.liferay.portlet.private-session-attributes=false",
-        "com.liferay.portlet.render-weight=50",
-        "com.liferay.portlet.use-default-template=true",
-        "javax.portlet.display-name=DDM Form Records Viewer",
-        "javax.portlet.init-param.template-path=/",
-        "javax.portlet.init-param.view-template=/view.jsp",
-        "javax.portlet.name=" + FormCounterPortletKeys.FORMCOUNTER,
-        "javax.portlet.resource-bundle=content.Language",
-        "javax.portlet.security-role-ref=power-user,user",
-        "javax.portlet.supported-locale=en,fa"
-}, service = Portlet.class)
+@Component(
+	property = {
+		"com.liferay.portlet.add-default-resource=true",
+		"com.liferay.portlet.display-category=category.hidden",
+		"com.liferay.portlet.header-portlet-css=/css/main.css",
+		"com.liferay.portlet.layout-cacheable=true",
+		"com.liferay.portlet.private-request-attributes=false",
+		"com.liferay.portlet.private-session-attributes=false",
+		"com.liferay.portlet.render-weight=50",
+		"com.liferay.portlet.use-default-template=true",
+		"javax.portlet.display-name=DDM Form Records Viewer",
+		"javax.portlet.init-param.template-path=/",
+		"javax.portlet.init-param.view-template=/view.jsp",
+		"javax.portlet.name=" + FormCounterPortletKeys.FORMCOUNTER,
+		"javax.portlet.resource-bundle=content.Language",
+		"javax.portlet.security-role-ref=power-user,user",
+		"javax.portlet.supported-locale=en,fa"
+	},
+	service = Portlet.class
+)
 public class FormCounterPortlet extends MVCPortlet {
 
-    private static final Log _log = LogFactoryUtil.getLog(FormCounterPortlet.class);
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
+	@Override
+	public void doView(
+			RenderRequest renderRequest, RenderResponse renderResponse)
+		throws IOException, PortletException {
 
-    @Override
-    public void doView(RenderRequest renderRequest, RenderResponse renderResponse)
-            throws IOException, PortletException {
+		try {
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
-        try {
-            ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
-            Locale locale = themeDisplay.getLocale();
-            long userId = themeDisplay.getUserId();
-            long groupId = themeDisplay.getScopeGroupId();
+			Locale locale = themeDisplay.getLocale();
+			long userId = themeDisplay.getUserId();
+			long groupId = themeDisplay.getScopeGroupId();
 
-            Map<String, List<String>> userCustomFields = UserCustomFieldUtil.getUserCustomFieldsWithValues(userId);
-            List<DDMFormInstance> formInstances = DDMFormService.getFormInstancesForUser(userCustomFields, groupId);
+			Map<String, List<String>> userCustomFields =
+				UserCustomFieldUtil.getUserCustomFieldsWithValues(userId);
 
-            SearchCriteria searchCriteria;
+			List<DDMFormInstance> formInstances =
+				DDMFormService.getFormInstancesForUser(
+					userCustomFields, groupId);
 
-            try {
-                PortletSession session = renderRequest.getPortletSession();
-                searchCriteria = (SearchCriteria) session.getAttribute("searchCriteria");
-            } catch (Exception exception) {
-                searchCriteria = null;
-            }
+			SearchCriteria searchCriteria;
 
-            if (searchCriteria == null) {
-                searchCriteria = new SearchCriteria();
-                searchCriteria.setUserCustomFields(userCustomFields);
+			try {
+				PortletSession session = renderRequest.getPortletSession();
 
-                long selectedFormInstanceId = ParamUtil.getLong(renderRequest,
-                        FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID, 0);
-                searchCriteria.setFormInstanceId(selectedFormInstanceId);
-            }
+				searchCriteria = (SearchCriteria)session.getAttribute(
+					"searchCriteria");
+			}
+			catch (Exception exception) {
+				searchCriteria = null;
+			}
 
-            int delta = ParamUtil.getInteger(renderRequest, FormCounterPortletKeys.PARAM_DELTA,
-                    FormCounterPortletKeys.DEFAULT_DELTA);
+			if (searchCriteria == null) {
+				searchCriteria = new SearchCriteria();
+				searchCriteria.setUserCustomFields(userCustomFields);
 
-            int cur = ParamUtil.getInteger(renderRequest, "cur", 1);
+				long selectedFormInstanceId = ParamUtil.getLong(
+					renderRequest,
+					FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID, 0);
+				searchCriteria.setFormInstanceId(selectedFormInstanceId);
+			}
 
-            String orderByCol = ParamUtil.getString(renderRequest, "orderByCol",
-                    FormCounterPortletKeys.DEFAULT_ORDER_BY_COL);
+			int delta = ParamUtil.getInteger(
+				renderRequest, FormCounterPortletKeys.PARAM_DELTA,
+				FormCounterPortletKeys.DEFAULT_DELTA);
 
-            String orderByType = ParamUtil.getString(renderRequest, "orderByType",
-                    FormCounterPortletKeys.DEFAULT_ORDER_BY_TYPE);
+			int cur = ParamUtil.getInteger(renderRequest, "cur", 1);
 
-            renderRequest.setAttribute("hasValidCustomFields", !userCustomFields.isEmpty());
-            renderRequest.setAttribute("selectedFormInstanceId", searchCriteria.getFormInstanceId());
-            renderRequest.setAttribute("searchCriteria", searchCriteria);
-            renderRequest.setAttribute("delta", delta);
-            renderRequest.setAttribute("cur", cur);
-            renderRequest.setAttribute("orderByCol", orderByCol);
-            renderRequest.setAttribute("orderByType", orderByType);
+			String orderByCol = ParamUtil.getString(
+				renderRequest, "orderByCol",
+				FormCounterPortletKeys.DEFAULT_ORDER_BY_COL);
 
-            List<FormInstanceDisplayDTO> formInstanceDTOs = convertToFormInstanceDTOs(formInstances, locale,
-                    userCustomFields);
-            renderRequest.setAttribute("formInstances", formInstanceDTOs);
+			String orderByType = ParamUtil.getString(
+				renderRequest, "orderByType",
+				FormCounterPortletKeys.DEFAULT_ORDER_BY_TYPE);
 
-            List<FormRecordDisplayDTO> formRecords = new ArrayList<>();
-            int totalCount = 0;
+			renderRequest.setAttribute("cur", cur);
+			renderRequest.setAttribute("delta", delta);
+			renderRequest.setAttribute(
+				"hasValidCustomFields", !userCustomFields.isEmpty());
+			renderRequest.setAttribute("orderByCol", orderByCol);
+			renderRequest.setAttribute("orderByType", orderByType);
+			renderRequest.setAttribute("searchCriteria", searchCriteria);
+			renderRequest.setAttribute(
+				"selectedFormInstanceId", searchCriteria.getFormInstanceId());
 
-            if (!userCustomFields.isEmpty()) {
-                int start = (cur - 1) * delta;
-                int end = start + delta;
+			List<FormInstanceDisplayDTO> formInstanceDTOs =
+				convertToFormInstanceDTOs(
+					formInstances, locale, userCustomFields);
 
-                if (searchCriteria.hasSearchCriteria() || searchCriteria.getFormInstanceId() > 0) {
+			renderRequest.setAttribute("formInstances", formInstanceDTOs);
 
-                    List<DDMFormInstanceRecord> records = DDMFormService.searchFormRecords(
-                            searchCriteria, start, end, orderByCol, orderByType);
+			List<FormRecordDisplayDTO> formRecords = new ArrayList<>();
+			int totalCount = 0;
 
-                    formRecords = convertToFormRecordDTOs(records, locale);
+			if (!userCustomFields.isEmpty()) {
+				int start = (cur - 1) * delta;
+				int end = start + delta;
 
-                    totalCount = records.size();
-                    if (totalCount == 0) {
-                        SessionErrors.add(renderRequest, "no-records-found");
-                    }
+				if (searchCriteria.hasSearchCriteria() ||
+					(searchCriteria.getFormInstanceId() > 0)) {
 
-                } else {
+					List<DDMFormInstanceRecord> records =
+						DDMFormService.searchFormRecords(
+							searchCriteria, start, end, orderByCol,
+							orderByType);
 
-                    List<DDMFormInstanceRecord> records = DDMFormService.getFilteredFormRecords(
-                            searchCriteria.getFormInstanceId(), userCustomFields, start, end, orderByCol, orderByType);
+					formRecords = convertToFormRecordDTOs(records, locale);
 
-                    formRecords = convertToFormRecordDTOs(records, locale);
-                    totalCount = records.size();
-                }
-            }
+					totalCount = records.size();
 
-            renderRequest.setAttribute("formRecords", formRecords);
-            renderRequest.setAttribute("totalCount", totalCount);
+					if (totalCount == 0) {
+						SessionErrors.add(renderRequest, "noRecordsFound");
+					}
+				}
+				else {
+					List<DDMFormInstanceRecord> records =
+						DDMFormService.getFilteredFormRecords(
+							searchCriteria.getFormInstanceId(),
+							userCustomFields, start, end, orderByCol,
+							orderByType);
 
-            long unseenCount = formRecords.stream().filter(record -> !record.isSeen()).count();
-            renderRequest.setAttribute("unseenCount", unseenCount);
+					formRecords = convertToFormRecordDTOs(records, locale);
+					totalCount = records.size();
+				}
+			}
 
-            int totalPages = (int) Math.ceil((double) totalCount / delta);
-            renderRequest.setAttribute("totalPages", totalPages);
-            renderRequest.setAttribute("currentPage", cur);
-            SessionMessages.add(renderRequest, SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
+			renderRequest.setAttribute("formRecords", formRecords);
+			renderRequest.setAttribute("totalCount", totalCount);
 
-        } catch (Exception e) {
-            renderRequest.setAttribute("errorMessage", "An error occurred while loading the form records.");
-        }
+			long unseenCount = formRecords.stream(
+			).filter(
+				record -> !record.isSeen()
+			).count();
+			renderRequest.setAttribute("unseenCount", unseenCount);
 
-        super.doView(renderRequest, renderResponse);
-    }
+			int totalPages = (int)Math.ceil((double)totalCount / delta);
+			renderRequest.setAttribute("totalPages", totalPages);
+			renderRequest.setAttribute("currentPage", cur);
+			SessionMessages.add(
+				renderRequest,
+				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
+		}
+		catch (Exception exception) {
+			renderRequest.setAttribute(
+				"errorMessage",
+				"An error occurred while loading the form records.");
+		}
 
-    public void searchRecords(ActionRequest actionRequest, ActionResponse actionResponse) {
+		super.doView(renderRequest, renderResponse);
+	}
 
-        try {
-            ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
-            long userId = themeDisplay.getUserId();
-            Map<String, List<String>> userCustomFields = UserCustomFieldUtil.getUserCustomFieldsWithValues(userId);
+	public void searchRecords(
+		ActionRequest actionRequest, ActionResponse actionResponse) {
 
-            SearchCriteria searchCriteria = new SearchCriteria();
-            searchCriteria.setUserCustomFields(userCustomFields);
+		try {
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
-            long formInstanceId = ParamUtil.getLong(actionRequest, FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID, 0);
-            searchCriteria.setFormInstanceId(formInstanceId);
+			long userId = themeDisplay.getUserId();
+			Map<String, List<String>> userCustomFields =
+				UserCustomFieldUtil.getUserCustomFieldsWithValues(userId);
 
-            String registrantName = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_REGISTRANT_NAME);
-            String formNumber = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_FORM_NUMBER);
-            String trackingCode = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_TRACKING_CODE);
-            String formName = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_FORM_NAME);
+			SearchCriteria searchCriteria = new SearchCriteria();
 
-            if (Validator.isNotNull(registrantName)) {
-                searchCriteria.setRegistrantName(registrantName.trim());
-            }
-            if (Validator.isNotNull(formNumber)) {
-                searchCriteria.setFormNumber(formNumber.trim());
-            }
-            if (Validator.isNotNull(trackingCode)) {
-                searchCriteria.setTrackingCode(trackingCode.trim());
-            }
-            if (Validator.isNotNull(formName)) {
-                searchCriteria.setFormName(formName.trim());
-            }
+			searchCriteria.setUserCustomFields(userCustomFields);
 
-            String startDateStr = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_START_DATE);
-            String endDateStr = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_END_DATE);
+			long formInstanceId = ParamUtil.getLong(
+				actionRequest, FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID,
+				0);
+			searchCriteria.setFormInstanceId(formInstanceId);
 
-            if (Validator.isNotNull(startDateStr)) {
-                try {
-                    Date startDate = DATE_FORMAT.parse(startDateStr);
-                    searchCriteria.setStartDate(startDate);
-                } catch (ParseException e) {
-                    _log.warn("Invalid start date format: " + startDateStr, e);
-                }
-            }
+			String registrantName = ParamUtil.getString(
+				actionRequest, FormCounterPortletKeys.PARAM_REGISTRANT_NAME);
+			String formNumber = ParamUtil.getString(
+				actionRequest, FormCounterPortletKeys.PARAM_FORM_NUMBER);
+			String trackingCode = ParamUtil.getString(
+				actionRequest, FormCounterPortletKeys.PARAM_TRACKING_CODE);
+			String formName = ParamUtil.getString(
+				actionRequest, FormCounterPortletKeys.PARAM_FORM_NAME);
 
-            if (Validator.isNotNull(endDateStr)) {
-                try {
-                    Date endDate = DATE_FORMAT.parse(endDateStr);
-                    searchCriteria.setEndDate(endDate);
-                } catch (ParseException e) {
-                    _log.warn("Invalid end date format: " + endDateStr, e);
-                }
-            }
+			if (Validator.isNotNull(registrantName)) {
+				searchCriteria.setRegistrantName(registrantName.trim());
+			}
 
-            String status = ParamUtil.getString(actionRequest, FormCounterPortletKeys.PARAM_STATUS);
-            if (Validator.isNotNull(status) && !"all".equals(status)) {
-                searchCriteria.setStatus(status);
-            }
+			if (Validator.isNotNull(formNumber)) {
+				searchCriteria.setFormNumber(formNumber.trim());
+			}
 
-            PortletSession session = actionRequest.getPortletSession();
-            session.setAttribute("searchCriteria", searchCriteria);
-            SessionMessages.add(actionRequest, SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_SUCCESS_MESSAGE);
+			if (Validator.isNotNull(trackingCode)) {
+				searchCriteria.setTrackingCode(trackingCode.trim());
+			}
 
-        } catch (Exception e) {
-            _log.error("Error processing search action", e);
-            actionRequest.setAttribute("errorMessage", "search.error.occurred");
-        }
-    }
+			if (Validator.isNotNull(formName)) {
+				searchCriteria.setFormName(formName.trim());
+			}
 
-    private List<FormInstanceDisplayDTO> convertToFormInstanceDTOs(List<DDMFormInstance> formInstances,
-                                                                   Locale locale, Map<String, List<String>> userCustomFields) {
-        List<FormInstanceDisplayDTO> dtos = new ArrayList<>();
+			String startDateStr = ParamUtil.getString(
+				actionRequest, FormCounterPortletKeys.PARAM_START_DATE);
+			String endDateStr = ParamUtil.getString(
+				actionRequest, FormCounterPortletKeys.PARAM_END_DATE);
 
-        for (DDMFormInstance formInstance : formInstances) {
-            FormInstanceDisplayDTO dto = new FormInstanceDisplayDTO(formInstance, locale);
+			if (Validator.isNotNull(startDateStr)) {
+				try {
+					Date startDate = DATE_FORMAT.parse(startDateStr);
 
-            if (userCustomFields != null && !userCustomFields.isEmpty()) {
-                int count = DDMFormService.getFilteredFormRecordsCount(formInstance.getFormInstanceId(), userCustomFields);
-                if (count == 0) {
-                    continue;
-                }
-                dto.setRecordCount(count);
-            }
+					searchCriteria.setStartDate(startDate);
+				}
+				catch (ParseException e) {
+					_log.warn("Invalid start date format: " + startDateStr, e);
+				}
+			}
 
-            dtos.add(dto);
-        }
+			if (Validator.isNotNull(endDateStr)) {
+				try {
+					Date endDate = DATE_FORMAT.parse(endDateStr);
 
-        return dtos;
-    }
+					searchCriteria.setEndDate(endDate);
+				}
+				catch (ParseException e) {
+					_log.warn("Invalid end date format: " + endDateStr, e);
+				}
+			}
 
-    private List<FormRecordDisplayDTO> convertToFormRecordDTOs(List<DDMFormInstanceRecord> records, Locale locale) {
-        List<FormRecordDisplayDTO> dtos = new ArrayList<>();
+			String status = ParamUtil.getString(
+				actionRequest, FormCounterPortletKeys.PARAM_STATUS);
 
-        for (DDMFormInstanceRecord record : records) {
-            try {
-                DDMFormInstance formInstance = DDMFormService.getFormInstance(record.getFormInstanceId());
+			if (Validator.isNotNull(status) && !"all".equals(status)) {
+				searchCriteria.setStatus(status);
+			}
 
-                FormRecordDisplayDTO dto = new FormRecordDisplayDTO(record, formInstance, locale);
-                dtos.add(dto);
+			PortletSession session = actionRequest.getPortletSession();
 
-            } catch (Exception e) {
-                _log.warn("Error converting record to DTO: " + record.getFormInstanceRecordId(), e);
-            }
-        }
+			session.setAttribute("searchCriteria", searchCriteria);
+			SessionMessages.add(
+				actionRequest,
+				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_SUCCESS_MESSAGE);
+		}
+		catch (Exception exception) {
+			_log.error("Error processing search action", exception);
+			actionRequest.setAttribute("errorMessage", "search.error.occurred");
+		}
+	}
 
-        dtos.sort((dto1, dto2) -> {
-            if (dto1.isSeen() == dto2.isSeen()) {
-                return dto2.getCreateDate().compareTo(dto1.getCreateDate());
-            }
-            return dto1.isSeen() ? 1 : -1;
-        });
+	private List<FormInstanceDisplayDTO> convertToFormInstanceDTOs(
+		List<DDMFormInstance> formInstances, Locale locale,
+		Map<String, List<String>> userCustomFields) {
 
-        return dtos;
-    }
+		List<FormInstanceDisplayDTO> dtos = new ArrayList<>();
+
+		for (DDMFormInstance formInstance : formInstances) {
+			FormInstanceDisplayDTO dto = new FormInstanceDisplayDTO(
+				formInstance, locale);
+
+			if ((userCustomFields != null) && !userCustomFields.isEmpty()) {
+				int count = DDMFormService.getFilteredFormRecordsCount(
+					formInstance.getFormInstanceId(), userCustomFields);
+
+				if (count == 0) {
+					continue;
+				}
+
+				dto.setRecordCount(count);
+			}
+
+			dtos.add(dto);
+		}
+
+		return dtos;
+	}
+
+	private List<FormRecordDisplayDTO> convertToFormRecordDTOs(
+		List<DDMFormInstanceRecord> records, Locale locale) {
+
+		List<FormRecordDisplayDTO> dtos = new ArrayList<>();
+
+		for (DDMFormInstanceRecord record : records) {
+			try {
+				DDMFormInstance formInstance = DDMFormService.getFormInstance(
+					record.getFormInstanceId());
+
+				FormRecordDisplayDTO dto = new FormRecordDisplayDTO(
+					record, formInstance, locale);
+
+				dtos.add(dto);
+			}
+			catch (Exception exception) {
+				_log.warn(
+					"Error converting record to DTO: " +
+						record.getFormInstanceRecordId(),
+					exception);
+			}
+		}
+
+		dtos.sort(
+			(dto1, dto2) -> {
+				if (dto1.isSeen() == dto2.isSeen()) {
+					return dto2.getCreateDate(
+					).compareTo(
+						dto1.getCreateDate()
+					);
+				}
+
+				if (dto1.isSeen()) {
+					return 1;
+				}
+
+				return -1;
+			});
+
+		return dtos;
+	}
+
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
+		"MM/dd/yyyy");
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		FormCounterPortlet.class);
+
 }

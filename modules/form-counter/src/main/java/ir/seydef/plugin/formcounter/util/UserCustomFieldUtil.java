@@ -23,93 +23,110 @@ import java.util.Map;
  */
 public class UserCustomFieldUtil {
 
-    private static final Log _log = LogFactoryUtil.getLog(UserCustomFieldUtil.class);
+	public static Map<String, List<String>> getUserCustomFieldsWithValues(
+		long userId) {
 
-    public static Map<String, List<String>> getUserCustomFieldsWithValues(long userId) {
-        Map<String, List<String>> customFieldsMap = new HashMap<>();
+		Map<String, List<String>> customFieldsMap = new HashMap<>();
 
-        if (userId <= 0) {
-            return customFieldsMap;
-        }
+		if (userId <= 0) {
+			return customFieldsMap;
+		}
 
-        try {
-            User user = UserLocalServiceUtil.fetchUser(userId);
-            if (user == null || user.isDefaultUser()) {
-                return customFieldsMap;
-            }
+		try {
+			User user = UserLocalServiceUtil.fetchUser(userId);
 
-            ExpandoTable table = ExpandoTableLocalServiceUtil.getTable(
-                    user.getCompanyId(),
-                    User.class.getName(),
-                    "CUSTOM_FIELDS");
+			if ((user == null) || user.isDefaultUser()) {
+				return customFieldsMap;
+			}
 
-            if (table == null) {
-                return customFieldsMap;
-            }
+			ExpandoTable table = ExpandoTableLocalServiceUtil.getTable(
+				user.getCompanyId(), User.class.getName(), "CUSTOM_FIELDS");
 
-            List<ExpandoColumn> columns = ExpandoColumnLocalServiceUtil.getColumns(table.getTableId());
+			if (table == null) {
+				return customFieldsMap;
+			}
 
-            for (ExpandoColumn column : columns) {
-                try {
-                    ExpandoValue expandoValue = ExpandoValueLocalServiceUtil.getValue(
-                            user.getCompanyId(),
-                            User.class.getName(),
-                            "CUSTOM_FIELDS",
-                            column.getName(),
-                            userId);
+			List<ExpandoColumn> columns =
+				ExpandoColumnLocalServiceUtil.getColumns(table.getTableId());
 
-                    if (expandoValue != null) {
-                        String value = GetterUtil.getString(expandoValue.getData());
+			for (ExpandoColumn column : columns) {
+				try {
+					ExpandoValue expandoValue =
+						ExpandoValueLocalServiceUtil.getValue(
+							user.getCompanyId(), User.class.getName(),
+							"CUSTOM_FIELDS", column.getName(), userId);
 
-                        if (Validator.isNotNull(value)) {
-                            List<String> values = splitCustomFieldValue(value);
-                            if (!values.isEmpty()) {
-                                customFieldsMap.put(column.getName(), values);
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    _log.warn("Error getting value for custom field: " + column.getName(), e);
-                }
-            }
+					if (expandoValue != null) {
+						String value = GetterUtil.getString(
+							expandoValue.getData());
 
-        } catch (Exception e) {
-            _log.error("Error getting user custom fields for user: " + userId, e);
-        }
+						if (Validator.isNotNull(value)) {
+							List<String> values = splitCustomFieldValue(value);
 
-        return customFieldsMap;
-    }
+							if (!values.isEmpty()) {
+								customFieldsMap.put(column.getName(), values);
+							}
+						}
+					}
+				}
+				catch (Exception exception) {
+					_log.warn(
+						"Error getting value for custom field: " +
+							column.getName(),
+						exception);
+				}
+			}
+		}
+		catch (Exception exception) {
+			_log.error(
+				"Error getting user custom fields for user: " + userId,
+				exception);
+		}
 
-    public static List<String> splitCustomFieldValue(String value) {
-        List<String> values = new ArrayList<>();
+		return customFieldsMap;
+	}
 
-        if (Validator.isNull(value)) {
-            return values;
-        }
+	public static List<String> splitCustomFieldValue(String value) {
+		List<String> values = new ArrayList<>();
 
-        if (value.contains(",")) {
-            String[] parts = value.split(",");
-            for (String part : parts) {
-                String trimmed = part.trim();
-                if (Validator.isNotNull(trimmed)) {
-                    values.add(trimmed);
-                }
-            }
-        } else if (value.contains("-")) {
-            String[] parts = value.split("-");
-            for (String part : parts) {
-                String trimmed = part.trim();
-                if (Validator.isNotNull(trimmed)) {
-                    values.add(trimmed);
-                }
-            }
-        } else {
-            String trimmed = value.trim();
-            if (Validator.isNotNull(trimmed)) {
-                values.add(trimmed);
-            }
-        }
+		if (Validator.isNull(value)) {
+			return values;
+		}
 
-        return values;
-    }
+		if (value.contains(",")) {
+			String[] parts = value.split(",");
+
+			for (String part : parts) {
+				String trimmed = part.trim();
+
+				if (Validator.isNotNull(trimmed)) {
+					values.add(trimmed);
+				}
+			}
+		}
+		else if (value.contains("-")) {
+			String[] parts = value.split("-");
+
+			for (String part : parts) {
+				String trimmed = part.trim();
+
+				if (Validator.isNotNull(trimmed)) {
+					values.add(trimmed);
+				}
+			}
+		}
+		else {
+			String trimmed = value.trim();
+
+			if (Validator.isNotNull(trimmed)) {
+				values.add(trimmed);
+			}
+		}
+
+		return values;
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		UserCustomFieldUtil.class);
+
 }

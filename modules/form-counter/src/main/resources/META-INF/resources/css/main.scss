@@ -325,7 +325,7 @@ select:focus,
   outline-offset: 2px;
 }
 
-/* High contrast mode support */
+/* ---------- High contrast mode support ---------- */
 @media (prefers-contrast: high) {
   .ddm-form-records-portlet {
     border: 2px solid #000;
@@ -459,7 +459,7 @@ select:focus,
   background-color: #ededed !important;
 }
 
-///* Clickable rows */
+///* ---------- Clickable rows ---------- */
 //.table-responsive table tbody tr {
 //  cursor: pointer;
 //  transition: all 0.2s ease;

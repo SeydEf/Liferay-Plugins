@@ -1,6 +1,7 @@
 package ir.seydef.plugin.formcounter.model;
 
 import java.io.Serializable;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -9,95 +10,105 @@ import java.util.Map;
  * @author S.Abolfazl Eftekhari
  */
 public class SearchCriteria implements Serializable {
-    private static final long serialVersionUID = 1L;
 
-    private String registrantName;
-    private String formNumber;
-    private String trackingCode;
-    private String formName;
-    private Date startDate;
-    private Date endDate;
-    private String status;
-    private long formInstanceId;
-    private Map<String, List<String>> userCustomFields;
+	public SearchCriteria() {
+	}
 
-    public SearchCriteria() {
-    }
+	public Date getEndDate() {
+		return _endDate;
+	}
 
-    public String getRegistrantName() {
-        return registrantName;
-    }
+	public long getFormInstanceId() {
+		return _formInstanceId;
+	}
 
-    public void setRegistrantName(String registrantName) {
-        this.registrantName = registrantName;
-    }
+	public String getFormName() {
+		return _formName;
+	}
 
-    public String getFormNumber() {
-        return formNumber;
-    }
+	public String getFormNumber() {
+		return _formNumber;
+	}
 
-    public void setFormNumber(String formNumber) {
-        this.formNumber = formNumber;
-    }
+	public String getRegistrantName() {
+		return _registrantName;
+	}
 
-    public String getTrackingCode() {
-        return trackingCode;
-    }
+	public Date getStartDate() {
+		return _startDate;
+	}
 
-    public void setTrackingCode(String trackingCode) {
-        this.trackingCode = trackingCode;
-    }
+	public String getStatus() {
+		return _status;
+	}
 
-    public String getFormName() {
-        return formName;
-    }
+	public String getTrackingCode() {
+		return _trackingCode;
+	}
 
-    public void setFormName(String formName) {
-        this.formName = formName;
-    }
+	public Map<String, List<String>> getUserCustomFields() {
+		return _userCustomFields;
+	}
 
-    public Date getStartDate() {
-        return startDate;
-    }
+	public boolean hasSearchCriteria() {
+		if ((_registrantName != null) || (_formNumber != null) ||
+			(_trackingCode != null) || (_formName != null) ||
+			(_startDate != null) || (_endDate != null) || (_status != null)) {
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
+			return true;
+		}
 
-    public Date getEndDate() {
-        return endDate;
-    }
+		return false;
+	}
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
+	public void setEndDate(Date endDate) {
+		_endDate = endDate;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public void setFormInstanceId(long formInstanceId) {
+		_formInstanceId = formInstanceId;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setFormName(String formName) {
+		_formName = formName;
+	}
 
-    public long getFormInstanceId() {
-        return formInstanceId;
-    }
+	public void setFormNumber(String formNumber) {
+		_formNumber = formNumber;
+	}
 
-    public void setFormInstanceId(long formInstanceId) {
-        this.formInstanceId = formInstanceId;
-    }
+	public void setRegistrantName(String registrantName) {
+		_registrantName = registrantName;
+	}
 
-    public Map<String, List<String>> getUserCustomFields() {
-        return userCustomFields;
-    }
+	public void setStartDate(Date startDate) {
+		_startDate = startDate;
+	}
 
-    public void setUserCustomFields(Map<String, List<String>> userCustomFields) {
-        this.userCustomFields = userCustomFields;
-    }
+	public void setStatus(String status) {
+		_status = status;
+	}
 
-    public boolean hasSearchCriteria() {
-        return registrantName != null || formNumber != null || trackingCode != null ||
-                formName != null || startDate != null || endDate != null || status != null;
-    }
+	public void setTrackingCode(String trackingCode) {
+		_trackingCode = trackingCode;
+	}
+
+	public void setUserCustomFields(
+		Map<String, List<String>> userCustomFields) {
+
+		_userCustomFields = userCustomFields;
+	}
+
+	private static final long serialVersionUID = 1L;
+
+	private Date _endDate;
+	private long _formInstanceId;
+	private String _formName;
+	private String _formNumber;
+	private String _registrantName;
+	private Date _startDate;
+	private String _status;
+	private String _trackingCode;
+	private Map<String, List<String>> _userCustomFields;
+
 }

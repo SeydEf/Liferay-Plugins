@@ -2,9 +2,9 @@ package ir.seydef.plugin.formcounter.model;
 
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
-import com.liferay.portal.kernel.util.Validator;
-import ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalServiceUtil;
+
 import ir.seydef.plugin.formcounter.helper.DDMFormService;
+import ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalServiceUtil;
 
 import java.util.Date;
 import java.util.Locale;
@@ -14,147 +14,152 @@ import java.util.Locale;
  */
 public class FormRecordDisplayDTO {
 
-    private long recordId;
-    private long formInstanceId;
-    private String formInstanceName;
-    private Date createDate;
-    private Date modifiedDate;
-    private String userName;
-    private String submitterName;
-    private boolean seen;
-    private String statusLabel;
-    private Date seenDate;
+	public FormRecordDisplayDTO() {
+	}
 
-    public FormRecordDisplayDTO() {
-    }
+	public FormRecordDisplayDTO(
+		DDMFormInstanceRecord record, DDMFormInstance formInstance,
+		Locale locale) {
 
-    public FormRecordDisplayDTO(DDMFormInstanceRecord record, DDMFormInstance formInstance, Locale locale) {
-        this.recordId = record.getFormInstanceRecordId();
-        this.formInstanceId = record.getFormInstanceId();
-        this.formInstanceName = formInstance != null ? formInstance.getName(locale) : "";
-        this.createDate = record.getCreateDate();
-        this.modifiedDate = record.getModifiedDate();
-        this.userName = record.getUserName();
+		_recordId = record.getFormInstanceRecordId();
+		_formInstanceId = record.getFormInstanceId();
+		_formInstanceName =
+			(formInstance != null) ? formInstance.getName(locale) : "";
+		_createDate = record.getCreateDate();
+		_modifiedDate = record.getModifiedDate();
+		_userName = record.getUserName();
 
-        // Extract submitter name from form fields
-        this.submitterName = DDMFormService.extractSubmitterNameFromRecord(record);
+		_submitterName = DDMFormService.extractSubmitterNameFromRecord(record);
 
-        try {
-            FormSubmissionStatus submissionStatus = FormSubmissionStatusLocalServiceUtil
-                    .getByFormInstanceRecordId(record.getFormInstanceRecordId());
-            if (submissionStatus != null) {
-                this.seen = submissionStatus.isSeen();
-                this.seenDate = submissionStatus.getSeenDate();
-                this.statusLabel = submissionStatus.isSeen() ? "seen" : "unseen";
-            } else {
-                this.seen = false;
-                this.seenDate = null;
-                this.statusLabel = "unseen";
-            }
-        } catch (Exception e) {
-            this.seen = false;
-            this.seenDate = null;
-            this.statusLabel = "unseen";
-        }
-    }
+		try {
+			FormSubmissionStatus submissionStatus =
+				FormSubmissionStatusLocalServiceUtil.getByFormInstanceRecordId(
+					record.getFormInstanceRecordId());
 
-    public long getRecordId() {
-        return recordId;
-    }
+			if (submissionStatus != null) {
+				_seen = submissionStatus.isSeen();
+				_seenDate = submissionStatus.getSeenDate();
+				_statusLabel = submissionStatus.isSeen() ? "seen" : "unseen";
+			}
+			else {
+				_seen = false;
+				_seenDate = null;
+				_statusLabel = "unseen";
+			}
+		}
+		catch (Exception exception) {
+			_seen = false;
+			_seenDate = null;
+			_statusLabel = "unseen";
+		}
+	}
 
-    public void setRecordId(long recordId) {
-        this.recordId = recordId;
-    }
+	public Date getCreateDate() {
+		return _createDate;
+	}
 
-    public long getFormInstanceId() {
-        return formInstanceId;
-    }
+	public String getFormattedCreateDate() {
+		if (_createDate != null) {
+			return _createDate.toString();
+		}
 
-    public void setFormInstanceId(long formInstanceId) {
-        this.formInstanceId = formInstanceId;
-    }
+		return "";
+	}
 
-    public String getFormInstanceName() {
-        return formInstanceName;
-    }
+	public long getFormInstanceId() {
+		return _formInstanceId;
+	}
 
-    public void setFormInstanceName(String formInstanceName) {
-        this.formInstanceName = formInstanceName;
-    }
+	public String getFormInstanceName() {
+		return _formInstanceName;
+	}
 
-    public Date getCreateDate() {
-        return createDate;
-    }
+	public Date getModifiedDate() {
+		return _modifiedDate;
+	}
 
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
+	public long getRecordId() {
+		return _recordId;
+	}
 
-    public Date getModifiedDate() {
-        return modifiedDate;
-    }
+	public Date getSeenDate() {
+		return _seenDate;
+	}
 
-    public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
+	public String getStatusLabel() {
+		return _statusLabel;
+	}
 
-    public String getUserName() {
-        return userName;
-    }
+	public String getSubmitterName() {
+		return _submitterName;
+	}
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+	public String getUserName() {
+		return _userName;
+	}
 
-    public String getSubmitterName() {
-        return submitterName;
-    }
+	public boolean isSeen() {
+		return _seen;
+	}
 
-    public void setSubmitterName(String submitterName) {
-        this.submitterName = submitterName;
-    }
+	public void setCreateDate(Date createDate) {
+		_createDate = createDate;
+	}
 
-    public boolean isSeen() {
-        return seen;
-    }
+	public void setFormInstanceId(long formInstanceId) {
+		_formInstanceId = formInstanceId;
+	}
 
-    public void setSeen(boolean seen) {
-        this.seen = seen;
-    }
+	public void setFormInstanceName(String formInstanceName) {
+		_formInstanceName = formInstanceName;
+	}
 
-    public Date getSeenDate() {
-        return seenDate;
-    }
+	public void setModifiedDate(Date modifiedDate) {
+		_modifiedDate = modifiedDate;
+	}
 
-    public void setSeenDate(Date seenDate) {
-        this.seenDate = seenDate;
-    }
+	public void setRecordId(long recordId) {
+		_recordId = recordId;
+	}
 
-    public String getStatusLabel() {
-        return statusLabel;
-    }
+	public void setSeen(boolean seen) {
+		_seen = seen;
+	}
 
-    public void setStatusLabel(String statusLabel) {
-        this.statusLabel = statusLabel;
-    }
+	public void setSeenDate(Date seenDate) {
+		_seenDate = seenDate;
+	}
 
-    public String getFormattedCreateDate() {
-        if (createDate != null) {
-            return createDate.toString();
-        }
-        return "";
-    }
+	public void setStatusLabel(String statusLabel) {
+		_statusLabel = statusLabel;
+	}
 
-    @Override
-    public String toString() {
-        return "FormRecordDisplayDTO{" +
-                "recordId=" + recordId +
-                ", formInstanceId=" + formInstanceId +
-                ", formInstanceName='" + formInstanceName + '\'' +
-                ", createDate=" + createDate +
-                ", userName='" + userName + '\'' +
-                ", seen=" + seen +
-                ", statusLabel='" + statusLabel + '\'' +
-                '}';
-    }
+	public void setSubmitterName(String submitterName) {
+		_submitterName = submitterName;
+	}
+
+	public void setUserName(String userName) {
+		_userName = userName;
+	}
+
+	@Override
+	public String toString() {
+		return "FormRecordDisplayDTO{recordId=" + _recordId +
+			", formInstanceId=" + _formInstanceId + ", formInstanceName='" +
+				_formInstanceName + '\'' + ", createDate=" + _createDate +
+					", userName='" + _userName + '\'' + ", seen=" + _seen +
+						", statusLabel='" + _statusLabel + '\'' + '}';
+	}
+
+	private Date _createDate;
+	private long _formInstanceId;
+	private String _formInstanceName;
+	private Date _modifiedDate;
+	private long _recordId;
+	private boolean _seen;
+	private Date _seenDate;
+	private String _statusLabel;
+	private String _submitterName;
+	private String _userName;
+
 }

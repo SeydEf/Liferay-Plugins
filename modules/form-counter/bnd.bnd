@@ -1,13 +1,13 @@
 Bundle-Name: form-counter
 Bundle-SymbolicName: ir.seydef.plugin.formcounter
 Bundle-Version: 1.0.0
-Export-Package: \
-    ir.seydef.plugin.formcounter.application.list,\
+Export-Package:\
+	ir.seydef.plugin.formcounter.application.list,\
 	ir.seydef.plugin.formcounter.constants,\
 	ir.seydef.plugin.formcounter.model,\
-    ir.seydef.plugin.formcounter.helper,\
+	ir.seydef.plugin.formcounter.helper,\
 	ir.seydef.plugin.formcounter.util
-Import-Package: \
+Import-Package:\
 	ir.seydef.plugin.formcounter.model;resolution:=optional,\
 	ir.seydef.plugin.formcounter.service;resolution:=optional,\
 	*
