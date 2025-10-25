@@ -66,9 +66,9 @@
 			<finder-column name="groupId" />
 		</finder>
 
-		<finder name="G_S" return-type="Collection">
-			<finder-column name="groupId" />
+		<finder name="S_G" return-type="Collection">
 			<finder-column name="seen" />
+			<finder-column name="groupId" />
 		</finder>
 	</entity>
 </service-builder>

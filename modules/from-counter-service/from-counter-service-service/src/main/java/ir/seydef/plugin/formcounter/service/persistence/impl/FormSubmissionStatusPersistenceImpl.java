@@ -1828,74 +1828,74 @@ public class FormSubmissionStatusPersistenceImpl
 	private static final String _FINDER_COLUMN_GROUPID_GROUPID_2 =
 		"formSubmissionStatus.groupId = ?";
 
-	private FinderPath _finderPathWithPaginationFindByG_S;
-	private FinderPath _finderPathWithoutPaginationFindByG_S;
-	private FinderPath _finderPathCountByG_S;
+	private FinderPath _finderPathWithPaginationFindByS_G;
+	private FinderPath _finderPathWithoutPaginationFindByS_G;
+	private FinderPath _finderPathCountByS_G;
 
 	/**
-	 * Returns all the form submission statuses where groupId = &#63; and seen = &#63;.
+	 * Returns all the form submission statuses where seen = &#63; and groupId = &#63;.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @return the matching form submission statuses
 	 */
 	@Override
-	public List<FormSubmissionStatus> findByG_S(long groupId, boolean seen) {
-		return findByG_S(
-			groupId, seen, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+	public List<FormSubmissionStatus> findByS_G(boolean seen, long groupId) {
+		return findByS_G(
+			seen, groupId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
 
 	/**
-	 * Returns a range of all the form submission statuses where groupId = &#63; and seen = &#63;.
+	 * Returns a range of all the form submission statuses where seen = &#63; and groupId = &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>FormSubmissionStatusModelImpl</code>.
 	 * </p>
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param start the lower bound of the range of form submission statuses
 	 * @param end the upper bound of the range of form submission statuses (not inclusive)
 	 * @return the range of matching form submission statuses
 	 */
 	@Override
-	public List<FormSubmissionStatus> findByG_S(
-		long groupId, boolean seen, int start, int end) {
+	public List<FormSubmissionStatus> findByS_G(
+		boolean seen, long groupId, int start, int end) {
 
-		return findByG_S(groupId, seen, start, end, null);
+		return findByS_G(seen, groupId, start, end, null);
 	}
 
 	/**
-	 * Returns an ordered range of all the form submission statuses where groupId = &#63; and seen = &#63;.
+	 * Returns an ordered range of all the form submission statuses where seen = &#63; and groupId = &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>FormSubmissionStatusModelImpl</code>.
 	 * </p>
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param start the lower bound of the range of form submission statuses
 	 * @param end the upper bound of the range of form submission statuses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching form submission statuses
 	 */
 	@Override
-	public List<FormSubmissionStatus> findByG_S(
-		long groupId, boolean seen, int start, int end,
+	public List<FormSubmissionStatus> findByS_G(
+		boolean seen, long groupId, int start, int end,
 		OrderByComparator<FormSubmissionStatus> orderByComparator) {
 
-		return findByG_S(groupId, seen, start, end, orderByComparator, true);
+		return findByS_G(seen, groupId, start, end, orderByComparator, true);
 	}
 
 	/**
-	 * Returns an ordered range of all the form submission statuses where groupId = &#63; and seen = &#63;.
+	 * Returns an ordered range of all the form submission statuses where seen = &#63; and groupId = &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>FormSubmissionStatusModelImpl</code>.
 	 * </p>
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param start the lower bound of the range of form submission statuses
 	 * @param end the upper bound of the range of form submission statuses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -1903,8 +1903,8 @@ public class FormSubmissionStatusPersistenceImpl
 	 * @return the ordered range of matching form submission statuses
 	 */
 	@Override
-	public List<FormSubmissionStatus> findByG_S(
-		long groupId, boolean seen, int start, int end,
+	public List<FormSubmissionStatus> findByS_G(
+		boolean seen, long groupId, int start, int end,
 		OrderByComparator<FormSubmissionStatus> orderByComparator,
 		boolean useFinderCache) {
 
@@ -1915,14 +1915,14 @@ public class FormSubmissionStatusPersistenceImpl
 			(orderByComparator == null)) {
 
 			if (useFinderCache) {
-				finderPath = _finderPathWithoutPaginationFindByG_S;
-				finderArgs = new Object[] {groupId, seen};
+				finderPath = _finderPathWithoutPaginationFindByS_G;
+				finderArgs = new Object[] {seen, groupId};
 			}
 		}
 		else if (useFinderCache) {
-			finderPath = _finderPathWithPaginationFindByG_S;
+			finderPath = _finderPathWithPaginationFindByS_G;
 			finderArgs = new Object[] {
-				groupId, seen, start, end, orderByComparator
+				seen, groupId, start, end, orderByComparator
 			};
 		}
 
@@ -1934,8 +1934,8 @@ public class FormSubmissionStatusPersistenceImpl
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FormSubmissionStatus formSubmissionStatus : list) {
-					if ((groupId != formSubmissionStatus.getGroupId()) ||
-						(seen != formSubmissionStatus.isSeen())) {
+					if ((seen != formSubmissionStatus.isSeen()) ||
+						(groupId != formSubmissionStatus.getGroupId())) {
 
 						list = null;
 
@@ -1958,9 +1958,9 @@ public class FormSubmissionStatusPersistenceImpl
 
 			sb.append(_SQL_SELECT_FORMSUBMISSIONSTATUS_WHERE);
 
-			sb.append(_FINDER_COLUMN_G_S_GROUPID_2);
+			sb.append(_FINDER_COLUMN_S_G_SEEN_2);
 
-			sb.append(_FINDER_COLUMN_G_S_SEEN_2);
+			sb.append(_FINDER_COLUMN_S_G_GROUPID_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
@@ -1981,9 +1981,9 @@ public class FormSubmissionStatusPersistenceImpl
 
 				QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(groupId);
-
 				queryPos.add(seen);
+
+				queryPos.add(groupId);
 
 				list = (List<FormSubmissionStatus>)QueryUtil.list(
 					query, getDialect(), start, end);
@@ -2006,22 +2006,22 @@ public class FormSubmissionStatusPersistenceImpl
 	}
 
 	/**
-	 * Returns the first form submission status in the ordered set where groupId = &#63; and seen = &#63;.
+	 * Returns the first form submission status in the ordered set where seen = &#63; and groupId = &#63;.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching form submission status
 	 * @throws NoSuchFormSubmissionStatusException if a matching form submission status could not be found
 	 */
 	@Override
-	public FormSubmissionStatus findByG_S_First(
-			long groupId, boolean seen,
+	public FormSubmissionStatus findByS_G_First(
+			boolean seen, long groupId,
 			OrderByComparator<FormSubmissionStatus> orderByComparator)
 		throws NoSuchFormSubmissionStatusException {
 
-		FormSubmissionStatus formSubmissionStatus = fetchByG_S_First(
-			groupId, seen, orderByComparator);
+		FormSubmissionStatus formSubmissionStatus = fetchByS_G_First(
+			seen, groupId, orderByComparator);
 
 		if (formSubmissionStatus != null) {
 			return formSubmissionStatus;
@@ -2031,11 +2031,11 @@ public class FormSubmissionStatusPersistenceImpl
 
 		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		sb.append("groupId=");
-		sb.append(groupId);
-
-		sb.append(", seen=");
+		sb.append("seen=");
 		sb.append(seen);
+
+		sb.append(", groupId=");
+		sb.append(groupId);
 
 		sb.append("}");
 
@@ -2043,20 +2043,20 @@ public class FormSubmissionStatusPersistenceImpl
 	}
 
 	/**
-	 * Returns the first form submission status in the ordered set where groupId = &#63; and seen = &#63;.
+	 * Returns the first form submission status in the ordered set where seen = &#63; and groupId = &#63;.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching form submission status, or <code>null</code> if a matching form submission status could not be found
 	 */
 	@Override
-	public FormSubmissionStatus fetchByG_S_First(
-		long groupId, boolean seen,
+	public FormSubmissionStatus fetchByS_G_First(
+		boolean seen, long groupId,
 		OrderByComparator<FormSubmissionStatus> orderByComparator) {
 
-		List<FormSubmissionStatus> list = findByG_S(
-			groupId, seen, 0, 1, orderByComparator);
+		List<FormSubmissionStatus> list = findByS_G(
+			seen, groupId, 0, 1, orderByComparator);
 
 		if (!list.isEmpty()) {
 			return list.get(0);
@@ -2066,22 +2066,22 @@ public class FormSubmissionStatusPersistenceImpl
 	}
 
 	/**
-	 * Returns the last form submission status in the ordered set where groupId = &#63; and seen = &#63;.
+	 * Returns the last form submission status in the ordered set where seen = &#63; and groupId = &#63;.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching form submission status
 	 * @throws NoSuchFormSubmissionStatusException if a matching form submission status could not be found
 	 */
 	@Override
-	public FormSubmissionStatus findByG_S_Last(
-			long groupId, boolean seen,
+	public FormSubmissionStatus findByS_G_Last(
+			boolean seen, long groupId,
 			OrderByComparator<FormSubmissionStatus> orderByComparator)
 		throws NoSuchFormSubmissionStatusException {
 
-		FormSubmissionStatus formSubmissionStatus = fetchByG_S_Last(
-			groupId, seen, orderByComparator);
+		FormSubmissionStatus formSubmissionStatus = fetchByS_G_Last(
+			seen, groupId, orderByComparator);
 
 		if (formSubmissionStatus != null) {
 			return formSubmissionStatus;
@@ -2091,11 +2091,11 @@ public class FormSubmissionStatusPersistenceImpl
 
 		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		sb.append("groupId=");
-		sb.append(groupId);
-
-		sb.append(", seen=");
+		sb.append("seen=");
 		sb.append(seen);
+
+		sb.append(", groupId=");
+		sb.append(groupId);
 
 		sb.append("}");
 
@@ -2103,26 +2103,26 @@ public class FormSubmissionStatusPersistenceImpl
 	}
 
 	/**
-	 * Returns the last form submission status in the ordered set where groupId = &#63; and seen = &#63;.
+	 * Returns the last form submission status in the ordered set where seen = &#63; and groupId = &#63;.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching form submission status, or <code>null</code> if a matching form submission status could not be found
 	 */
 	@Override
-	public FormSubmissionStatus fetchByG_S_Last(
-		long groupId, boolean seen,
+	public FormSubmissionStatus fetchByS_G_Last(
+		boolean seen, long groupId,
 		OrderByComparator<FormSubmissionStatus> orderByComparator) {
 
-		int count = countByG_S(groupId, seen);
+		int count = countByS_G(seen, groupId);
 
 		if (count == 0) {
 			return null;
 		}
 
-		List<FormSubmissionStatus> list = findByG_S(
-			groupId, seen, count - 1, count, orderByComparator);
+		List<FormSubmissionStatus> list = findByS_G(
+			seen, groupId, count - 1, count, orderByComparator);
 
 		if (!list.isEmpty()) {
 			return list.get(0);
@@ -2132,18 +2132,18 @@ public class FormSubmissionStatusPersistenceImpl
 	}
 
 	/**
-	 * Returns the form submission statuses before and after the current form submission status in the ordered set where groupId = &#63; and seen = &#63;.
+	 * Returns the form submission statuses before and after the current form submission status in the ordered set where seen = &#63; and groupId = &#63;.
 	 *
 	 * @param formSubmissionStatusId the primary key of the current form submission status
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next form submission status
 	 * @throws NoSuchFormSubmissionStatusException if a form submission status with the primary key could not be found
 	 */
 	@Override
-	public FormSubmissionStatus[] findByG_S_PrevAndNext(
-			long formSubmissionStatusId, long groupId, boolean seen,
+	public FormSubmissionStatus[] findByS_G_PrevAndNext(
+			long formSubmissionStatusId, boolean seen, long groupId,
 			OrderByComparator<FormSubmissionStatus> orderByComparator)
 		throws NoSuchFormSubmissionStatusException {
 
@@ -2157,14 +2157,14 @@ public class FormSubmissionStatusPersistenceImpl
 
 			FormSubmissionStatus[] array = new FormSubmissionStatusImpl[3];
 
-			array[0] = getByG_S_PrevAndNext(
-				session, formSubmissionStatus, groupId, seen, orderByComparator,
+			array[0] = getByS_G_PrevAndNext(
+				session, formSubmissionStatus, seen, groupId, orderByComparator,
 				true);
 
 			array[1] = formSubmissionStatus;
 
-			array[2] = getByG_S_PrevAndNext(
-				session, formSubmissionStatus, groupId, seen, orderByComparator,
+			array[2] = getByS_G_PrevAndNext(
+				session, formSubmissionStatus, seen, groupId, orderByComparator,
 				false);
 
 			return array;
@@ -2177,9 +2177,9 @@ public class FormSubmissionStatusPersistenceImpl
 		}
 	}
 
-	protected FormSubmissionStatus getByG_S_PrevAndNext(
+	protected FormSubmissionStatus getByS_G_PrevAndNext(
 		Session session, FormSubmissionStatus formSubmissionStatus,
-		long groupId, boolean seen,
+		boolean seen, long groupId,
 		OrderByComparator<FormSubmissionStatus> orderByComparator,
 		boolean previous) {
 
@@ -2196,9 +2196,9 @@ public class FormSubmissionStatusPersistenceImpl
 
 		sb.append(_SQL_SELECT_FORMSUBMISSIONSTATUS_WHERE);
 
-		sb.append(_FINDER_COLUMN_G_S_GROUPID_2);
+		sb.append(_FINDER_COLUMN_S_G_SEEN_2);
 
-		sb.append(_FINDER_COLUMN_G_S_SEEN_2);
+		sb.append(_FINDER_COLUMN_S_G_GROUPID_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
@@ -2269,9 +2269,9 @@ public class FormSubmissionStatusPersistenceImpl
 
 		QueryPos queryPos = QueryPos.getInstance(query);
 
-		queryPos.add(groupId);
-
 		queryPos.add(seen);
+
+		queryPos.add(groupId);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
@@ -2293,16 +2293,16 @@ public class FormSubmissionStatusPersistenceImpl
 	}
 
 	/**
-	 * Removes all the form submission statuses where groupId = &#63; and seen = &#63; from the database.
+	 * Removes all the form submission statuses where seen = &#63; and groupId = &#63; from the database.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 */
 	@Override
-	public void removeByG_S(long groupId, boolean seen) {
+	public void removeByS_G(boolean seen, long groupId) {
 		for (FormSubmissionStatus formSubmissionStatus :
-				findByG_S(
-					groupId, seen, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+				findByS_G(
+					seen, groupId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
 					null)) {
 
 			remove(formSubmissionStatus);
@@ -2310,17 +2310,17 @@ public class FormSubmissionStatusPersistenceImpl
 	}
 
 	/**
-	 * Returns the number of form submission statuses where groupId = &#63; and seen = &#63;.
+	 * Returns the number of form submission statuses where seen = &#63; and groupId = &#63;.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @return the number of matching form submission statuses
 	 */
 	@Override
-	public int countByG_S(long groupId, boolean seen) {
-		FinderPath finderPath = _finderPathCountByG_S;
+	public int countByS_G(boolean seen, long groupId) {
+		FinderPath finderPath = _finderPathCountByS_G;
 
-		Object[] finderArgs = new Object[] {groupId, seen};
+		Object[] finderArgs = new Object[] {seen, groupId};
 
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
@@ -2329,9 +2329,9 @@ public class FormSubmissionStatusPersistenceImpl
 
 			sb.append(_SQL_COUNT_FORMSUBMISSIONSTATUS_WHERE);
 
-			sb.append(_FINDER_COLUMN_G_S_GROUPID_2);
+			sb.append(_FINDER_COLUMN_S_G_SEEN_2);
 
-			sb.append(_FINDER_COLUMN_G_S_SEEN_2);
+			sb.append(_FINDER_COLUMN_S_G_GROUPID_2);
 
 			String sql = sb.toString();
 
@@ -2344,9 +2344,9 @@ public class FormSubmissionStatusPersistenceImpl
 
 				QueryPos queryPos = QueryPos.getInstance(query);
 
-				queryPos.add(groupId);
-
 				queryPos.add(seen);
+
+				queryPos.add(groupId);
 
 				count = (Long)query.uniqueResult();
 
@@ -2363,11 +2363,11 @@ public class FormSubmissionStatusPersistenceImpl
 		return count.intValue();
 	}
 
-	private static final String _FINDER_COLUMN_G_S_GROUPID_2 =
-		"formSubmissionStatus.groupId = ? AND ";
+	private static final String _FINDER_COLUMN_S_G_SEEN_2 =
+		"formSubmissionStatus.seen = ? AND ";
 
-	private static final String _FINDER_COLUMN_G_S_SEEN_2 =
-		"formSubmissionStatus.seen = ?";
+	private static final String _FINDER_COLUMN_S_G_GROUPID_2 =
+		"formSubmissionStatus.groupId = ?";
 
 	public FormSubmissionStatusPersistenceImpl() {
 		setModelClass(FormSubmissionStatus.class);
@@ -3027,24 +3027,24 @@ public class FormSubmissionStatusPersistenceImpl
 			new String[] {Long.class.getName()}, new String[] {"groupId"},
 			false);
 
-		_finderPathWithPaginationFindByG_S = _createFinderPath(
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByG_S",
+		_finderPathWithPaginationFindByS_G = _createFinderPath(
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByS_G",
 			new String[] {
-				Long.class.getName(), Boolean.class.getName(),
+				Boolean.class.getName(), Long.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
 			},
-			new String[] {"groupId", "seen"}, true);
+			new String[] {"seen", "groupId"}, true);
 
-		_finderPathWithoutPaginationFindByG_S = _createFinderPath(
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByG_S",
-			new String[] {Long.class.getName(), Boolean.class.getName()},
-			new String[] {"groupId", "seen"}, true);
+		_finderPathWithoutPaginationFindByS_G = _createFinderPath(
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByS_G",
+			new String[] {Boolean.class.getName(), Long.class.getName()},
+			new String[] {"seen", "groupId"}, true);
 
-		_finderPathCountByG_S = _createFinderPath(
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByG_S",
-			new String[] {Long.class.getName(), Boolean.class.getName()},
-			new String[] {"groupId", "seen"}, false);
+		_finderPathCountByS_G = _createFinderPath(
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByS_G",
+			new String[] {Boolean.class.getName(), Long.class.getName()},
+			new String[] {"seen", "groupId"}, false);
 
 		FormSubmissionStatusUtil.setPersistence(this);
 	}

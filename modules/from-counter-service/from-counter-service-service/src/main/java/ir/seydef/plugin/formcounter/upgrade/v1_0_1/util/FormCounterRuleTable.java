@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public class FormCounterRuleTable {
 
+	public static final String TABLE_NAME = "FormCounterRule";
+
 	public static final Object[][] TABLE_COLUMNS = {
 		{"formCounterRuleId", Types.BIGINT}, {"ruleName", Types.VARCHAR},
 		{"description", Types.VARCHAR}, {"ruleConditions", Types.VARCHAR},
@@ -22,13 +24,6 @@ public class FormCounterRuleTable {
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
 		new HashMap<>();
-
-	public static final String TABLE_NAME = "FormCounterRule";
-
-	public static final String TABLE_SQL_CREATE =
-		"create table FormCounterRule (formCounterRuleId LONG not null primary key,ruleName VARCHAR(75) null,description VARCHAR(75) null,ruleConditions VARCHAR(75) null,logicOperator VARCHAR(75) null,active BOOLEAN,companyId LONG,groupId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null)";
-
-	public static final String TABLE_SQL_DROP = "drop table FormCounterRule";
 
 	static {
 		TABLE_COLUMNS_MAP.put("active", Types.BOOLEAN);
@@ -44,5 +39,19 @@ public class FormCounterRuleTable {
 		TABLE_COLUMNS_MAP.put("userId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("userName", Types.VARCHAR);
 	}
+
+	public static final String TABLE_SQL_CREATE =
+
+		"create table FormCounterRule (formCounterRuleId LONG not null primary key,ruleName VARCHAR(75) null,description VARCHAR(75) null,ruleConditions VARCHAR(75) null,logicOperator VARCHAR(75) null,active BOOLEAN,companyId LONG,groupId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null)";
+
+	public static final String TABLE_SQL_DROP = "drop table FormCounterRule";
+
+	public static final String[] TABLE_SQL_ADD_INDEXES = {
+		"create index IX_610391EF on FormCounterRule (active_);" +
+		"create index IX_1E1F4C80 on FormSubmissionStatus (companyId);" +
+		"create index IX_837B541 on FormSubmissionStatus (formInstanceRecordId);" +
+		"create index IX_335F9E33 on FormSubmissionStatus (seen, groupId);"
+	};
+
 
 }

@@ -704,192 +704,192 @@ public class FormSubmissionStatusUtil {
 	}
 
 	/**
-	 * Returns all the form submission statuses where groupId = &#63; and seen = &#63;.
+	 * Returns all the form submission statuses where seen = &#63; and groupId = &#63;.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @return the matching form submission statuses
 	 */
-	public static List<FormSubmissionStatus> findByG_S(
-		long groupId, boolean seen) {
+	public static List<FormSubmissionStatus> findByS_G(
+		boolean seen, long groupId) {
 
-		return getPersistence().findByG_S(groupId, seen);
+		return getPersistence().findByS_G(seen, groupId);
 	}
 
 	/**
-	 * Returns a range of all the form submission statuses where groupId = &#63; and seen = &#63;.
+	 * Returns a range of all the form submission statuses where seen = &#63; and groupId = &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>FormSubmissionStatusModelImpl</code>.
 	 * </p>
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param start the lower bound of the range of form submission statuses
 	 * @param end the upper bound of the range of form submission statuses (not inclusive)
 	 * @return the range of matching form submission statuses
 	 */
-	public static List<FormSubmissionStatus> findByG_S(
-		long groupId, boolean seen, int start, int end) {
+	public static List<FormSubmissionStatus> findByS_G(
+		boolean seen, long groupId, int start, int end) {
 
-		return getPersistence().findByG_S(groupId, seen, start, end);
+		return getPersistence().findByS_G(seen, groupId, start, end);
 	}
 
 	/**
-	 * Returns an ordered range of all the form submission statuses where groupId = &#63; and seen = &#63;.
+	 * Returns an ordered range of all the form submission statuses where seen = &#63; and groupId = &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>FormSubmissionStatusModelImpl</code>.
 	 * </p>
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param start the lower bound of the range of form submission statuses
 	 * @param end the upper bound of the range of form submission statuses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching form submission statuses
 	 */
-	public static List<FormSubmissionStatus> findByG_S(
-		long groupId, boolean seen, int start, int end,
+	public static List<FormSubmissionStatus> findByS_G(
+		boolean seen, long groupId, int start, int end,
 		OrderByComparator<FormSubmissionStatus> orderByComparator) {
 
-		return getPersistence().findByG_S(
-			groupId, seen, start, end, orderByComparator);
+		return getPersistence().findByS_G(
+			seen, groupId, start, end, orderByComparator);
 	}
 
 	/**
-	 * Returns an ordered range of all the form submission statuses where groupId = &#63; and seen = &#63;.
+	 * Returns an ordered range of all the form submission statuses where seen = &#63; and groupId = &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>FormSubmissionStatusModelImpl</code>.
 	 * </p>
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param start the lower bound of the range of form submission statuses
 	 * @param end the upper bound of the range of form submission statuses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching form submission statuses
 	 */
-	public static List<FormSubmissionStatus> findByG_S(
-		long groupId, boolean seen, int start, int end,
+	public static List<FormSubmissionStatus> findByS_G(
+		boolean seen, long groupId, int start, int end,
 		OrderByComparator<FormSubmissionStatus> orderByComparator,
 		boolean useFinderCache) {
 
-		return getPersistence().findByG_S(
-			groupId, seen, start, end, orderByComparator, useFinderCache);
+		return getPersistence().findByS_G(
+			seen, groupId, start, end, orderByComparator, useFinderCache);
 	}
 
 	/**
-	 * Returns the first form submission status in the ordered set where groupId = &#63; and seen = &#63;.
+	 * Returns the first form submission status in the ordered set where seen = &#63; and groupId = &#63;.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching form submission status
 	 * @throws NoSuchFormSubmissionStatusException if a matching form submission status could not be found
 	 */
-	public static FormSubmissionStatus findByG_S_First(
-			long groupId, boolean seen,
+	public static FormSubmissionStatus findByS_G_First(
+			boolean seen, long groupId,
 			OrderByComparator<FormSubmissionStatus> orderByComparator)
 		throws ir.seydef.plugin.formcounter.exception.
 			NoSuchFormSubmissionStatusException {
 
-		return getPersistence().findByG_S_First(
-			groupId, seen, orderByComparator);
+		return getPersistence().findByS_G_First(
+			seen, groupId, orderByComparator);
 	}
 
 	/**
-	 * Returns the first form submission status in the ordered set where groupId = &#63; and seen = &#63;.
+	 * Returns the first form submission status in the ordered set where seen = &#63; and groupId = &#63;.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching form submission status, or <code>null</code> if a matching form submission status could not be found
 	 */
-	public static FormSubmissionStatus fetchByG_S_First(
-		long groupId, boolean seen,
+	public static FormSubmissionStatus fetchByS_G_First(
+		boolean seen, long groupId,
 		OrderByComparator<FormSubmissionStatus> orderByComparator) {
 
-		return getPersistence().fetchByG_S_First(
-			groupId, seen, orderByComparator);
+		return getPersistence().fetchByS_G_First(
+			seen, groupId, orderByComparator);
 	}
 
 	/**
-	 * Returns the last form submission status in the ordered set where groupId = &#63; and seen = &#63;.
+	 * Returns the last form submission status in the ordered set where seen = &#63; and groupId = &#63;.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching form submission status
 	 * @throws NoSuchFormSubmissionStatusException if a matching form submission status could not be found
 	 */
-	public static FormSubmissionStatus findByG_S_Last(
-			long groupId, boolean seen,
+	public static FormSubmissionStatus findByS_G_Last(
+			boolean seen, long groupId,
 			OrderByComparator<FormSubmissionStatus> orderByComparator)
 		throws ir.seydef.plugin.formcounter.exception.
 			NoSuchFormSubmissionStatusException {
 
-		return getPersistence().findByG_S_Last(
-			groupId, seen, orderByComparator);
+		return getPersistence().findByS_G_Last(
+			seen, groupId, orderByComparator);
 	}
 
 	/**
-	 * Returns the last form submission status in the ordered set where groupId = &#63; and seen = &#63;.
+	 * Returns the last form submission status in the ordered set where seen = &#63; and groupId = &#63;.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching form submission status, or <code>null</code> if a matching form submission status could not be found
 	 */
-	public static FormSubmissionStatus fetchByG_S_Last(
-		long groupId, boolean seen,
+	public static FormSubmissionStatus fetchByS_G_Last(
+		boolean seen, long groupId,
 		OrderByComparator<FormSubmissionStatus> orderByComparator) {
 
-		return getPersistence().fetchByG_S_Last(
-			groupId, seen, orderByComparator);
+		return getPersistence().fetchByS_G_Last(
+			seen, groupId, orderByComparator);
 	}
 
 	/**
-	 * Returns the form submission statuses before and after the current form submission status in the ordered set where groupId = &#63; and seen = &#63;.
+	 * Returns the form submission statuses before and after the current form submission status in the ordered set where seen = &#63; and groupId = &#63;.
 	 *
 	 * @param formSubmissionStatusId the primary key of the current form submission status
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next form submission status
 	 * @throws NoSuchFormSubmissionStatusException if a form submission status with the primary key could not be found
 	 */
-	public static FormSubmissionStatus[] findByG_S_PrevAndNext(
-			long formSubmissionStatusId, long groupId, boolean seen,
+	public static FormSubmissionStatus[] findByS_G_PrevAndNext(
+			long formSubmissionStatusId, boolean seen, long groupId,
 			OrderByComparator<FormSubmissionStatus> orderByComparator)
 		throws ir.seydef.plugin.formcounter.exception.
 			NoSuchFormSubmissionStatusException {
 
-		return getPersistence().findByG_S_PrevAndNext(
-			formSubmissionStatusId, groupId, seen, orderByComparator);
+		return getPersistence().findByS_G_PrevAndNext(
+			formSubmissionStatusId, seen, groupId, orderByComparator);
 	}
 
 	/**
-	 * Removes all the form submission statuses where groupId = &#63; and seen = &#63; from the database.
+	 * Removes all the form submission statuses where seen = &#63; and groupId = &#63; from the database.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 */
-	public static void removeByG_S(long groupId, boolean seen) {
-		getPersistence().removeByG_S(groupId, seen);
+	public static void removeByS_G(boolean seen, long groupId) {
+		getPersistence().removeByS_G(seen, groupId);
 	}
 
 	/**
-	 * Returns the number of form submission statuses where groupId = &#63; and seen = &#63;.
+	 * Returns the number of form submission statuses where seen = &#63; and groupId = &#63;.
 	 *
-	 * @param groupId the group ID
 	 * @param seen the seen
+	 * @param groupId the group ID
 	 * @return the number of matching form submission statuses
 	 */
-	public static int countByG_S(long groupId, boolean seen) {
-		return getPersistence().countByG_S(groupId, seen);
+	public static int countByS_G(boolean seen, long groupId) {
+		return getPersistence().countByS_G(seen, groupId);
 	}
 
 	/**
