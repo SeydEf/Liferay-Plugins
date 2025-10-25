@@ -32,7 +32,7 @@ FormSubmissionStatus submissionStatus = null;
 String seenByUserName = null;
 String submitterName = null;
 String statusLabel = "unseen";
-DateConverterImpl dateConverter = new DateConverterImpl();
+DateConverterImpl dateConverterImpl = new DateConverterImpl();
 errorMessage = null;
 
 try {
@@ -134,17 +134,17 @@ catch (Exception exception) {
 								<span class="detail-value"><%= Validator.isNotNull(submitterName) ? submitterName : "-" %></span>
 							</div>
 
-							<div class="detail-group">
-								<label class="detail-label"><liferay-ui:message key="create.date" />:</label>
+						<div class="detail-group">
+							<label class="detail-label"><liferay-ui:message key="create.date" />:</label>
 
-								<span class="detail-value"><%= dateConverter.getDateTimeFromGregorianToPersian(record.getCreateDate()) %></span>
-							</div>
+							<span class="detail-value"><%= dateConverterImpl.getDateTimeFromGregorianToPersian(record.getCreateDate()) %></span>
+						</div>
 
-							<div class="detail-group">
-								<label class="detail-label"><liferay-ui:message key="modified.date" />:</label>
+						<div class="detail-group">
+							<label class="detail-label"><liferay-ui:message key="modified.date" />:</label>
 
-								<span class="detail-value"><%= dateConverter.getDateTimeFromGregorianToPersian(record.getModifiedDate()) %></span>
-							</div>
+							<span class="detail-value"><%= dateConverterImpl.getDateTimeFromGregorianToPersian(record.getModifiedDate()) %></span>
+						</div>
 						</div>
 
 						<div class="col-md-6">
@@ -162,13 +162,11 @@ catch (Exception exception) {
 							if ((submissionStatus != null) && submissionStatus.isSeen()) {
 							%>
 
-							<div class="detail-group">
-								<label class="detail-label"><liferay-ui:message key="seen.date" />:</label>
+						<div class="detail-group">
+							<label class="detail-label"><liferay-ui:message key="seen.date" />:</label>
 
-								<span class="detail-value"><%= submissionStatus.getSeenDate() != null ? dateConverter.getDateTimeFromGregorianToPersian(submissionStatus.getSeenDate()) : "N/A" %></span>
-							</div>
-
-							<%
+							<span class="detail-value"><%= (submissionStatus.getSeenDate() != null) ? dateConverterImpl.getDateTimeFromGregorianToPersian(submissionStatus.getSeenDate()) : "N/A" %></span>
+						</div> <%
 							if (Validator.isNotNull(seenByUserName)) {
 							%>
 
@@ -231,7 +229,8 @@ catch (Exception exception) {
 
 						<%
 							}
-						} catch (Exception exception) {
+						}
+						catch (Exception exception) {
 							System.err.println(exception.getMessage());
 						%>
 

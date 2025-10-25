@@ -4,6 +4,7 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -15,123 +16,135 @@ import java.util.List;
  * @author S.Abolfazl Eftekhari
  */
 public class Rule {
-    private static final Log _log = LogFactoryUtil.getLog(Rule.class);
 
-    private long ruleId;
-    private String name;
-    private String description;
-    private List<RuleCondition> conditions;
-    private String logicOperator;
-    private boolean active;
+	public static Rule fromJSONString(String jsonString) {
+		if (Validator.isNull(jsonString)) {
+			return null;
+		}
 
-    public Rule() {
-        this.conditions = new ArrayList<>();
-    }
+		try {
+			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+				jsonString);
+			Rule rule = new Rule();
 
-    public static Rule fromJSONString(String jsonString) {
-        if (Validator.isNull(jsonString)) {
-            return null;
-        }
+			rule.setLogicOperator(jsonObject.getString("logic"));
 
-        try {
-            JSONObject jsonObject = JSONFactoryUtil.createJSONObject(jsonString);
-            Rule rule = new Rule();
+			JSONArray conditionsArray = jsonObject.getJSONArray("conditions");
 
-            rule.setLogicOperator(jsonObject.getString("logic"));
+			if (conditionsArray != null) {
+				List<RuleCondition> conditions = new ArrayList<>();
 
-            JSONArray conditionsArray = jsonObject.getJSONArray("conditions");
-            if (conditionsArray != null) {
-                List<RuleCondition> conditions = new ArrayList<>();
+				for (int i = 0; i < conditionsArray.length(); i++) {
+					JSONObject conditionObj = conditionsArray.getJSONObject(i);
 
-                for (int i = 0; i < conditionsArray.length(); i++) {
-                    JSONObject conditionObj = conditionsArray.getJSONObject(i);
-                    RuleCondition condition = RuleCondition.fromJSONObject(conditionObj);
-                    if (condition != null) {
-                        conditions.add(condition);
-                    }
-                }
+					RuleCondition condition = RuleCondition.fromJSONObject(
+						conditionObj);
 
-                rule.setConditions(conditions);
-            }
+					if (condition != null) {
+						conditions.add(condition);
+					}
+				}
 
-            return rule;
-        } catch (JSONException e) {
-            _log.error("Error parsing JSON string to Rule", e);
-            return null;
-        }
-    }
+				rule.setConditions(conditions);
+			}
 
-    public long getRuleId() {
-        return ruleId;
-    }
+			return rule;
+		}
+		catch (JSONException jsonException) {
+			_log.error("Error parsing JSON string to Rule", jsonException);
 
-    public void setRuleId(long ruleId) {
-        this.ruleId = ruleId;
-    }
+			return null;
+		}
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Rule() {
+		_conditions = new ArrayList<>();
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void addCondition(RuleCondition condition) {
+		if (_conditions == null) {
+			_conditions = new ArrayList<>();
+		}
 
-    public String getDescription() {
-        return description;
-    }
+		_conditions.add(condition);
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public List<RuleCondition> getConditions() {
+		return _conditions;
+	}
 
-    public List<RuleCondition> getConditions() {
-        return conditions;
-    }
+	public String getDescription() {
+		return _description;
+	}
 
-    public void setConditions(List<RuleCondition> conditions) {
-        this.conditions = conditions;
-    }
+	public String getLogicOperator() {
+		return _logicOperator;
+	}
 
-    public void addCondition(RuleCondition condition) {
-        if (this.conditions == null) {
-            this.conditions = new ArrayList<>();
-        }
-        this.conditions.add(condition);
-    }
+	public String getName() {
+		return _name;
+	}
 
-    public String getLogicOperator() {
-        return logicOperator;
-    }
+	public long getRuleId() {
+		return _ruleId;
+	}
 
-    public void setLogicOperator(String logicOperator) {
-        this.logicOperator = logicOperator;
-    }
+	public boolean isActive() {
+		return _active;
+	}
 
-    public boolean isActive() {
-        return active;
-    }
+	public void setActive(boolean active) {
+		_active = active;
+	}
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+	public void setConditions(List<RuleCondition> conditions) {
+		_conditions = conditions;
+	}
 
-    public String toJSONString() {
-        try {
-            JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
-            JSONArray conditionsArray = JSONFactoryUtil.createJSONArray();
+	public void setDescription(String description) {
+		_description = description;
+	}
 
-            for (RuleCondition condition : conditions) {
-                conditionsArray.put(condition.toJSONObject());
-            }
+	public void setLogicOperator(String logicOperator) {
+		_logicOperator = logicOperator;
+	}
 
-            jsonObject.put("conditions", conditionsArray);
-            jsonObject.put("logic", logicOperator);
+	public void setName(String name) {
+		_name = name;
+	}
 
-            return jsonObject.toString();
-        } catch (Exception exception) {
-            _log.error("Error converting rule to JSON string", exception);
-            return "{}";
-        }
-    }
+	public void setRuleId(long ruleId) {
+		_ruleId = ruleId;
+	}
+
+	public String toJSONString() {
+		try {
+			JSONArray conditionsArray = JSONFactoryUtil.createJSONArray();
+
+			for (RuleCondition condition : _conditions) {
+				conditionsArray.put(condition.toJSONObject());
+			}
+
+			return JSONUtil.put(
+				"conditions", conditionsArray
+			).put(
+				"logic", _logicOperator
+			).toString();
+		}
+		catch (Exception exception) {
+			_log.error("Error converting rule to JSON string", exception);
+
+			return "{}";
+		}
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(Rule.class);
+
+	private boolean _active;
+	private List<RuleCondition> _conditions;
+	private String _description;
+	private String _logicOperator;
+	private String _name;
+	private long _ruleId;
+
 }

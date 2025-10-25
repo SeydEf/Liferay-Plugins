@@ -5,7 +5,11 @@
 
 package ir.seydef.plugin.formcounter.service.impl;
 
+import com.liferay.dynamic.data.lists.model.DDLRecord;
+import com.liferay.dynamic.data.lists.service.DDLRecordLocalServiceUtil;
 import com.liferay.portal.aop.AopService;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -14,6 +18,8 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import ir.seydef.plugin.formcounter.model.FormSubmissionStatus;
 import ir.seydef.plugin.formcounter.service.base.FormSubmissionStatusLocalServiceBaseImpl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -66,8 +72,6 @@ public class FormSubmissionStatusLocalServiceImpl
 			formInstanceRecordId);
 
 		if (existing != null) {
-
-
 			existing.setSeen(seen);
 			existing.setSeenDate(seen ? new Date() : null);
 			existing.setModifiedDate(new Date());
@@ -81,6 +85,7 @@ public class FormSubmissionStatusLocalServiceImpl
 		if (seen) {
 			newStatus.setSeen(true);
 			newStatus.setSeenDate(new Date());
+
 			newStatus = formSubmissionStatusPersistence.update(newStatus);
 		}
 
@@ -111,43 +116,35 @@ public class FormSubmissionStatusLocalServiceImpl
 		long formInstanceId, long groupId) {
 
 		try {
-
-			com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery =
-				dynamicQuery(
-				).add(
-					com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil.
-						eq("groupId", groupId)
-				).add(
-					com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil.
-						eq("seen", false)
-				);
+			DynamicQuery dynamicQuery = dynamicQuery(
+			).add(
+				RestrictionsFactoryUtil.eq("groupId", groupId)
+			).add(
+				RestrictionsFactoryUtil.eq("seen", false)
+			);
 
 			List<FormSubmissionStatus> unseenSubmissions = dynamicQuery(
 				dynamicQuery);
 
-			List<FormSubmissionStatus> result = new java.util.ArrayList<>();
+			List<FormSubmissionStatus> result = new ArrayList<>();
 
 			for (FormSubmissionStatus status : unseenSubmissions) {
 				try {
-
-					com.liferay.dynamic.data.lists.model.DDLRecord record =
-						com.liferay.dynamic.data.lists.service.
-							DDLRecordLocalServiceUtil.getDDLRecord(
-								status.getFormInstanceRecordId());
+					DDLRecord record = DDLRecordLocalServiceUtil.getDDLRecord(
+						status.getFormInstanceRecordId());
 
 					if (record.getRecordSetId() == formInstanceId) {
 						result.add(status);
 					}
 				}
 				catch (Exception exception) {
-					continue;
 				}
 			}
 
 			return result;
 		}
 		catch (Exception exception) {
-			return java.util.Collections.emptyList();
+			return Collections.emptyList();
 		}
 	}
 
@@ -163,8 +160,12 @@ public class FormSubmissionStatusLocalServiceImpl
 		FormSubmissionStatus status = getByFormInstanceRecordId(
 			formInstanceRecordId);
 
-        return (status != null) && status.isSeen();
-    }
+		if ((status != null) && status.isSeen()) {
+			return true;
+		}
+
+		return false;
+	}
 
 	public FormSubmissionStatus markAsSeen(
 			long formInstanceRecordId, long userId)

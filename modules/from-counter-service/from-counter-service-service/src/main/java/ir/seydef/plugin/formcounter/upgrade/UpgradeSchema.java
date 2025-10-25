@@ -17,9 +17,7 @@ public class UpgradeSchema implements UpgradeStepRegistrator {
 
 	@Override
 	public void register(Registry registry) {
-		registry.register(
-			"1.0.0", "1.0.1",
-			new UpgradeFormCounterRule()
-		);
+		registry.register("1.0.0", "1.0.1", new UpgradeFormCounterRule());
 	}
+
 }

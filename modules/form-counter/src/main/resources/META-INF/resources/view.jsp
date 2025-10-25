@@ -13,9 +13,10 @@ List<FormRecordDisplayDTO> formRecords = (List<FormRecordDisplayDTO>)request.get
 SearchCriteria searchCriteria = (SearchCriteria)request.getAttribute("searchCriteria");
 
 int totalCount = (Integer)request.getAttribute("totalCount");
+
 Long unseenCountObj = (Long)request.getAttribute("unseenCount");
 
-long unseenCount = unseenCountObj != null ? unseenCountObj : 0;
+long unseenCount = (unseenCountObj != null) ? unseenCountObj : 0;
 
 if (searchCriteria == null) {
 	searchCriteria = new SearchCriteria();
@@ -100,7 +101,7 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	label="status"
 	name="<%= FormCounterPortletKeys.PARAM_STATUS %>"
 	onChange="this.form.submit()"
-	value='<%= searchCriteria.getStatus() != null ? searchCriteria.getStatus() : "all" %>'
+	value='<%= (searchCriteria.getStatus() != null) ? searchCriteria.getStatus() : "all" %>'
 >
 						<aui:option value="all">
 							<liferay-ui:message key="all.statuses" />
@@ -124,7 +125,7 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	name="<%= FormCounterPortletKeys.PARAM_REGISTRANT_NAME %>"
 	placeholder="search.by.registrant.name"
 	type="text"
-	value='<%= searchCriteria.getRegistrantName() != null ? searchCriteria.getRegistrantName() : "" %>'
+	value='<%= (searchCriteria.getRegistrantName() != null) ? searchCriteria.getRegistrantName() : "" %>'
 />
 				</div>
 
@@ -134,31 +135,31 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	name="<%= FormCounterPortletKeys.PARAM_TRACKING_CODE %>"
 	placeholder="search.by.tracking.code"
 	type="text"
-	value='<%= searchCriteria.getTrackingCode() != null ? searchCriteria.getTrackingCode() : "" %>'
+	value='<%= (searchCriteria.getTrackingCode() != null) ? searchCriteria.getTrackingCode() : "" %>'
 />
 				</div>
 
 				<div class="col-md-2">
 					<label><liferay-ui:message key="start.date" /></label>
 <liferay-ui:input-date
-	dayValue="<%= searchCriteria.getStartDate() != null ? Integer.parseInt(dateFormat.format(searchCriteria.getStartDate()).substring(8, 10)) : 0 %>"
-	monthValue="<%= searchCriteria.getStartDate() != null ? Integer.parseInt(dateFormat.format(searchCriteria.getStartDate()).substring(5, 7)) - 1 : -1 %>"
+	dayValue="<%= (searchCriteria.getStartDate() != null) ? Integer.parseInt(dateFormat.format(searchCriteria.getStartDate()).substring(8, 10)) : 0 %>"
+	monthValue="<%= (searchCriteria.getStartDate() != null) ? (Integer.parseInt(dateFormat.format(searchCriteria.getStartDate()).substring(5, 7)) - 1) : -1 %>"
 	name="<%= FormCounterPortletKeys.PARAM_START_DATE %>"
 	nullable="<%= true %>"
 	showDisableCheckbox="<%= false %>"
-	yearValue="<%= searchCriteria.getStartDate() != null ? Integer.parseInt(dateFormat.format(searchCriteria.getStartDate()).substring(0, 4)) : 0 %>"
+	yearValue="<%= (searchCriteria.getStartDate() != null) ? Integer.parseInt(dateFormat.format(searchCriteria.getStartDate()).substring(0, 4)) : 0 %>"
 />
 				</div>
 
 				<div class="col-md-2">
 					<label><liferay-ui:message key="end.date" /></label>
 <liferay-ui:input-date
-	dayValue="<%= searchCriteria.getEndDate() != null ? Integer.parseInt(dateFormat.format(searchCriteria.getEndDate()).substring(8, 10)) : 0 %>"
-	monthValue="<%= searchCriteria.getEndDate() != null ? Integer.parseInt(dateFormat.format(searchCriteria.getEndDate()).substring(5, 7)) - 1 : -1 %>"
+	dayValue="<%= (searchCriteria.getEndDate() != null) ? Integer.parseInt(dateFormat.format(searchCriteria.getEndDate()).substring(8, 10)) : 0 %>"
+	monthValue="<%= (searchCriteria.getEndDate() != null) ? (Integer.parseInt(dateFormat.format(searchCriteria.getEndDate()).substring(5, 7)) - 1) : -1 %>"
 	name="<%= FormCounterPortletKeys.PARAM_END_DATE %>"
 	nullable="<%= true %>"
 	showDisableCheckbox="<%= false %>"
-	yearValue="<%= searchCriteria.getEndDate() != null ? Integer.parseInt(dateFormat.format(searchCriteria.getEndDate()).substring(0, 4)) : 0 %>"
+	yearValue="<%= (searchCriteria.getEndDate() != null) ? Integer.parseInt(dateFormat.format(searchCriteria.getEndDate()).substring(0, 4)) : 0 %>"
 />
 				</div>
 

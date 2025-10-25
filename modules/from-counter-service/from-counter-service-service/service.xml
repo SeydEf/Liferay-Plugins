@@ -6,6 +6,30 @@
 	<author>S.Abolfazl Eftekhari</author>
 	<namespace>FormCounter</namespace>
 
+	<entity name="FormCounterRule" local-service="true" remote-service="true">
+		<!-- Primary key -->
+		<column name="formCounterRuleId" primary="true" type="long" />
+
+		<!-- Rule definition fields -->
+		<column name="ruleName" type="String" />
+		<column name="description" type="String" />
+		<column name="ruleConditions" type="String" />
+		<column name="active" type="boolean" />
+
+		<!-- Audit fields -->
+		<column name="companyId" type="long" />
+		<column name="groupId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Finder methods -->
+		<finder name="Active" return-type="Collection">
+			<finder-column name="active" />
+		</finder>
+	</entity>
+
 	<entity name="FormSubmissionStatus" local-service="true" remote-service="true">
 		<!-- Primary key -->
 		<column name="formSubmissionStatusId" primary="true" type="long" />
@@ -43,32 +67,8 @@
 		</finder>
 
 		<finder name="G_S" return-type="Collection">
-			<finder-column name="groupId" />
 			<finder-column name="seen" />
-		</finder>
-	</entity>
-
-	<entity name="FormCounterRule" local-service="true" remote-service="true">
-		<!-- Primary key -->
-		<column name="formCounterRuleId" primary="true" type="long" />
-
-		<!-- Rule definition fields -->
-		<column name="ruleName" type="String" />
-		<column name="description" type="String" />
-		<column name="ruleConditions" type="String" />
-		<column name="active" type="boolean" />
-
-		<!-- Audit fields -->
-		<column name="companyId" type="long" />
-		<column name="groupId" type="long" />
-		<column name="userId" type="long" />
-		<column name="userName" type="String" />
-		<column name="createDate" type="Date" />
-		<column name="modifiedDate" type="Date" />
-
-		<!-- Finder methods -->
-		<finder name="Active" return-type="Collection">
-			<finder-column name="active" />
+			<finder-column name="groupId" />
 		</finder>
 	</entity>
 </service-builder>

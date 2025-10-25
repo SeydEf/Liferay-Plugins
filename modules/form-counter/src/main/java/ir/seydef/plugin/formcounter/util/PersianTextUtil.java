@@ -57,20 +57,16 @@ public class PersianTextUtil {
 			if ((ch >= FormCounterPersianTextConstants.PERSIAN_ZERO) &&
 				(ch <= FormCounterPersianTextConstants.PERSIAN_NINE)) {
 
-				result.append(
-					(char)
-						('0' +
-							(ch -
-								FormCounterPersianTextConstants.PERSIAN_ZERO)));
+				char persianZero = FormCounterPersianTextConstants.PERSIAN_ZERO;
+
+				result.append((char)('0' + (ch - persianZero)));
 			}
 			else if ((ch >= FormCounterPersianTextConstants.ARABIC_ZERO) &&
 					 (ch <= FormCounterPersianTextConstants.ARABIC_NINE)) {
 
-				result.append(
-					(char)
-						('0' +
-							(ch -
-								FormCounterPersianTextConstants.ARABIC_ZERO)));
+				char arabicZero = FormCounterPersianTextConstants.ARABIC_ZERO;
+
+				result.append((char)('0' + (ch - arabicZero)));
 			}
 			else {
 				result.append(ch);

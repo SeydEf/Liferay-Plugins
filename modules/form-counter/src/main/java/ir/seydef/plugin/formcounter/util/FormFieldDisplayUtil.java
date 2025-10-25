@@ -1,6 +1,7 @@
 package ir.seydef.plugin.formcounter.util;
 
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -8,6 +9,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Iterator;
@@ -78,7 +80,7 @@ public class FormFieldDisplayUtil {
 
 					// Search all fields recursively (both top-level and nested)
 
-					String optionLabel = findOptionLabelRecursively(
+					String optionLabel = _findOptionLabelRecursively(
 						fields, fieldValue.getName(), cleanValue);
 
 					if (optionLabel != null) {
@@ -112,7 +114,8 @@ public class FormFieldDisplayUtil {
 				JSONArray fields = jsonDefinition.getJSONArray("fields");
 
 				if (fields != null) {
-					String label = findFieldLabelRecursively(fields, fieldName);
+					String label = _findFieldLabelRecursively(
+						fields, fieldName);
 
 					if (label != null) {
 						return label;
@@ -134,11 +137,11 @@ public class FormFieldDisplayUtil {
 
 		StringBuilder html = new StringBuilder();
 
-		if ((formFieldValues == null) || formFieldValues.isEmpty()) {
+		if (ListUtil.isEmpty(formFieldValues)) {
 			return html.toString();
 		}
 
-		String indentClass = level > 0 ? " nested-level-" + level : "";
+		String indentClass = (level > 0) ? " nested-level-" + level : "";
 
 		for (DDMFormFieldValue fieldValue : formFieldValues) {
 			try {
@@ -151,23 +154,22 @@ public class FormFieldDisplayUtil {
 				}
 
 				String value = "";
-				boolean isMultiline = false;
+				boolean multiline = false;
 				boolean hasValue = false;
 
 				try {
-					if ((fieldValue.getValue() != null) &&
-						(fieldValue.getValue(
-						).getDefaultLocale() != null)) {
+					Value fieldValueValue = fieldValue.getValue();
+
+					if ((fieldValueValue != null) &&
+						(fieldValueValue.getDefaultLocale() != null)) {
 
 						String rawValue = GetterUtil.getString(
-							fieldValue.getValue(
-							).getString(
-								fieldValue.getValue(
-								).getDefaultLocale()
-							));
+							fieldValueValue.getString(
+								fieldValueValue.getDefaultLocale()));
 
 						if (Validator.isNotNull(rawValue)) {
 							hasValue = true;
+
 							String type = fieldValue.getType();
 
 							if ((structure != null) && type.equals("select")) {
@@ -178,7 +180,7 @@ public class FormFieldDisplayUtil {
 								value = rawValue;
 							}
 
-							isMultiline =
+							multiline =
 								value.contains("\n") || (value.length() > 100);
 						}
 					}
@@ -210,25 +212,28 @@ public class FormFieldDisplayUtil {
 						html.append(
 							"<label class='form-field-label'>"
 						).append(
-							escapeHtml(fieldLabel)
+							_escapeHtml(fieldLabel)
 						).append(
 							"</label>"
 						);
 
-						if (isMultiline) {
+						if (multiline) {
 							html.append(
-								"<textarea class='form-control form-field-input form-field-textarea' disabled readonly rows='4'>");
+								"<textarea class='form-control " +
+									"form-field-input form-field-textarea' " +
+										"disabled readonly rows='4'>");
 							html.append(
-								escapeHtml(
+								_escapeHtml(
 									Validator.isNotNull(value) ? value :
 										"N/A"));
 							html.append("</textarea>");
 						}
 						else {
 							html.append(
-								"<input type='text' class='form-control form-field-input' value='"
+								"<input type='text' class='form-control " +
+									"form-field-input' value='"
 							).append(
-								escapeHtml(
+								_escapeHtml(
 									Validator.isNotNull(value) ? value : "N/A")
 							).append(
 								"' disabled readonly />"
@@ -264,7 +269,7 @@ public class FormFieldDisplayUtil {
 		return html.toString();
 	}
 
-	private static String escapeHtml(String text) {
+	private static String _escapeHtml(String text) {
 		if (text == null) {
 			return "";
 		}
@@ -282,7 +287,7 @@ public class FormFieldDisplayUtil {
 		);
 	}
 
-	private static String findFieldLabelRecursively(
+	private static String _findFieldLabelRecursively(
 		JSONArray fields, String fieldName) {
 
 		if (fields == null) {
@@ -311,7 +316,7 @@ public class FormFieldDisplayUtil {
 					JSONArray nestedFields = field.getJSONArray("nestedFields");
 
 					if ((nestedFields != null) && (nestedFields.length() > 0)) {
-						String nestedLabel = findFieldLabelRecursively(
+						String nestedLabel = _findFieldLabelRecursively(
 							nestedFields, fieldName);
 
 						if (nestedLabel != null) {
@@ -328,7 +333,7 @@ public class FormFieldDisplayUtil {
 		return null;
 	}
 
-	private static String findOptionLabelRecursively(
+	private static String _findOptionLabelRecursively(
 		JSONArray fields, String fieldName, String cleanValue) {
 
 		if (fields == null) {
@@ -360,7 +365,7 @@ public class FormFieldDisplayUtil {
 				if (field.has("nestedFields")) {
 					JSONArray nestedFields = field.getJSONArray("nestedFields");
 
-					String result = findOptionLabelRecursively(
+					String result = _findOptionLabelRecursively(
 						nestedFields, fieldName, cleanValue);
 
 					if (result != null) {

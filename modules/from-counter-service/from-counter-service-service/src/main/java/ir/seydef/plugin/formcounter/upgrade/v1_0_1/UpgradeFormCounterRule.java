@@ -20,4 +20,5 @@ public class UpgradeFormCounterRule extends UpgradeProcess {
 				new AlterColumnType("ruleConditions", "TEXT null"));
 		}
 	}
+
 }

@@ -1,8 +1,8 @@
 dependencies {
 	compileOnly group: "com.liferay.portal", name: "release.portal.api"
+	compileOnly project(":modules:form-counter")
 	compileOnly project(":modules:from-counter-service:from-counter-service-api")
 	compileOnly project(":modules:from-counter-service:from-counter-service-service")
-	compileOnly project(":modules:form-counter")
 
 	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
 }

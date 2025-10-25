@@ -10,89 +10,96 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.Validator;
+
 import ir.seydef.plugin.formcounter.model.FormCounterRule;
 import ir.seydef.plugin.formcounter.service.base.FormCounterRuleLocalServiceBaseImpl;
-import org.osgi.service.component.annotations.Component;
 
 import java.util.Date;
 import java.util.List;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author S.Abolfazl Eftekhari
  */
-@Component(property = "model.class.name=ir.seydef.plugin.formcounter.model.FormCounterRule", service = AopService.class)
+@Component(
+	property = "model.class.name=ir.seydef.plugin.formcounter.model.FormCounterRule",
+	service = AopService.class
+)
 public class FormCounterRuleLocalServiceImpl
-        extends FormCounterRuleLocalServiceBaseImpl {
+	extends FormCounterRuleLocalServiceBaseImpl {
 
-    public FormCounterRule addFormCounterRule(
-            String ruleName, String description,
-            String ruleConditions, boolean active,
-            ServiceContext serviceContext)
-            throws PortalException {
+	public FormCounterRule addFormCounterRule(
+			String ruleName, String description, String ruleConditions,
+			boolean active, ServiceContext serviceContext)
+		throws PortalException {
 
-        long formCounterRuleId = counterLocalService.increment(
-                FormCounterRule.class.getName());
+		long formCounterRuleId = counterLocalService.increment(
+			FormCounterRule.class.getName());
 
-        long userId = serviceContext.getUserId();
-        User user = userLocalService.getUser(userId);
+		long userId = serviceContext.getUserId();
 
-        Date now = new Date();
+		User user = userLocalService.getUser(userId);
 
-        FormCounterRule rule = formCounterRulePersistence.create(formCounterRuleId);
+		Date now = new Date();
 
-        rule.setCompanyId(serviceContext.getCompanyId());
-        rule.setGroupId(serviceContext.getScopeGroupId());
-        rule.setUserId(userId);
-        rule.setUserName(user.getFullName());
-        rule.setCreateDate(serviceContext.getCreateDate(now));
-        rule.setModifiedDate(serviceContext.getModifiedDate(now));
+		FormCounterRule rule = formCounterRulePersistence.create(
+			formCounterRuleId);
 
-        rule.setRuleName(ruleName);
-        rule.setDescription(description);
-        rule.setRuleConditions(ruleConditions);
-        rule.setActive(active);
+		rule.setCompanyId(serviceContext.getCompanyId());
+		rule.setGroupId(serviceContext.getScopeGroupId());
+		rule.setUserId(userId);
+		rule.setUserName(user.getFullName());
+		rule.setCreateDate(serviceContext.getCreateDate(now));
+		rule.setModifiedDate(serviceContext.getModifiedDate(now));
 
-        return formCounterRulePersistence.update(rule);
-    }
+		rule.setRuleName(ruleName);
+		rule.setDescription(description);
+		rule.setRuleConditions(ruleConditions);
+		rule.setActive(active);
 
-    public List<FormCounterRule> findByActive(boolean active) {
-        return formCounterRulePersistence.findByActive(active);
-    }
+		return formCounterRulePersistence.update(rule);
+	}
 
-    public FormCounterRule updateFormCounterRule(
-            long formCounterRuleId, String ruleName, String description,
-            String ruleConditions, boolean active,
-            ServiceContext serviceContext)
-            throws PortalException {
+	@Override
+	public FormCounterRule deleteFormCounterRule(long formCounterRuleId)
+		throws PortalException {
 
-        if (formCounterRuleId <= 0) {
-            throw new PortalException("Invalid rule ID: " + formCounterRuleId);
-        }
+		FormCounterRule rule = formCounterRulePersistence.findByPrimaryKey(
+			formCounterRuleId);
 
-        if (Validator.isNull(ruleName)) {
-            throw new PortalException("Rule name cannot be empty");
-        }
+		return formCounterRulePersistence.remove(rule);
+	}
 
-        FormCounterRule rule = formCounterRulePersistence.findByPrimaryKey(
-                formCounterRuleId);
+	public List<FormCounterRule> findByActive(boolean active) {
+		return formCounterRulePersistence.findByActive(active);
+	}
 
-        rule.setModifiedDate(serviceContext.getModifiedDate(new Date()));
+	public FormCounterRule updateFormCounterRule(
+			long formCounterRuleId, String ruleName, String description,
+			String ruleConditions, boolean active,
+			ServiceContext serviceContext)
+		throws PortalException {
 
-        rule.setRuleName(ruleName);
-        rule.setDescription(description);
-        rule.setRuleConditions(ruleConditions);
-        rule.setActive(active);
+		if (formCounterRuleId <= 0) {
+			throw new PortalException("Invalid rule ID: " + formCounterRuleId);
+		}
 
-        return formCounterRulePersistence.update(rule);
-    }
+		if (Validator.isNull(ruleName)) {
+			throw new PortalException("Rule name cannot be empty");
+		}
 
-    @Override
-    public FormCounterRule deleteFormCounterRule(long formCounterRuleId)
-            throws PortalException {
+		FormCounterRule rule = formCounterRulePersistence.findByPrimaryKey(
+			formCounterRuleId);
 
-        FormCounterRule rule = formCounterRulePersistence.findByPrimaryKey(
-                formCounterRuleId);
+		rule.setModifiedDate(serviceContext.getModifiedDate(new Date()));
 
-        return formCounterRulePersistence.remove(rule);
-    }
+		rule.setRuleName(ruleName);
+		rule.setDescription(description);
+		rule.setRuleConditions(ruleConditions);
+		rule.setActive(active);
+
+		return formCounterRulePersistence.update(rule);
+	}
+
 }

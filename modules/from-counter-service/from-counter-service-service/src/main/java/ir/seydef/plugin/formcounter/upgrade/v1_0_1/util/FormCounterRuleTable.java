@@ -7,6 +7,7 @@ import java.util.Map;
 
 /**
  * @author S.Abolfazl Eftekhari
+ * @generated
  */
 public class FormCounterRuleTable {
 
@@ -20,22 +21,7 @@ public class FormCounterRuleTable {
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
-		new HashMap<String, Integer>();
-
-	static {
-		TABLE_COLUMNS_MAP.put("formCounterRuleId", Types.BIGINT);
-		TABLE_COLUMNS_MAP.put("ruleName", Types.VARCHAR);
-		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
-		TABLE_COLUMNS_MAP.put("ruleConditions", Types.VARCHAR);
-		TABLE_COLUMNS_MAP.put("logicOperator", Types.VARCHAR);
-		TABLE_COLUMNS_MAP.put("active", Types.BOOLEAN);
-		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
-		TABLE_COLUMNS_MAP.put("groupId", Types.BIGINT);
-		TABLE_COLUMNS_MAP.put("userId", Types.BIGINT);
-		TABLE_COLUMNS_MAP.put("userName", Types.VARCHAR);
-		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
-		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
-	}
+		new HashMap<>();
 
 	public static final String TABLE_NAME = "FormCounterRule";
 
@@ -43,5 +29,20 @@ public class FormCounterRuleTable {
 		"create table FormCounterRule (formCounterRuleId LONG not null primary key,ruleName VARCHAR(75) null,description VARCHAR(75) null,ruleConditions VARCHAR(75) null,logicOperator VARCHAR(75) null,active BOOLEAN,companyId LONG,groupId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table FormCounterRule";
+
+	static {
+		TABLE_COLUMNS_MAP.put("active", Types.BOOLEAN);
+		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("formCounterRuleId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("groupId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("logicOperator", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("ruleConditions", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("ruleName", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("userId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("userName", Types.VARCHAR);
+	}
 
 }

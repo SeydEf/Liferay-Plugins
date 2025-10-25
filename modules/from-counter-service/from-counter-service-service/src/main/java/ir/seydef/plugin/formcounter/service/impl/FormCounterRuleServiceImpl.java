@@ -35,30 +35,24 @@ public class FormCounterRuleServiceImpl extends FormCounterRuleServiceBaseImpl {
 
 	public FormCounterRule addFormCounterRule(
 			String ruleName, String description, String ruleConditions,
-			String logicOperator, boolean active,
-			ServiceContext serviceContext)
+			boolean active, ServiceContext serviceContext)
 		throws PortalException {
 
 		_portletResourcePermission.check(
 			getPermissionChecker(), serviceContext.getScopeGroupId(),
 			ActionKeys.ADD_ENTRY);
 
-		long formCounterRuleId = counterLocalService.increment(
-			FormCounterRule.class.getName());
-
 		return formCounterRuleLocalService.addFormCounterRule(
-			formCounterRuleId, ruleName, description, ruleConditions,
-			logicOperator, active, serviceContext);
+			ruleName, description, ruleConditions, active, serviceContext);
 	}
 
 	public FormCounterRule deleteFormCounterRule(long formCounterRuleId)
 		throws PortalException {
 
-		FormCounterRule formCounterRule =
-			formCounterRuleLocalService.getFormCounterRule(formCounterRuleId);
-
 		_formCounterRuleModelResourcePermission.check(
-			getPermissionChecker(), formCounterRule, ActionKeys.DELETE);
+			getPermissionChecker(),
+			formCounterRuleLocalService.getFormCounterRule(formCounterRuleId),
+			ActionKeys.DELETE);
 
 		return formCounterRuleLocalService.deleteFormCounterRule(
 			formCounterRuleId);
@@ -67,13 +61,13 @@ public class FormCounterRuleServiceImpl extends FormCounterRuleServiceBaseImpl {
 	public FormCounterRule getFormCounterRule(long formCounterRuleId)
 		throws PortalException {
 
-		FormCounterRule formCounterRule =
-			formCounterRuleLocalService.getFormCounterRule(formCounterRuleId);
-
 		_formCounterRuleModelResourcePermission.check(
-			getPermissionChecker(), formCounterRule, ActionKeys.VIEW);
+			getPermissionChecker(),
+			formCounterRuleLocalService.getFormCounterRule(formCounterRuleId),
+			ActionKeys.VIEW);
 
-		return formCounterRule;
+		return formCounterRuleLocalService.getFormCounterRule(
+			formCounterRuleId);
 	}
 
 	public List<FormCounterRule> getFormCounterRules(int start, int end) {
@@ -101,15 +95,14 @@ public class FormCounterRuleServiceImpl extends FormCounterRuleServiceBaseImpl {
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		FormCounterRule formCounterRule =
-			formCounterRuleLocalService.getFormCounterRule(formCounterRuleId);
-
 		_formCounterRuleModelResourcePermission.check(
-			getPermissionChecker(), formCounterRule, ActionKeys.UPDATE);
+			getPermissionChecker(),
+			formCounterRuleLocalService.getFormCounterRule(formCounterRuleId),
+			ActionKeys.UPDATE);
 
 		return formCounterRuleLocalService.updateFormCounterRule(
-			formCounterRuleId, ruleName, description, ruleConditions,
-			logicOperator, active, serviceContext);
+			formCounterRuleId, ruleName, description, ruleConditions, active,
+			serviceContext);
 	}
 
 	@Reference

@@ -1,71 +1,72 @@
 package ir.seydef.plugin.formcounter.rules.admin.model;
 
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.json.JSONUtil;
 
 /**
  * @author S.Abolfazl Eftekhari
  */
 public class RuleCondition {
-    private static final Log _log = LogFactoryUtil.getLog(RuleCondition.class);
 
-    private String field;
-    private String operator;
-    private String reference;
+	public static RuleCondition fromJSONObject(JSONObject jsonObject) {
+		if (jsonObject == null) {
+			return null;
+		}
 
-    public RuleCondition() {
-    }
+		RuleCondition condition = new RuleCondition();
 
-    public RuleCondition(String field, String operator, String reference) {
-        this.field = field;
-        this.operator = operator;
-        this.reference = reference;
-    }
+		condition.setField(jsonObject.getString("field"));
+		condition.setOperator(jsonObject.getString("operator"));
+		condition.setReference(jsonObject.getString("reference"));
 
-    public static RuleCondition fromJSONObject(JSONObject jsonObject) {
-        if (jsonObject == null) {
-            return null;
-        }
+		return condition;
+	}
 
-        RuleCondition condition = new RuleCondition();
-        condition.setField(jsonObject.getString("field"));
-        condition.setOperator(jsonObject.getString("operator"));
-        condition.setReference(jsonObject.getString("reference"));
+	public RuleCondition() {
+	}
 
-        return condition;
-    }
+	public RuleCondition(String field, String operator, String reference) {
+		_field = field;
+		_operator = operator;
+		_reference = reference;
+	}
 
-    public String getField() {
-        return field;
-    }
+	public String getField() {
+		return _field;
+	}
 
-    public void setField(String field) {
-        this.field = field;
-    }
+	public String getOperator() {
+		return _operator;
+	}
 
-    public String getOperator() {
-        return operator;
-    }
+	public String getReference() {
+		return _reference;
+	}
 
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
+	public void setField(String field) {
+		_field = field;
+	}
 
-    public String getReference() {
-        return reference;
-    }
+	public void setOperator(String operator) {
+		_operator = operator;
+	}
 
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
+	public void setReference(String reference) {
+		_reference = reference;
+	}
 
-    public JSONObject toJSONObject() {
-        JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
-        jsonObject.put("field", field);
-        jsonObject.put("operator", operator);
-        jsonObject.put("reference", reference);
-        return jsonObject;
-    }
+	public JSONObject toJSONObject() {
+		return JSONUtil.put(
+			"field", _field
+		).put(
+			"operator", _operator
+		).put(
+			"reference", _reference
+		);
+	}
+
+	private String _field;
+	private String _operator;
+	private String _reference;
+
 }

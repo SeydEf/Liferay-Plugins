@@ -24,9 +24,18 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-import javax.portlet.*;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.Portlet;
+import javax.portlet.PortletException;
+import javax.portlet.PortletSession;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -65,11 +74,11 @@ public class FormCounterPortlet extends MVCPortlet {
 				(ThemeDisplay)renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 			Locale locale = themeDisplay.getLocale();
-			long userId = themeDisplay.getUserId();
 			long groupId = themeDisplay.getScopeGroupId();
 
 			Map<String, List<String>> userCustomFields =
-				UserCustomFieldUtil.getUserCustomFieldsWithValues(userId);
+				UserCustomFieldUtil.getUserCustomFieldsWithValues(
+					themeDisplay.getUserId());
 
 			List<DDMFormInstance> formInstances =
 				DDMFormService.getFormInstancesForUser(
@@ -89,11 +98,13 @@ public class FormCounterPortlet extends MVCPortlet {
 
 			if (searchCriteria == null) {
 				searchCriteria = new SearchCriteria();
+
 				searchCriteria.setUserCustomFields(userCustomFields);
 
 				long selectedFormInstanceId = ParamUtil.getLong(
 					renderRequest,
-					FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID, 0);
+					FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID);
+
 				searchCriteria.setFormInstanceId(selectedFormInstanceId);
 			}
 
@@ -122,7 +133,7 @@ public class FormCounterPortlet extends MVCPortlet {
 				"selectedFormInstanceId", searchCriteria.getFormInstanceId());
 
 			List<FormInstanceDisplayDTO> formInstanceDTOs =
-				convertToFormInstanceDTOs(
+				_convertToFormInstanceDTOs(
 					formInstances, locale, userCustomFields);
 
 			renderRequest.setAttribute("formInstances", formInstanceDTOs);
@@ -132,6 +143,7 @@ public class FormCounterPortlet extends MVCPortlet {
 
 			if (!userCustomFields.isEmpty()) {
 				int start = (cur - 1) * delta;
+
 				int end = start + delta;
 
 				if (searchCriteria.hasSearchCriteria() ||
@@ -142,7 +154,7 @@ public class FormCounterPortlet extends MVCPortlet {
 							searchCriteria, start, end, orderByCol,
 							orderByType);
 
-					formRecords = convertToFormRecordDTOs(records, locale);
+					formRecords = _convertToFormRecordDTOs(records, locale);
 
 					totalCount = records.size();
 
@@ -157,7 +169,7 @@ public class FormCounterPortlet extends MVCPortlet {
 							userCustomFields, start, end, orderByCol,
 							orderByType);
 
-					formRecords = convertToFormRecordDTOs(records, locale);
+					formRecords = _convertToFormRecordDTOs(records, locale);
 					totalCount = records.size();
 				}
 			}
@@ -169,11 +181,15 @@ public class FormCounterPortlet extends MVCPortlet {
 			).filter(
 				record -> !record.isSeen()
 			).count();
+
 			renderRequest.setAttribute("unseenCount", unseenCount);
 
 			int totalPages = (int)Math.ceil((double)totalCount / delta);
+
 			renderRequest.setAttribute("totalPages", totalPages);
+
 			renderRequest.setAttribute("currentPage", cur);
+
 			SessionMessages.add(
 				renderRequest,
 				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
@@ -194,18 +210,18 @@ public class FormCounterPortlet extends MVCPortlet {
 			ThemeDisplay themeDisplay =
 				(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
-			long userId = themeDisplay.getUserId();
 			Map<String, List<String>> userCustomFields =
-				UserCustomFieldUtil.getUserCustomFieldsWithValues(userId);
+				UserCustomFieldUtil.getUserCustomFieldsWithValues(
+					themeDisplay.getUserId());
 
 			SearchCriteria searchCriteria = new SearchCriteria();
 
 			searchCriteria.setUserCustomFields(userCustomFields);
 
-			long formInstanceId = ParamUtil.getLong(
-				actionRequest, FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID,
-				0);
-			searchCriteria.setFormInstanceId(formInstanceId);
+			searchCriteria.setFormInstanceId(
+				ParamUtil.getLong(
+					actionRequest,
+					FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID));
 
 			String registrantName = ParamUtil.getString(
 				actionRequest, FormCounterPortletKeys.PARAM_REGISTRANT_NAME);
@@ -239,36 +255,38 @@ public class FormCounterPortlet extends MVCPortlet {
 
 			if (Validator.isNotNull(startDateStr)) {
 				try {
-					Date startDate = DATE_FORMAT.parse(startDateStr);
-
-					searchCriteria.setStartDate(startDate);
+					searchCriteria.setStartDate(
+						_DATE_FORMAT.parse(startDateStr));
 				}
-				catch (ParseException e) {
-					_log.warn("Invalid start date format: " + startDateStr, e);
+				catch (ParseException parseException) {
+					_log.warn(
+						"Invalid start date format: " + startDateStr,
+						parseException);
 				}
 			}
 
 			if (Validator.isNotNull(endDateStr)) {
 				try {
-					Date endDate = DATE_FORMAT.parse(endDateStr);
-
-					searchCriteria.setEndDate(endDate);
+					searchCriteria.setEndDate(_DATE_FORMAT.parse(endDateStr));
 				}
-				catch (ParseException e) {
-					_log.warn("Invalid end date format: " + endDateStr, e);
+				catch (ParseException parseException) {
+					_log.warn(
+						"Invalid end date format: " + endDateStr,
+						parseException);
 				}
 			}
 
 			String status = ParamUtil.getString(
 				actionRequest, FormCounterPortletKeys.PARAM_STATUS);
 
-			if (Validator.isNotNull(status) && !"all".equals(status)) {
+			if (Validator.isNotNull(status) && !status.equals("all")) {
 				searchCriteria.setStatus(status);
 			}
 
 			PortletSession session = actionRequest.getPortletSession();
 
 			session.setAttribute("searchCriteria", searchCriteria);
+
 			SessionMessages.add(
 				actionRequest,
 				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_SUCCESS_MESSAGE);
@@ -279,7 +297,7 @@ public class FormCounterPortlet extends MVCPortlet {
 		}
 	}
 
-	private List<FormInstanceDisplayDTO> convertToFormInstanceDTOs(
+	private List<FormInstanceDisplayDTO> _convertToFormInstanceDTOs(
 		List<DDMFormInstance> formInstances, Locale locale,
 		Map<String, List<String>> userCustomFields) {
 
@@ -306,7 +324,7 @@ public class FormCounterPortlet extends MVCPortlet {
 		return dtos;
 	}
 
-	private List<FormRecordDisplayDTO> convertToFormRecordDTOs(
+	private List<FormRecordDisplayDTO> _convertToFormRecordDTOs(
 		List<DDMFormInstanceRecord> records, Locale locale) {
 
 		List<FormRecordDisplayDTO> dtos = new ArrayList<>();
@@ -348,7 +366,7 @@ public class FormCounterPortlet extends MVCPortlet {
 		return dtos;
 	}
 
-	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
+	private static final SimpleDateFormat _DATE_FORMAT = new SimpleDateFormat(
 		"MM/dd/yyyy");
 
 	private static final Log _log = LogFactoryUtil.getLog(
