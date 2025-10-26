@@ -423,79 +423,140 @@ if (formCounterRule != null) {
 					hiddenInput.value = conditionCount;
 				}
 			}
-			var ruleName = document
-				.getElementById("<portlet:namespace />ruleName")
-				.value.trim();
 
-			if (!ruleName) {
-				alert('<%= UnicodeLanguageUtil.get(request, "please-enter-a-rule-name") %>');
+			var ruleNameInput = document.getElementById("<portlet:namespace />ruleName");
+
+			if (!ruleNameInput || !ruleNameInput.value.trim()) {
 				event.preventDefault();
+				event.stopImmediatePropagation();
+				alert('<%= UnicodeLanguageUtil.get(request, "please-enter-a-rule-name") %>');
+				if (ruleNameInput) {
+					ruleNameInput.focus();
+				}
 				return false;
 			}
 
 			if (conditionCount === 0) {
-				alert('<%= UnicodeLanguageUtil.get(request, "please-add-at-least-one-condition") %>');
 				event.preventDefault();
+				event.stopImmediatePropagation();
+				alert('<%= UnicodeLanguageUtil.get(request, "please-add-at-least-one-condition") %>');
 				return false;
 			}
 
 			var conditionRows = document.querySelectorAll(".condition-row");
+
 			for (var i = 0; i < conditionRows.length; i++) {
-				var index = conditionRows[i].getAttribute("data-index");
-				var fieldSelect =
-					document.querySelector(
-						'select[name="<portlet:namespace />field' + index + '"]'
-					) ||
-					conditionRows[i].querySelector('select[id$="field' + index + '"]') ||
-					conditionRows[i].querySelector("select");
-
-				var operatorSelect =
-					document.querySelector(
-						'select[name="<portlet:namespace />operator' + index + '"]'
-					) ||
-					conditionRows[i].querySelector(
-						'select[id$="operator' + index + '"]'
-					) ||
-					conditionRows[i].querySelectorAll("select")[1];
-
-				var referenceInput =
-					document.querySelector(
-						'input[name="<portlet:namespace />reference' + index + '"]'
-					) ||
-					conditionRows[i].querySelector(
-						'input[id$="reference' + index + '"]'
-					) ||
-					conditionRows[i].querySelector("input");
+				var fieldSelect = conditionRows[i].querySelector("select[name*='field']");
+				var operatorSelect = conditionRows[i].querySelector("select[name*='operator']");
+				var referenceInput = conditionRows[i].querySelector("input[name*='reference']");
 
 				if (!fieldSelect || !fieldSelect.value) {
-					alert(
-						'<%= LanguageUtil.get(request, "please-select-a-custom-field") %> ' + (parseInt(i) + 1)
-					);
 					event.preventDefault();
+					event.stopImmediatePropagation();
+					alert('<%= UnicodeLanguageUtil.get(request, "please-select-a-custom-field") %> #' + (i + 1));
+					if (fieldSelect) {
+						fieldSelect.focus();
+					}
 					return false;
 				}
 
 				if (!operatorSelect || !operatorSelect.value) {
-					alert('<%= UnicodeLanguageUtil.get(request, "please-select-an-operator") %> ' + (parseInt(i) + 1));
 					event.preventDefault();
+					event.stopImmediatePropagation();
+					alert('<%= UnicodeLanguageUtil.get(request, "please-select-an-operator") %> #' + (i + 1));
+					if (operatorSelect) {
+						operatorSelect.focus();
+					}
 					return false;
 				}
 
 				if (!referenceInput || !referenceInput.value.trim()) {
-					alert(
-						'<%= LanguageUtil.get(request, "please-enter-a-reference-field-name") %> ' + (parseInt(i) + 1)
-					);
 					event.preventDefault();
+					event.stopImmediatePropagation();
+					alert('<%= UnicodeLanguageUtil.get(request, "please-enter-a-reference-field-name") %> #' + (i + 1));
+					if (referenceInput) {
+						referenceInput.focus();
+					}
 					return false;
 				}
 			}
 
-			document.querySelector(
+			var conditionCountHiddenInput = document.querySelector(
 				"input[name='<portlet:namespace />conditionCount']"
-			).value = conditionCount;
+			);
 
+			if (conditionCountHiddenInput) {
+				conditionCountHiddenInput.value = conditionCount;
+			}
 			return true;
-		});
+		}, true);
+
+		var saveButton = form.querySelector('button[type="submit"]');
+		if (saveButton) {
+			saveButton.addEventListener("click", function(event) {
+				updateConditionCount();
+
+				var conditionCount = document.querySelectorAll(".condition-row").length;
+				var ruleNameInput = document.getElementById("<portlet:namespace />ruleName");
+
+				if (!ruleNameInput || !ruleNameInput.value.trim()) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					alert('<%= UnicodeLanguageUtil.get(request, "please-enter-a-rule-name") %>');
+					if (ruleNameInput) {
+						ruleNameInput.focus();
+					}
+					return false;
+				}
+
+				if (conditionCount === 0) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					alert('<%= UnicodeLanguageUtil.get(request, "please-add-at-least-one-condition") %>');
+					return false;
+				}
+
+				var conditionRows = document.querySelectorAll(".condition-row");
+
+				for (var i = 0; i < conditionRows.length; i++) {
+					var fieldSelect = conditionRows[i].querySelector("select[name*='field']");
+					var operatorSelect = conditionRows[i].querySelector("select[name*='operator']");
+					var referenceInput = conditionRows[i].querySelector("input[name*='reference']");
+
+					if (!fieldSelect || !fieldSelect.value) {
+						event.preventDefault();
+						event.stopImmediatePropagation();
+						alert('<%= UnicodeLanguageUtil.get(request, "please-select-a-custom-field") %> #' + (i + 1));
+						if (fieldSelect) {
+							fieldSelect.focus();
+						}
+						return false;
+					}
+
+					if (!operatorSelect || !operatorSelect.value) {
+						event.preventDefault();
+						event.stopImmediatePropagation();
+						alert('<%= UnicodeLanguageUtil.get(request, "please-select-an-operator") %> #' + (i + 1));
+						if (operatorSelect) {
+							operatorSelect.focus();
+						}
+						return false;
+					}
+
+					if (!referenceInput || !referenceInput.value.trim()) {
+						event.preventDefault();
+						event.stopImmediatePropagation();
+						alert('<%= UnicodeLanguageUtil.get(request, "please-enter-a-reference-field-name") %> #' + (i + 1));
+						if (referenceInput) {
+							referenceInput.focus();
+						}
+						return false;
+					}
+				}
+
+				return true;
+			});
+		}
 	}
 });
 </aui:script>
