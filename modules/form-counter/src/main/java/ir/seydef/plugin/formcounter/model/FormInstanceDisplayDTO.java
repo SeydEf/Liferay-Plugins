@@ -43,6 +43,10 @@ public class FormInstanceDisplayDTO {
 		return _recordCount;
 	}
 
+	public int getUnseenCount() {
+		return _unseenCount;
+	}
+
 	public void setDescription(String description) {
 		_description = description;
 	}
@@ -59,6 +63,10 @@ public class FormInstanceDisplayDTO {
 		_recordCount = recordCount;
 	}
 
+	public void setUnseenCount(int unseenCount) {
+		_unseenCount = unseenCount;
+	}
+
 	@Override
 	public String toString() {
 		return "FormInstanceDisplayDTO{formInstanceId=" + _formInstanceId +
@@ -69,5 +77,6 @@ public class FormInstanceDisplayDTO {
 	private long _formInstanceId;
 	private String _name;
 	private int _recordCount;
+	private int _unseenCount;
 
 }

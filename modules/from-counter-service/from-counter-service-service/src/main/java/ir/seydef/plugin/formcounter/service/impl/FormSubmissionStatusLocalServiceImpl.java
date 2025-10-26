@@ -105,11 +105,11 @@ public class FormSubmissionStatusLocalServiceImpl
 	}
 
 	public List<FormSubmissionStatus> getSeenByGroupId(long groupId) {
-		return formSubmissionStatusPersistence.findByG_S(groupId, true);
+		return formSubmissionStatusPersistence.findByS_G(true, groupId);
 	}
 
 	public int getSeenCountByGroupId(long groupId) {
-		return formSubmissionStatusPersistence.countByG_S(groupId, true);
+		return formSubmissionStatusPersistence.countByS_G(true, groupId);
 	}
 
 	public List<FormSubmissionStatus> getUnseenByFormInstanceId(
@@ -149,11 +149,11 @@ public class FormSubmissionStatusLocalServiceImpl
 	}
 
 	public List<FormSubmissionStatus> getUnseenByGroupId(long groupId) {
-		return formSubmissionStatusPersistence.findByG_S(groupId, false);
+		return formSubmissionStatusPersistence.findByS_G(true, groupId);
 	}
 
 	public int getUnseenCountByGroupId(long groupId) {
-		return formSubmissionStatusPersistence.countByG_S(groupId, false);
+		return formSubmissionStatusPersistence.countByS_G(false, groupId);
 	}
 
 	public boolean isSeen(long formInstanceRecordId) {

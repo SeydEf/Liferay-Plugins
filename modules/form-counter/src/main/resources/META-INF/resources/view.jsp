@@ -280,6 +280,13 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 							<div class="summary-count">
 								<liferay-ui:message key="records.count" />:
 									${formInstance.recordCount}
+
+								<c:if test="${formInstance.unseenCount > 0}">
+									<span class="badge badge-warning unseen-badge">
+										${formInstance.unseenCount}
+										<liferay-ui:message key="unseen" />
+									</span>
+								</c:if>
 							</div>
 						</div>
 					</c:forEach>

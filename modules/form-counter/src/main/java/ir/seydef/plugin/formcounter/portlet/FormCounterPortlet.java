@@ -17,6 +17,7 @@ import ir.seydef.plugin.formcounter.helper.DDMFormService;
 import ir.seydef.plugin.formcounter.model.FormInstanceDisplayDTO;
 import ir.seydef.plugin.formcounter.model.FormRecordDisplayDTO;
 import ir.seydef.plugin.formcounter.model.SearchCriteria;
+import ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalServiceUtil;
 import ir.seydef.plugin.formcounter.util.UserCustomFieldUtil;
 
 import java.io.IOException;
@@ -134,7 +135,7 @@ public class FormCounterPortlet extends MVCPortlet {
 
 			List<FormInstanceDisplayDTO> formInstanceDTOs =
 				_convertToFormInstanceDTOs(
-					formInstances, locale, userCustomFields);
+					formInstances, locale, userCustomFields, groupId);
 
 			renderRequest.setAttribute("formInstances", formInstanceDTOs);
 
@@ -299,7 +300,7 @@ public class FormCounterPortlet extends MVCPortlet {
 
 	private List<FormInstanceDisplayDTO> _convertToFormInstanceDTOs(
 		List<DDMFormInstance> formInstances, Locale locale,
-		Map<String, List<String>> userCustomFields) {
+		Map<String, List<String>> userCustomFields, long groupId) {
 
 		List<FormInstanceDisplayDTO> dtos = new ArrayList<>();
 
@@ -316,6 +317,17 @@ public class FormCounterPortlet extends MVCPortlet {
 				}
 
 				dto.setRecordCount(count);
+			}
+
+			try {
+				dto.setUnseenCount(
+					FormSubmissionStatusLocalServiceUtil.
+						getUnseenByFormInstanceId(
+							formInstance.getFormInstanceId(), groupId
+						).size());
+			}
+			catch (Exception exception) {
+				dto.setUnseenCount(0);
 			}
 
 			dtos.add(dto);
