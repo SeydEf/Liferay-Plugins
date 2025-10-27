@@ -11,6 +11,10 @@ public class UpgradeFormCounterRule extends UpgradeProcess {
 
 	@Override
 	protected void doUpgrade() throws Exception {
+		if (!hasTable(FormCounterRuleTable.TABLE_NAME)) {
+			runSQL(FormCounterRuleTable.TABLE_SQL_CREATE);
+		}
+
 		if (hasColumnType(
 				FormCounterRuleTable.TABLE_NAME, "ruleConditions",
 				"VARCHAR(75) null")) {
