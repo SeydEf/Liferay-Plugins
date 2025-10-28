@@ -83,10 +83,15 @@ public class DDMFormService {
 	}
 
 	public static List<DDMFormInstanceRecord> getFilteredFormRecords(
-		long formInstanceId, Map<String, List<String>> userCustomFields,
-		int start, int end, String orderByCol, String orderByType) {
+		List<Long> formInstanceIds, Map<String, List<String>> userCustomFields,
+		int start, int end, String orderByCol, String orderByType,
+		long groupId) {
 
 		if ((userCustomFields == null) || userCustomFields.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		if ((formInstanceIds == null) || ListUtil.isEmpty(formInstanceIds)) {
 			return new ArrayList<>();
 		}
 
@@ -104,14 +109,15 @@ public class DDMFormService {
 				RestrictionsFactoryUtil.in(
 					"formInstanceRecordId", approvedRecordIds));
 
-			if (formInstanceId > 0) {
-				dynamicQuery.add(
-					PropertyFactoryUtil.forName(
-						"formInstanceId"
-					).eq(
-						formInstanceId
-					));
-			}
+			dynamicQuery.add(
+				RestrictionsFactoryUtil.in("formInstanceId", formInstanceIds));
+
+			dynamicQuery.add(
+				PropertyFactoryUtil.forName(
+					"groupId"
+				).eq(
+					groupId
+				));
 
 			if (Validator.isNotNull(orderByCol)) {
 				if ("desc".equalsIgnoreCase(orderByType)) {
@@ -155,7 +161,8 @@ public class DDMFormService {
 	}
 
 	public static int getFilteredFormRecordsCount(
-		long formInstanceId, Map<String, List<String>> userCustomFields) {
+		long formInstanceId, Map<String, List<String>> userCustomFields,
+		long groupId) {
 
 		if ((userCustomFields == null) || userCustomFields.isEmpty()) {
 			return 0;
@@ -180,6 +187,13 @@ public class DDMFormService {
 					RestrictionsFactoryUtil.eq(
 						"formInstanceId", formInstanceId));
 			}
+
+			dynamicQuery.add(
+				PropertyFactoryUtil.forName(
+					"groupId"
+				).eq(
+					groupId
+				));
 
 			List<DDMFormInstanceRecord> allRecords =
 				DDMFormInstanceRecordLocalServiceUtil.dynamicQuery(
@@ -359,13 +373,17 @@ public class DDMFormService {
 	}
 
 	public static List<DDMFormInstanceRecord> searchFormRecords(
-		SearchCriteria searchCriteria, int start, int end, String orderByCol,
-		String orderByType) {
+		SearchCriteria searchCriteria, List<Long> formInstanceIds, int start,
+		int end, String orderByCol, String orderByType, long groupId) {
 
 		Map<String, List<String>> userCustomFields =
 			searchCriteria.getUserCustomFields();
 
 		if ((userCustomFields == null) || userCustomFields.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		if ((formInstanceIds == null) || ListUtil.isEmpty(formInstanceIds)) {
 			return new ArrayList<>();
 		}
 
@@ -391,6 +409,18 @@ public class DDMFormService {
 						searchCriteria.getFormInstanceId()
 					));
 			}
+			else {
+				dynamicQuery.add(
+					RestrictionsFactoryUtil.in(
+						"formInstanceId", formInstanceIds));
+			}
+
+			dynamicQuery.add(
+				PropertyFactoryUtil.forName(
+					"groupId"
+				).eq(
+					groupId
+				));
 
 			if (searchCriteria.getStartDate() != null) {
 				dynamicQuery.add(

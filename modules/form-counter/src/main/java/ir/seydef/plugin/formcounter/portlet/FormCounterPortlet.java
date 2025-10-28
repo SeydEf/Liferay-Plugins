@@ -147,13 +147,19 @@ public class FormCounterPortlet extends MVCPortlet {
 
 				int end = start + delta;
 
+				List<Long> formInstanceIds = new ArrayList<>();
+
+				for (FormInstanceDisplayDTO dto : formInstanceDTOs) {
+					formInstanceIds.add(dto.getFormInstanceId());
+				}
+
 				if (searchCriteria.hasSearchCriteria() ||
 					(searchCriteria.getFormInstanceId() > 0)) {
 
 					List<DDMFormInstanceRecord> records =
 						DDMFormService.searchFormRecords(
-							searchCriteria, start, end, orderByCol,
-							orderByType);
+							searchCriteria, formInstanceIds, start, end,
+							orderByCol, orderByType, groupId);
 
 					formRecords = _convertToFormRecordDTOs(records, locale);
 
@@ -166,9 +172,8 @@ public class FormCounterPortlet extends MVCPortlet {
 				else {
 					List<DDMFormInstanceRecord> records =
 						DDMFormService.getFilteredFormRecords(
-							searchCriteria.getFormInstanceId(),
-							userCustomFields, start, end, orderByCol,
-							orderByType);
+							formInstanceIds, userCustomFields, start, end,
+							orderByCol, orderByType, groupId);
 
 					formRecords = _convertToFormRecordDTOs(records, locale);
 					totalCount = records.size();
@@ -310,7 +315,8 @@ public class FormCounterPortlet extends MVCPortlet {
 
 			if ((userCustomFields != null) && !userCustomFields.isEmpty()) {
 				int count = DDMFormService.getFilteredFormRecordsCount(
-					formInstance.getFormInstanceId(), userCustomFields);
+					formInstance.getFormInstanceId(), userCustomFields,
+					groupId);
 
 				if (count == 0) {
 					continue;
