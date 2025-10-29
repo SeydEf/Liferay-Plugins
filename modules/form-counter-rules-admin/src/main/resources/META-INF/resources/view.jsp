@@ -6,39 +6,39 @@ List<FormCounterRule> rules = (List<FormCounterRule>)request.getAttribute("rules
 
 <div class="container-fluid-1280">
 	<liferay-ui:success
-		key="rule-added-successfully"
+		key="ruleAddedSuccessfully"
 		message="rule-added-successfully"
 	/>
 
 	<liferay-ui:success
-		key="rule-updated-successfully"
+		key="ruleUpdatedSuccessfully"
 		message="rule-updated-successfully"
 	/>
 
 	<liferay-ui:success
-		key="rule-deleted-successfully"
+		key="ruleDeletedSuccessfully"
 		message="rule-deleted-successfully"
 	/>
 
 	<liferay-ui:error
-		key="error-loading-rules"
+		key="errorLoadingRules"
 		message="error-loading-rules"
 	/>
 
 	<liferay-ui:error key="errorAddingRule" message="error-adding-rule" />
 
 	<liferay-ui:error
-		key="error-updating-rule"
+		key="errorUpdatingRule"
 		message="error-updating-rule"
 	/>
 
 	<liferay-ui:error
-		key="error-deleting-rule"
+		key="errorDeletingRule"
 		message="error-deleting-rule"
 	/>
 
 	<liferay-ui:error
-		key="error-invalid-rule-id"
+		key="errorInvalidRuleId"
 		message="error-invalid-rule-id"
 	/>
 
