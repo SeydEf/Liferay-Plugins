@@ -5,6 +5,8 @@ import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -14,6 +16,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 
 import ir.seydef.plugin.formcounter.constants.FormCounterPortletKeys;
 import ir.seydef.plugin.formcounter.helper.DDMFormService;
+import ir.seydef.plugin.formcounter.helper.FormStatusSyncService;
 import ir.seydef.plugin.formcounter.model.FormInstanceDisplayDTO;
 import ir.seydef.plugin.formcounter.model.FormRecordDisplayDTO;
 import ir.seydef.plugin.formcounter.model.SearchCriteria;
@@ -39,6 +42,8 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
 /**
  * @author S.Abolfazl Eftekhari
@@ -84,6 +89,19 @@ public class FormCounterPortlet extends MVCPortlet {
 			List<DDMFormInstance> formInstances =
 				DDMFormService.getFormInstancesForUser(
 					userCustomFields, groupId);
+
+			try {
+				ServiceContext serviceContext =
+					ServiceContextFactory.getInstance(renderRequest);
+
+				_formStatusSyncService.syncFormSubmissionStatuses(
+					formInstances, serviceContext);
+			}
+			catch (Exception exception) {
+				_log.warn(
+					"Error during background form status synchronization",
+					exception);
+			}
 
 			SearchCriteria searchCriteria;
 
@@ -389,5 +407,8 @@ public class FormCounterPortlet extends MVCPortlet {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		FormCounterPortlet.class);
+
+	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
+	private FormStatusSyncService _formStatusSyncService;
 
 }

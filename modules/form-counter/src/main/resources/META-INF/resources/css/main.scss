@@ -344,7 +344,7 @@ select:focus,
 }
 
 /* ---------- High contrast mode support ---------- */
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .ddm-form-records-portlet {
     border: 2px solid #000;
   }
@@ -386,12 +386,9 @@ select:focus,
 }
 
 .stats-badge {
-  background: linear-gradient(135deg, #aaaaaa 0%, #959585 100%);
-  color: white;
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.9rem;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
