@@ -72,15 +72,12 @@ public class UserCustomFieldUtil {
 				catch (Exception exception) {
 					_log.warn(
 						"Error getting value for custom field: " +
-							column.getName(),
-						exception);
+							column.getName());
 				}
 			}
 		}
 		catch (Exception exception) {
-			_log.error(
-				"Error getting user custom fields for user: " + userId,
-				exception);
+			_log.warn("There is no custom fields table for users!");
 		}
 
 		return customFieldsMap;
