@@ -2,6 +2,9 @@ package ir.seydef.plugin.formcounter.portlet;
 
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
@@ -17,13 +20,16 @@ import com.liferay.portal.kernel.util.WebKeys;
 import ir.seydef.plugin.formcounter.constants.FormCounterPortletKeys;
 import ir.seydef.plugin.formcounter.helper.DDMFormService;
 import ir.seydef.plugin.formcounter.helper.FormStatusSyncService;
+import ir.seydef.plugin.formcounter.model.DDMFieldInfo;
 import ir.seydef.plugin.formcounter.model.FormInstanceDisplayDTO;
 import ir.seydef.plugin.formcounter.model.FormRecordDisplayDTO;
 import ir.seydef.plugin.formcounter.model.SearchCriteria;
 import ir.seydef.plugin.formcounter.service.FormSubmissionStatusLocalServiceUtil;
+import ir.seydef.plugin.formcounter.util.DDMStructureFieldUtil;
 import ir.seydef.plugin.formcounter.util.UserCustomFieldUtil;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,6 +46,8 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -48,8 +56,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 /**
  * @author S.Abolfazl Eftekhari
  */
-@Component(
-	property = {
+@Component(property = {
 		"com.liferay.portlet.add-default-resource=true",
 		"com.liferay.portlet.display-category=category.hidden",
 		"com.liferay.portlet.header-portlet-css=/css/main.css",
@@ -65,42 +72,35 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 		"javax.portlet.resource-bundle=content.Language",
 		"javax.portlet.security-role-ref=power-user,user",
 		"javax.portlet.supported-locale=en,fa"
-	},
-	service = Portlet.class
-)
+}, service = Portlet.class)
 public class FormCounterPortlet extends MVCPortlet {
 
 	@Override
 	public void doView(
 			RenderRequest renderRequest, RenderResponse renderResponse)
-		throws IOException, PortletException {
+			throws IOException, PortletException {
 
 		try {
-			ThemeDisplay themeDisplay =
-				(ThemeDisplay)renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
+			ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 			Locale locale = themeDisplay.getLocale();
 			long groupId = themeDisplay.getScopeGroupId();
 
-			Map<String, List<String>> userCustomFields =
-				UserCustomFieldUtil.getUserCustomFieldsWithValues(
+			Map<String, List<String>> userCustomFields = UserCustomFieldUtil.getUserCustomFieldsWithValues(
 					themeDisplay.getUserId());
 
-			List<DDMFormInstance> formInstances =
-				DDMFormService.getFormInstancesForUser(
+			List<DDMFormInstance> formInstances = DDMFormService.getFormInstancesForUser(
 					userCustomFields, groupId);
 
 			try {
-				ServiceContext serviceContext =
-					ServiceContextFactory.getInstance(renderRequest);
+				ServiceContext serviceContext = ServiceContextFactory.getInstance(renderRequest);
 
 				_formStatusSyncService.syncFormSubmissionStatuses(
-					formInstances, serviceContext);
-			}
-			catch (Exception exception) {
+						formInstances, serviceContext);
+			} catch (Exception exception) {
 				_log.warn(
-					"Error during background form status synchronization",
-					exception);
+						"Error during background form status synchronization",
+						exception);
 			}
 
 			SearchCriteria searchCriteria;
@@ -108,10 +108,9 @@ public class FormCounterPortlet extends MVCPortlet {
 			try {
 				PortletSession session = renderRequest.getPortletSession();
 
-				searchCriteria = (SearchCriteria)session.getAttribute(
-					"searchCriteria");
-			}
-			catch (Exception exception) {
+				searchCriteria = (SearchCriteria) session.getAttribute(
+						"searchCriteria");
+			} catch (Exception exception) {
 				searchCriteria = null;
 			}
 
@@ -121,38 +120,37 @@ public class FormCounterPortlet extends MVCPortlet {
 				searchCriteria.setUserCustomFields(userCustomFields);
 
 				long selectedFormInstanceId = ParamUtil.getLong(
-					renderRequest,
-					FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID);
+						renderRequest,
+						FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID);
 
 				searchCriteria.setFormInstanceId(selectedFormInstanceId);
 			}
 
 			int delta = ParamUtil.getInteger(
-				renderRequest, FormCounterPortletKeys.PARAM_DELTA,
-				FormCounterPortletKeys.DEFAULT_DELTA);
+					renderRequest, FormCounterPortletKeys.PARAM_DELTA,
+					FormCounterPortletKeys.DEFAULT_DELTA);
 
 			int cur = ParamUtil.getInteger(renderRequest, "cur", 1);
 
 			String orderByCol = ParamUtil.getString(
-				renderRequest, "orderByCol",
-				FormCounterPortletKeys.DEFAULT_ORDER_BY_COL);
+					renderRequest, "orderByCol",
+					FormCounterPortletKeys.DEFAULT_ORDER_BY_COL);
 
 			String orderByType = ParamUtil.getString(
-				renderRequest, "orderByType",
-				FormCounterPortletKeys.DEFAULT_ORDER_BY_TYPE);
+					renderRequest, "orderByType",
+					FormCounterPortletKeys.DEFAULT_ORDER_BY_TYPE);
 
 			renderRequest.setAttribute("cur", cur);
 			renderRequest.setAttribute("delta", delta);
 			renderRequest.setAttribute(
-				"hasValidCustomFields", !userCustomFields.isEmpty());
+					"hasValidCustomFields", !userCustomFields.isEmpty());
 			renderRequest.setAttribute("orderByCol", orderByCol);
 			renderRequest.setAttribute("orderByType", orderByType);
 			renderRequest.setAttribute("searchCriteria", searchCriteria);
 			renderRequest.setAttribute(
-				"selectedFormInstanceId", searchCriteria.getFormInstanceId());
+					"selectedFormInstanceId", searchCriteria.getFormInstanceId());
 
-			List<FormInstanceDisplayDTO> formInstanceDTOs =
-				_convertToFormInstanceDTOs(
+			List<FormInstanceDisplayDTO> formInstanceDTOs = _convertToFormInstanceDTOs(
 					formInstances, locale, userCustomFields, groupId);
 
 			renderRequest.setAttribute("formInstances", formInstanceDTOs);
@@ -172,10 +170,9 @@ public class FormCounterPortlet extends MVCPortlet {
 				}
 
 				if (searchCriteria.hasSearchCriteria() ||
-					(searchCriteria.getFormInstanceId() > 0)) {
+						(searchCriteria.getFormInstanceId() > 0)) {
 
-					List<DDMFormInstanceRecord> records =
-						DDMFormService.searchFormRecords(
+					List<DDMFormInstanceRecord> records = DDMFormService.searchFormRecords(
 							searchCriteria, formInstanceIds, start, end,
 							orderByCol, orderByType, groupId);
 
@@ -186,10 +183,8 @@ public class FormCounterPortlet extends MVCPortlet {
 					if (totalCount == 0) {
 						SessionErrors.add(renderRequest, "noRecordsFound");
 					}
-				}
-				else {
-					List<DDMFormInstanceRecord> records =
-						DDMFormService.getFilteredFormRecords(
+				} else {
+					List<DDMFormInstanceRecord> records = DDMFormService.getFilteredFormRecords(
 							formInstanceIds, userCustomFields, start, end,
 							orderByCol, orderByType, groupId);
 
@@ -201,41 +196,36 @@ public class FormCounterPortlet extends MVCPortlet {
 			renderRequest.setAttribute("formRecords", formRecords);
 			renderRequest.setAttribute("totalCount", totalCount);
 
-			long unseenCount = formRecords.stream(
-			).filter(
-				record -> !record.isSeen()
-			).count();
+			long unseenCount = formRecords.stream().filter(
+					record -> !record.isSeen()).count();
 
 			renderRequest.setAttribute("unseenCount", unseenCount);
 
-			int totalPages = (int)Math.ceil((double)totalCount / delta);
+			int totalPages = (int) Math.ceil((double) totalCount / delta);
 
 			renderRequest.setAttribute("totalPages", totalPages);
 
 			renderRequest.setAttribute("currentPage", cur);
 
 			SessionMessages.add(
-				renderRequest,
-				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
-		}
-		catch (Exception exception) {
+					renderRequest,
+					SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
+		} catch (Exception exception) {
 			renderRequest.setAttribute(
-				"errorMessage",
-				"An error occurred while loading the form records.");
+					"errorMessage",
+					"An error occurred while loading the form records.");
 		}
 
 		super.doView(renderRequest, renderResponse);
 	}
 
 	public void searchRecords(
-		ActionRequest actionRequest, ActionResponse actionResponse) {
+			ActionRequest actionRequest, ActionResponse actionResponse) {
 
 		try {
-			ThemeDisplay themeDisplay =
-				(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
+			ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
-			Map<String, List<String>> userCustomFields =
-				UserCustomFieldUtil.getUserCustomFieldsWithValues(
+			Map<String, List<String>> userCustomFields = UserCustomFieldUtil.getUserCustomFieldsWithValues(
 					themeDisplay.getUserId());
 
 			SearchCriteria searchCriteria = new SearchCriteria();
@@ -243,18 +233,18 @@ public class FormCounterPortlet extends MVCPortlet {
 			searchCriteria.setUserCustomFields(userCustomFields);
 
 			searchCriteria.setFormInstanceId(
-				ParamUtil.getLong(
-					actionRequest,
-					FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID));
+					ParamUtil.getLong(
+							actionRequest,
+							FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID));
 
 			String registrantName = ParamUtil.getString(
-				actionRequest, FormCounterPortletKeys.PARAM_REGISTRANT_NAME);
+					actionRequest, FormCounterPortletKeys.PARAM_REGISTRANT_NAME);
 			String formNumber = ParamUtil.getString(
-				actionRequest, FormCounterPortletKeys.PARAM_FORM_NUMBER);
+					actionRequest, FormCounterPortletKeys.PARAM_FORM_NUMBER);
 			String trackingCode = ParamUtil.getString(
-				actionRequest, FormCounterPortletKeys.PARAM_TRACKING_CODE);
+					actionRequest, FormCounterPortletKeys.PARAM_TRACKING_CODE);
 			String formName = ParamUtil.getString(
-				actionRequest, FormCounterPortletKeys.PARAM_FORM_NAME);
+					actionRequest, FormCounterPortletKeys.PARAM_FORM_NAME);
 
 			if (Validator.isNotNull(registrantName)) {
 				searchCriteria.setRegistrantName(registrantName.trim());
@@ -273,68 +263,174 @@ public class FormCounterPortlet extends MVCPortlet {
 			}
 
 			String startDateStr = ParamUtil.getString(
-				actionRequest, FormCounterPortletKeys.PARAM_START_DATE);
+					actionRequest, FormCounterPortletKeys.PARAM_START_DATE);
 			String endDateStr = ParamUtil.getString(
-				actionRequest, FormCounterPortletKeys.PARAM_END_DATE);
+					actionRequest, FormCounterPortletKeys.PARAM_END_DATE);
 
 			if (Validator.isNotNull(startDateStr)) {
 				try {
 					searchCriteria.setStartDate(
-						_DATE_FORMAT.parse(startDateStr));
-				}
-				catch (ParseException parseException) {
+							_DATE_FORMAT.parse(startDateStr));
+				} catch (ParseException parseException) {
 					_log.warn(
-						"Invalid start date format: " + startDateStr,
-						parseException);
+							"Invalid start date format: " + startDateStr,
+							parseException);
 				}
 			}
 
 			if (Validator.isNotNull(endDateStr)) {
 				try {
 					searchCriteria.setEndDate(_DATE_FORMAT.parse(endDateStr));
-				}
-				catch (ParseException parseException) {
+				} catch (ParseException parseException) {
 					_log.warn(
-						"Invalid end date format: " + endDateStr,
-						parseException);
+							"Invalid end date format: " + endDateStr,
+							parseException);
 				}
 			}
 
 			String status = ParamUtil.getString(
-				actionRequest, FormCounterPortletKeys.PARAM_STATUS);
+					actionRequest, FormCounterPortletKeys.PARAM_STATUS);
 
 			if (Validator.isNotNull(status) && !status.equals("all")) {
 				searchCriteria.setStatus(status);
 			}
+
+			int filterCount = ParamUtil.getInteger(
+					actionRequest, "dynamicFilterCount", 0);
+
+			List<SearchCriteria.DynamicFilter> dynamicFilters = new ArrayList<>();
+
+			for (int i = 0; i < filterCount; i++) {
+				String fieldName = ParamUtil.getString(
+						actionRequest, "filterField" + i);
+				String fieldType = ParamUtil.getString(
+						actionRequest, "filterFieldType" + i);
+				String fieldValue = ParamUtil.getString(
+						actionRequest, "filterValue" + i);
+
+				if (Validator.isNotNull(fieldName) &&
+						Validator.isNotNull(fieldValue)) {
+
+					SearchCriteria.DynamicFilter filter = new SearchCriteria.DynamicFilter(
+							fieldName, fieldType, fieldValue);
+
+					dynamicFilters.add(filter);
+				}
+			}
+
+			searchCriteria.setDynamicFilters(dynamicFilters);
 
 			PortletSession session = actionRequest.getPortletSession();
 
 			session.setAttribute("searchCriteria", searchCriteria);
 
 			SessionMessages.add(
-				actionRequest,
-				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_SUCCESS_MESSAGE);
-		}
-		catch (Exception exception) {
+					actionRequest,
+					SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_SUCCESS_MESSAGE);
+		} catch (Exception exception) {
 			_log.error("Error processing search action", exception);
 			actionRequest.setAttribute("errorMessage", "search.error.occurred");
 		}
 	}
 
+	@Override
+	public void serveResource(
+			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
+			throws IOException, PortletException {
+
+		String resourceID = resourceRequest.getResourceID();
+
+		if ("getFormFields".equals(resourceID)) {
+			_serveFormFields(resourceRequest, resourceResponse);
+		} else {
+			super.serveResource(resourceRequest, resourceResponse);
+		}
+	}
+
+	private void _serveFormFields(
+			ResourceRequest resourceRequest, ResourceResponse resourceResponse) {
+
+		try {
+			long formInstanceId = ParamUtil.getLong(
+					resourceRequest, "formInstanceId");
+
+			ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
+
+			Locale locale = themeDisplay.getLocale();
+
+			DDMFormInstance formInstance = DDMFormService.getFormInstance(
+					formInstanceId);
+
+			List<DDMFieldInfo> fields = DDMStructureFieldUtil.getFormFields(
+					formInstance, locale);
+
+			JSONArray fieldsArray = JSONFactoryUtil.createJSONArray();
+
+			for (DDMFieldInfo field : fields) {
+				JSONObject fieldJSON = JSONFactoryUtil.createJSONObject();
+
+				fieldJSON.put("name", field.getName());
+				fieldJSON.put("label", field.getLabel());
+				fieldJSON.put("type", field.getType());
+
+				if (!field.getOptions().isEmpty()) {
+					JSONArray optionsArray = JSONFactoryUtil.createJSONArray();
+
+					for (DDMFieldInfo.FieldOption option : field.getOptions()) {
+
+						JSONObject optionJSON = JSONFactoryUtil.createJSONObject();
+
+						optionJSON.put("label", option.getLabel());
+						optionJSON.put("value", option.getValue());
+
+						optionsArray.put(optionJSON);
+					}
+
+					fieldJSON.put("options", optionsArray);
+				}
+
+				fieldsArray.put(fieldJSON);
+			}
+
+			resourceResponse.setContentType("application/json");
+			resourceResponse.setCharacterEncoding("UTF-8");
+
+			PrintWriter writer = resourceResponse.getWriter();
+
+			writer.write(fieldsArray.toString());
+
+			writer.flush();
+		} catch (Exception exception) {
+			_log.error("Error serving form fields", exception);
+
+			try {
+				resourceResponse.setContentType("application/json");
+
+				PrintWriter writer = resourceResponse.getWriter();
+
+				writer.write("{\"error\": \"Failed to load form fields\"}");
+
+				writer.flush();
+			} catch (IOException ioException) {
+				_log.error("Error writing error response", ioException);
+			}
+		}
+	}
+
 	private List<FormInstanceDisplayDTO> _convertToFormInstanceDTOs(
-		List<DDMFormInstance> formInstances, Locale locale,
-		Map<String, List<String>> userCustomFields, long groupId) {
+			List<DDMFormInstance> formInstances, Locale locale,
+			Map<String, List<String>> userCustomFields, long groupId) {
 
 		List<FormInstanceDisplayDTO> dtos = new ArrayList<>();
 
 		for (DDMFormInstance formInstance : formInstances) {
 			FormInstanceDisplayDTO dto = new FormInstanceDisplayDTO(
-				formInstance, locale);
+					formInstance, locale);
 
 			if ((userCustomFields != null) && !userCustomFields.isEmpty()) {
 				int count = DDMFormService.getFilteredFormRecordsCount(
-					formInstance.getFormInstanceId(), userCustomFields,
-					groupId);
+						formInstance.getFormInstanceId(), userCustomFields,
+						groupId);
 
 				if (count == 0) {
 					continue;
@@ -345,12 +441,9 @@ public class FormCounterPortlet extends MVCPortlet {
 
 			try {
 				dto.setUnseenCount(
-					FormSubmissionStatusLocalServiceUtil.
-						getUnseenByFormInstanceId(
-							formInstance.getFormInstanceId(), groupId
-						).size());
-			}
-			catch (Exception exception) {
+						FormSubmissionStatusLocalServiceUtil.getUnseenByFormInstanceId(
+								formInstance.getFormInstanceId(), groupId).size());
+			} catch (Exception exception) {
 				dto.setUnseenCount(0);
 			}
 
@@ -361,52 +454,49 @@ public class FormCounterPortlet extends MVCPortlet {
 	}
 
 	private List<FormRecordDisplayDTO> _convertToFormRecordDTOs(
-		List<DDMFormInstanceRecord> records, Locale locale) {
+			List<DDMFormInstanceRecord> records, Locale locale) {
 
 		List<FormRecordDisplayDTO> dtos = new ArrayList<>();
 
 		for (DDMFormInstanceRecord record : records) {
 			try {
 				DDMFormInstance formInstance = DDMFormService.getFormInstance(
-					record.getFormInstanceId());
+						record.getFormInstanceId());
 
 				FormRecordDisplayDTO dto = new FormRecordDisplayDTO(
-					record, formInstance, locale);
+						record, formInstance, locale);
 
 				dtos.add(dto);
-			}
-			catch (Exception exception) {
+			} catch (Exception exception) {
 				_log.warn(
-					"Error converting record to DTO: " +
-						record.getFormInstanceRecordId(),
-					exception);
+						"Error converting record to DTO: " +
+								record.getFormInstanceRecordId(),
+						exception);
 			}
 		}
 
 		dtos.sort(
-			(dto1, dto2) -> {
-				if (dto1.isSeen() == dto2.isSeen()) {
-					return dto2.getCreateDate(
-					).compareTo(
-						dto1.getCreateDate()
-					);
-				}
+				(dto1, dto2) -> {
+					if (dto1.isSeen() == dto2.isSeen()) {
+						return dto2.getCreateDate().compareTo(
+								dto1.getCreateDate());
+					}
 
-				if (dto1.isSeen()) {
-					return 1;
-				}
+					if (dto1.isSeen()) {
+						return 1;
+					}
 
-				return -1;
-			});
+					return -1;
+				});
 
 		return dtos;
 	}
 
 	private static final SimpleDateFormat _DATE_FORMAT = new SimpleDateFormat(
-		"MM/dd/yyyy");
+			"MM/dd/yyyy");
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		FormCounterPortlet.class);
+			FormCounterPortlet.class);
 
 	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
 	private FormStatusSyncService _formStatusSyncService;
