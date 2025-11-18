@@ -2,6 +2,7 @@ package ir.seydef.plugin.formcounter.model;
 
 import java.io.Serializable;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,53 @@ import java.util.Map;
  */
 public class SearchCriteria implements Serializable {
 
+	public static class DynamicFilter implements Serializable {
+
+		public DynamicFilter() {
+		}
+
+		public DynamicFilter(
+				String fieldName, String fieldType, String fieldValue) {
+
+			_fieldName = fieldName;
+			_fieldType = fieldType;
+			_fieldValue = fieldValue;
+		}
+
+		public String getFieldName() {
+			return _fieldName;
+		}
+
+		public String getFieldType() {
+			return _fieldType;
+		}
+
+		public String getFieldValue() {
+			return _fieldValue;
+		}
+
+		public void setFieldName(String fieldName) {
+			_fieldName = fieldName;
+		}
+
+		public void setFieldType(String fieldType) {
+			_fieldType = fieldType;
+		}
+
+		public void setFieldValue(String fieldValue) {
+			_fieldValue = fieldValue;
+		}
+
+		private static final long serialVersionUID = 1L;
+
+		private String _fieldName;
+		private String _fieldType;
+		private String _fieldValue;
+
+	}
+
 	public SearchCriteria() {
+		_dynamicFilters = new ArrayList<>();
 	}
 
 	public Date getEndDate() {
@@ -52,13 +99,26 @@ public class SearchCriteria implements Serializable {
 
 	public boolean hasSearchCriteria() {
 		if ((_registrantName != null) || (_formNumber != null) ||
-			(_trackingCode != null) || (_formName != null) ||
-			(_startDate != null) || (_endDate != null) || (_status != null)) {
+				(_trackingCode != null) || (_formName != null) ||
+				(_startDate != null) || (_endDate != null) || (_status != null) ||
+				((_dynamicFilters != null) && !_dynamicFilters.isEmpty())) {
 
 			return true;
 		}
 
 		return false;
+	}
+
+	public void addDynamicFilter(DynamicFilter filter) {
+		_dynamicFilters.add(filter);
+	}
+
+	public List<DynamicFilter> getDynamicFilters() {
+		return _dynamicFilters;
+	}
+
+	public void setDynamicFilters(List<DynamicFilter> dynamicFilters) {
+		_dynamicFilters = dynamicFilters;
 	}
 
 	public void setEndDate(Date endDate) {
@@ -94,13 +154,14 @@ public class SearchCriteria implements Serializable {
 	}
 
 	public void setUserCustomFields(
-		Map<String, List<String>> userCustomFields) {
+			Map<String, List<String>> userCustomFields) {
 
 		_userCustomFields = userCustomFields;
 	}
 
 	private static final long serialVersionUID = 1L;
 
+	private List<DynamicFilter> _dynamicFilters;
 	private Date _endDate;
 	private long _formInstanceId;
 	private String _formName;
