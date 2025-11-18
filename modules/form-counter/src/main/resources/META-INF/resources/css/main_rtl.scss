@@ -188,8 +188,7 @@
       background: #fff;
       padding: 1rem;
       border-radius: 6px;
-      border-right: 4px solid #007bff;
-      border-left: none;
+      border-left: 4px solid #007bff;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       transition: all 0.3s ease;
 
@@ -202,6 +201,24 @@
       .summary-count {
         color: #6c757d;
         font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .unseen-badge {
+        display: inline-flex;
+        align-items: center;
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        color: #000;
+        padding: 0.15rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3);
+        white-space: nowrap;
+        animation: fadeInScale 0.3s ease-out;
       }
     }
 
@@ -212,7 +229,7 @@
       &:hover {
         transform: translateY(-4px);
         box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-        border-right-color: #0056b3;
+        border-left-color: #0056b3;
         background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
 
         .summary-name {
@@ -408,6 +425,244 @@ select:focus,
 
 .search-actions .btn {
   width: 100%;
+}
+
+/* ---------- Dynamic Filters Section ---------- */
+.dynamic-filters-section {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  animation: slideDown 0.4s ease-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-20px);
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+    transform: translateY(0);
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+}
+
+.dynamic-filters-section h5 {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #007bff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#dynamicFiltersContainer {
+  margin-bottom: 1rem;
+}
+
+.dynamic-filter-row {
+  background: #ffffff;
+  padding: 1rem !important;
+  margin-bottom: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  animation: filterRowSlideIn 0.3s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.dynamic-filter-row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #007bff 0%, #0056b3 100%);
+}
+
+@keyframes filterRowSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 300px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.dynamic-filter-row label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  display: block;
+}
+
+.dynamic-filter-row .form-control,
+.dynamic-filter-row .field-select {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.dynamic-filter-row .form-control:focus,
+.dynamic-filter-row .field-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+.dynamic-filter-row .checkbox-group {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.dynamic-filter-row .checkbox-group .checkbox {
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s ease;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+}
+
+.dynamic-filter-row .checkbox-group .checkbox:hover {
+  background-color: #e9ecef;
+}
+
+.dynamic-filter-row .checkbox-group .checkbox:last-child {
+  margin-bottom: 0;
+}
+
+.dynamic-filter-row .checkbox-group label {
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 0;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dynamic-filter-row .checkbox-group input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.dynamic-filter-row .remove-filter-btn {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  border: none;
+  color: white;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: 35px;
+  margin-top: 0.5rem;
+}
+
+.dynamic-filter-row .remove-filter-btn:hover {
+  background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+  transform: translateY(-1px);
+}
+
+.dynamic-filter-row .remove-filter-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+#addFilterButton {
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(40, 167, 69, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+}
+
+#addFilterButton:hover {
+  background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+  box-shadow: 0 5px 12px rgba(40, 167, 69, 0.3);
+  transform: translateY(-2px);
+}
+
+#addFilterButton:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 6px rgba(40, 167, 69, 0.2);
+}
+
+#addFilterButton i {
+  font-size: 1rem;
+}
+
+/* Smooth scrollbar for checkbox groups */
+.checkbox-group::-webkit-scrollbar {
+  width: 8px;
+}
+
+.checkbox-group::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.checkbox-group::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.checkbox-group::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Responsive adjustments for filters */
+@media (max-width: 768px) {
+  .dynamic-filter-row .col-md-4,
+  .dynamic-filter-row .col-md-6,
+  .dynamic-filter-row .col-md-2 {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .dynamic-filter-row .remove-filter-btn {
+    margin-top: 0;
+  }
 }
 
 .form-stats {
@@ -931,8 +1186,6 @@ select:focus,
     color: black !important;
     font-size: 11pt;
     line-height: 1.4;
-    direction: rtl;
-    text-align: right;
   }
 
   .portlet-boundary,
@@ -958,7 +1211,6 @@ select:focus,
     padding-bottom: 5pt;
     border-bottom: 2pt solid #333;
     color: black !important;
-    text-align: right;
   }
 
   .details-grid {
@@ -994,7 +1246,6 @@ select:focus,
     padding-bottom: 5pt;
     border-bottom: 2pt solid #333;
     color: black !important;
-    text-align: right;
   }
 
   .form-field-item {
@@ -1018,12 +1269,9 @@ select:focus,
   }
 
   .nested-field {
-    margin-right: 15pt;
-    margin-left: 0;
-    padding-right: 10pt;
-    padding-left: 0;
-    border-right: 2pt solid #ddd;
-    border-left: none;
+    margin-left: 15pt;
+    padding-left: 10pt;
+    border-left: 2pt solid #ddd;
   }
 
   .nested-field .field-label {
@@ -1063,7 +1311,7 @@ select:focus,
   td {
     border: 1pt solid #ddd;
     padding: 5pt;
-    text-align: right;
+    text-align: left;
   }
 
   th {
@@ -1077,14 +1325,13 @@ select:focus,
   }
 
   .record-details-section:before {
-    content: "جزئیات رکورد فرم";
+    content: "Form Record Details";
     display: block;
     font-size: 16pt;
     font-weight: bold;
     margin-bottom: 15pt;
     padding-bottom: 10pt;
     border-bottom: 3pt solid #000;
-    text-align: right;
   }
 
   .badge,
