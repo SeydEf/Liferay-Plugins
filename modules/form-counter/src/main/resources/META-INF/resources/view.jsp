@@ -1,6 +1,7 @@
 <%@ page import="ir.seydef.plugin.formcounter.model.SearchCriteria" %>
 
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %>
 
 <%@ include file="/init.jsp" %>
 
@@ -30,6 +31,8 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	var="searchURL"
 >
 </portlet:actionURL>
+
+<portlet:resourceURL id="getFormFields" var="getFormFieldsURL" />
 
 <liferay-ui:error embed="false" key="noRecordsFound" message="no-records-found" />
 
@@ -77,7 +80,6 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 <aui:select
 	label="select.form.instance"
 	name="<%= FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID %>"
-	onChange="this.form.submit()"
 	value="<%= selectedFormInstanceId %>"
 >
 						<aui:option value="0">
@@ -100,7 +102,6 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 <aui:select
 	label="status"
 	name="<%= FormCounterPortletKeys.PARAM_STATUS %>"
-	onChange="this.form.submit()"
 	value='<%= (searchCriteria.getStatus() != null) ? searchCriteria.getStatus() : "all" %>'
 >
 						<aui:option value="all">
@@ -162,7 +163,6 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	yearValue="<%= (searchCriteria.getEndDate() != null) ? Integer.parseInt(dateFormat.format(searchCriteria.getEndDate()).substring(0, 4)) : 0 %>"
 />
 				</div>
-
 				<div class="col-md-4">
 					<div class="search-actions">
 <aui:button
@@ -181,6 +181,27 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 					</div>
 				</div>
 			</div>
+
+			<div class="row dynamic-filters-section" id="<portlet:namespace />dynamicFiltersSection" style="display: none;">
+				<div class="col-md-12">
+					<h5><liferay-ui:message key="form.field.filters" /></h5>
+
+					<div id="<portlet:namespace />dynamicFiltersContainer">
+					</div>
+
+					<button
+							type="button"
+							class="btn btn-success btn-sm"
+							id="<portlet:namespace />addFilterButton"
+					>
+						<i class="icon-plus"></i>
+						<liferay-ui:message key="add.filter" />
+					</button>
+
+					<aui:input name="dynamicFilterCount" type="hidden" value="0" />
+				</div>
+			</div>
+
 			</aui:form>
 		</div>
 
@@ -342,7 +363,9 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		);
 		if (formInstanceSelect) {
 			formInstanceSelect.value = formInstanceId;
-			document.getElementById("<portlet:namespace />searchForm").submit();
+			// Trigger the change event to show/hide filters
+			var event = new Event('change');
+			formInstanceSelect.dispatchEvent(event);
 		}
 	}
 
@@ -376,5 +399,223 @@ SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 				}, 300);
 			}, 5000);
 		}
+
+		var formFieldsCache = {};
+		var filterIndex = 0;
+
+		var formInstanceSelect = document.getElementById(
+			"<portlet:namespace /><%= FormCounterPortletKeys.PARAM_FORM_INSTANCE_ID %>"
+		);
+
+		if (formInstanceSelect) {
+			// Show filter section if a form is already selected on page load
+			var currentFormInstanceId = formInstanceSelect.value;
+			if (currentFormInstanceId && currentFormInstanceId !== "0") {
+				var filtersSection = document.getElementById(
+					"<portlet:namespace />dynamicFiltersSection"
+				);
+				filtersSection.style.display = "block";
+				loadFormFields(currentFormInstanceId);
+			}
+
+			formInstanceSelect.addEventListener("change", function() {
+				var formInstanceId = this.value;
+				var filtersSection = document.getElementById(
+					"<portlet:namespace />dynamicFiltersSection"
+				);
+
+				if (formInstanceId && formInstanceId !== "0") {
+					filtersSection.style.display = "block";
+					loadFormFields(formInstanceId);
+				} else {
+					filtersSection.style.display = "none";
+					clearAllFilters();
+				}
+			});
+		}
+
+		var addFilterButton = document.getElementById(
+			"<portlet:namespace />addFilterButton"
+		);
+
+		if (addFilterButton) {
+			addFilterButton.addEventListener("click", function() {
+				console.log("Add filter button clicked");
+				var formInstanceId = formInstanceSelect.value;
+				console.log("Form instance ID:", formInstanceId);
+				console.log("Form fields cache:", formFieldsCache);
+				if (formInstanceId && formInstanceId !== "0") {
+					addFilter(formFieldsCache[formInstanceId] || []);
+				} else {
+					console.log("No form selected");
+				}
+			});
+		} else {
+			console.log("Add filter button not found");
+		}
+
+		function loadFormFields(formInstanceId) {
+			if (formFieldsCache[formInstanceId]) {
+				return;
+			}
+
+			var resourceURL = '<%= getFormFieldsURL %>' + '&<portlet:namespace />formInstanceId=' + formInstanceId;
+
+			fetch(resourceURL)
+				.then(response => response.json())
+				.then(data => {
+					if (data && !data.error) {
+						formFieldsCache[formInstanceId] = data;
+						console.log("Form fields loaded:", data);
+					}
+				})
+				.catch(error => {
+					console.error('Error loading form fields:', error);
+				});
+		}
+
+		function addFilter(fields) {
+			console.log("addFilter called with fields:", fields);
+			var container = document.getElementById(
+				"<portlet:namespace />dynamicFiltersContainer"
+			);
+			console.log("Container element:", container);
+
+			var filterDiv = document.createElement("div");
+			filterDiv.className = "row dynamic-filter-row";
+			filterDiv.setAttribute("data-filter-index", filterIndex);
+			filterDiv.style.marginBottom = "15px";
+			filterDiv.style.padding = "10px";
+			filterDiv.style.border = "1px solid #ddd";
+			filterDiv.style.borderRadius = "4px";
+			filterDiv.style.backgroundColor = "#f9f9f9";
+
+			var fieldSelectHtml = '<div class="col-md-4">' +
+				'<label><liferay-ui:message key="field" /></label>' +
+				'<select class="form-control field-select" name="<portlet:namespace />filterField' + filterIndex + '" id="<portlet:namespace />filterField' + filterIndex + '">';
+
+			if (fields && fields.length > 0) {
+				fields.forEach(function(field, index) {
+					var selected = (index === 0) ? ' selected' : '';
+					fieldSelectHtml += '<option value="' + field.name + '" data-type="' + field.type + '"' + selected + '>' + field.label + '</option>';
+				});
+			}
+
+			fieldSelectHtml += '</select></div>';
+
+			var valueInputHtml = '<div class="col-md-6">' +
+				'<label><liferay-ui:message key="value" /></label>' +
+				'<div id="<portlet:namespace />filterValueContainer' + filterIndex + '"></div>' +
+				'<input type="hidden" name="<portlet:namespace />filterFieldType' + filterIndex + '" id="<portlet:namespace />filterFieldType' + filterIndex + '" />' +
+				'</div>';
+
+			var removeButtonHtml = '<div class="col-md-2">' +
+				'<label>&nbsp;</label>' +
+				'<button type="button" class="btn btn-danger remove-filter-btn btn-block" data-index="' + filterIndex + '">' +
+				'<span>' +
+				'<svg class="lexicon-icon lexicon-icon-trash"><use xlink:href="<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg#trash"></use></svg>' +
+				'</span>' +
+				'</button></div>';
+
+			filterDiv.innerHTML = fieldSelectHtml + valueInputHtml + removeButtonHtml;
+
+			container.appendChild(filterDiv);
+
+			var fieldSelect = filterDiv.querySelector(".field-select");
+			
+			// Automatically trigger change for first field
+			if (fields && fields.length > 0) {
+				var firstField = fields[0];
+				var currentFilterIndex = filterDiv.getAttribute("data-filter-index");
+				document.getElementById("<portlet:namespace />filterFieldType" + currentFilterIndex).value = firstField.type;
+				renderValueInput(currentFilterIndex, firstField.type, firstField.name, fields);
+			}
+			
+			fieldSelect.addEventListener("change", function() {
+				var selectedOption = this.options[this.selectedIndex];
+				var fieldType = selectedOption.getAttribute("data-type");
+				var fieldName = selectedOption.value;
+				var currentFilterIndex = filterDiv.getAttribute("data-filter-index");
+
+				document.getElementById("<portlet:namespace />filterFieldType" + currentFilterIndex).value = fieldType;
+
+				renderValueInput(currentFilterIndex, fieldType, fieldName, fields);
+			});
+
+			var removeButton = filterDiv.querySelector(".remove-filter-btn");
+			removeButton.addEventListener("click", function() {
+				container.removeChild(filterDiv);
+				updateFilterCount();
+			});
+
+			filterIndex++;
+			updateFilterCount();
+		}
+
+		function renderValueInput(filterIndex, fieldType, fieldName, fields) {
+			var container = document.getElementById(
+				"<portlet:namespace />filterValueContainer" + filterIndex
+			);
+
+			if (!container) return;
+
+			container.innerHTML = "";
+
+			var field = fields.find(function(f) { return f.name === fieldName; });
+			var fieldLabel = field ? field.label : fieldName;
+
+			if (fieldType === "text" || fieldType === "rich_text") {
+				container.innerHTML = '<input type="text" class="form-control" name="<portlet:namespace />filterValue' + filterIndex + '" placeholder="' + '<%= LanguageUtil.get(request, "search.for") %>' + ' ' + fieldLabel + ' ..." />';
+			} else if (fieldType === "numeric") {
+				container.innerHTML = '<input type="number" class="form-control" name="<portlet:namespace />filterValue' + filterIndex + '" placeholder="' + '<%= LanguageUtil.get(request, "search.for") %>' + ' ' + fieldLabel + ' ..." />';
+			} else if (fieldType === "date") {
+				container.innerHTML = '<input type="date" class="form-control" name="<portlet:namespace />filterValue' + filterIndex + '" />';
+			} else if (fieldType === "select" || fieldType === "radio") {
+				var selectHtml = '<select class="form-control" name="<portlet:namespace />filterValue' + filterIndex + '">' +
+					'<option value=""><liferay-ui:message key="select.option" /></option>';
+
+				if (field && field.options) {
+					field.options.forEach(function(option) {
+						selectHtml += '<option value="' + option.value + '">' + option.label + '</option>';
+					});
+				}
+
+				selectHtml += '</select>';
+				container.innerHTML = selectHtml;
+			} else if (fieldType === "checkbox_multiple") {
+				var checkboxHtml = '<div class="checkbox-group">';
+
+				if (field && field.options) {
+					field.options.forEach(function(option, index) {
+						checkboxHtml += '<div class="checkbox">' +
+							'<label>' +
+							'<input type="checkbox" name="<portlet:namespace />filterValue' + filterIndex + '" value="' + option.value + '"> ' +
+							option.label +
+							'</label>' +
+							'</div>';
+					});
+				}
+
+				checkboxHtml += '</div>';
+				container.innerHTML = checkboxHtml;
+			} else {
+				container.innerHTML = '<input type="text" class="form-control" name="<portlet:namespace />filterValue' + filterIndex + '" placeholder="' + '<%= LanguageUtil.get(locale, "search.for") %>' + ' ' + fieldName + ' ..." />';
+			}
+		}
+
+		function updateFilterCount() {
+			var count = document.querySelectorAll(".dynamic-filter-row").length;
+			document.getElementById("<portlet:namespace />dynamicFilterCount").value = count;
+		}
+
+		function clearAllFilters() {
+			var container = document.getElementById(
+				"<portlet:namespace />dynamicFiltersContainer"
+			);
+			container.innerHTML = "";
+			filterIndex = 0;
+			updateFilterCount();
+		}
 	});
+
 </aui:script>
