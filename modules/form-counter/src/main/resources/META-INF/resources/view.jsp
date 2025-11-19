@@ -4,6 +4,8 @@
 
 <%@ page import="java.text.SimpleDateFormat" %>
 
+<%@ page import="com.liferay.portal.kernel.util.HtmlUtil" %>
+
 <%@ include file="/init.jsp" %>
 
 <%
@@ -624,14 +626,18 @@ function selectFormInstance(formInstanceId) {
 				var checkboxHtml = '<div class="checkbox-group">';
 
 				if (field && field.options) {
+					checkboxHtml += '<div class="row">';
 					field.options.forEach(function (option, index) {
-						checkboxHtml += '<div class="checkbox">' +
-							'<label>' +
-							'<input type="checkbox" name="<portlet:namespace />filterValue' + filterIndex + '" value="' + option.value + '"> ' +
-							option.label +
+						checkboxHtml += '<div class="col-md-3">' +
+							'<div class="checkbox">' +
+							'<label style="display: flex; align-items: center;">' +
+							'<input type="checkbox" name="<portlet:namespace />filterValue' + filterIndex + '" value="' + option.value + '" style="margin-left: 5px;"> ' +
+							'<span>' + option.label + '</span>' +
 							'</label>' +
+							'</div>' +
 							'</div>';
 					});
+					checkboxHtml += '</div>';
 				}
 
 				checkboxHtml += '</div>';
