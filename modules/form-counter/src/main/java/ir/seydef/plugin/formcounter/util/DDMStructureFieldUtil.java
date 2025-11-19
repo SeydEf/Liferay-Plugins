@@ -92,7 +92,7 @@ public class DDMStructureFieldUtil {
                 fields.add(fieldInfo);
             }
         } catch (Exception exception) {
-            _log.error("Error extracting form fields", exception);
+            _log.error("Error extracting form fields");
         }
 
         return fields;
@@ -147,7 +147,7 @@ public class DDMStructureFieldUtil {
                 }
             }
         } catch (Exception exception) {
-            _log.warn("Error matching filter", exception);
+            _log.warn("Error matching filter");
         }
 
         return false;
