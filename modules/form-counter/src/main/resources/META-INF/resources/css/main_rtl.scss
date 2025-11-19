@@ -743,6 +743,8 @@ select:focus,
   z-index: 9999;
   display: none;
   animation: slideIn 0.3s ease-out;
+  max-width: 350px;
+  width: auto;
 }
 
 .unseen-notification.show {
@@ -753,15 +755,18 @@ select:focus,
   display: flex;
   align-items: center;
   gap: 10px;
+  white-space: nowrap;
 }
 
 .unseen-notification .notification-icon {
   font-size: 24px;
+  flex-shrink: 0;
 }
 
 .unseen-notification .notification-text {
   font-size: 16px;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .unseen-notification .notification-count {
@@ -771,6 +776,7 @@ select:focus,
   border-radius: 12px;
   font-weight: bold;
   margin-left: 5px;
+  flex-shrink: 0;
 }
 
 @keyframes slideIn {
