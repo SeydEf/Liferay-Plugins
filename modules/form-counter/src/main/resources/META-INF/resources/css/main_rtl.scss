@@ -427,7 +427,7 @@ select:focus,
   width: 100%;
 }
 
-/* ---------- Dynamic Filters Section ---------- */
+/* ---------- Dynamic filters section ---------- */
 .dynamic-filters-section {
   margin-top: 1.5rem;
   padding: 1.5rem;
@@ -632,7 +632,7 @@ select:focus,
   font-size: 1rem;
 }
 
-/* Smooth scrollbar for checkbox groups */
+/* ---------- Smooth scrollbar for checkbox groups ---------- */
 .checkbox-group::-webkit-scrollbar {
   width: 8px;
 }
@@ -651,7 +651,7 @@ select:focus,
   background: #555;
 }
 
-/* Responsive adjustments for filters */
+/* ---------- Responsive adjustments for filters ---------- */
 @media (max-width: 768px) {
   .dynamic-filter-row .col-md-4,
   .dynamic-filter-row .col-md-6,

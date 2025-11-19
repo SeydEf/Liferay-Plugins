@@ -10,95 +10,96 @@ import java.util.List;
  */
 public class DDMFieldInfo implements Serializable {
 
-    public static class FieldOption implements Serializable {
+	public DDMFieldInfo() {
+		_options = new ArrayList<>();
+	}
 
-        public FieldOption() {
-        }
+	public DDMFieldInfo(String name, String label, String type) {
+		_name = name;
+		_label = label;
+		_type = type;
 
-        public FieldOption(String label, String value) {
-            _label = label;
-            _value = value;
-        }
+		_options = new ArrayList<>();
+	}
 
-        public String getLabel() {
-            return _label;
-        }
+	public void addOption(FieldOption option) {
+		_options.add(option);
+	}
 
-        public String getValue() {
-            return _value;
-        }
+	public void addOption(String label, String value) {
+		_options.add(new FieldOption(label, value));
+	}
 
-        public void setLabel(String label) {
-            _label = label;
-        }
+	public String getLabel() {
+		return _label;
+	}
 
-        public void setValue(String value) {
-            _value = value;
-        }
+	public String getName() {
+		return _name;
+	}
 
-        private static final long serialVersionUID = 1L;
+	public List<FieldOption> getOptions() {
+		return _options;
+	}
 
-        private String _label;
-        private String _value;
+	public String getType() {
+		return _type;
+	}
 
-    }
+	public void setLabel(String label) {
+		_label = label;
+	}
 
-    public DDMFieldInfo() {
-        _options = new ArrayList<>();
-    }
+	public void setName(String name) {
+		_name = name;
+	}
 
-    public DDMFieldInfo(String name, String label, String type) {
-        _name = name;
-        _label = label;
-        _type = type;
-        _options = new ArrayList<>();
-    }
+	public void setOptions(List<FieldOption> options) {
+		_options = options;
+	}
 
-    public void addOption(FieldOption option) {
-        _options.add(option);
-    }
+	public void setType(String type) {
+		_type = type;
+	}
 
-    public void addOption(String label, String value) {
-        _options.add(new FieldOption(label, value));
-    }
+	public static class FieldOption implements Serializable {
 
-    public String getLabel() {
-        return _label;
-    }
+		public FieldOption() {
+		}
 
-    public String getName() {
-        return _name;
-    }
+		public FieldOption(String label, String value) {
+			_label = label;
+			_value = value;
+		}
 
-    public List<FieldOption> getOptions() {
-        return _options;
-    }
+		public String getLabel() {
+			return _label;
+		}
 
-    public String getType() {
-        return _type;
-    }
+		public String getValue() {
+			return _value;
+		}
 
-    public void setLabel(String label) {
-        _label = label;
-    }
+		public void setLabel(String label) {
+			_label = label;
+		}
 
-    public void setName(String name) {
-        _name = name;
-    }
+		public void setValue(String value) {
+			_value = value;
+		}
 
-    public void setOptions(List<FieldOption> options) {
-        _options = options;
-    }
+		private static final long serialVersionUID = 1L;
 
-    public void setType(String type) {
-        _type = type;
-    }
+		private String _label;
+		private String _value;
 
-    private static final long serialVersionUID = 1L;
+	}
 
-    private String _label;
-    private String _name;
-    private List<FieldOption> _options;
-    private String _type;
+	private static final long serialVersionUID = 1L;
+
+	private String _label;
+	private String _name;
+	private List<FieldOption> _options;
+	private String _type;
 
 }
