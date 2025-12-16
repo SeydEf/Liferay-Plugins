@@ -4,8 +4,6 @@
 
 <%@ page import="java.text.SimpleDateFormat" %>
 
-<%@ page import="com.liferay.portal.kernel.util.HtmlUtil" %>
-
 <%@ include file="/init.jsp" %>
 
 <%
