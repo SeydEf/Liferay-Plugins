@@ -42,7 +42,7 @@ public class FormCounterRuleTable {
 
 	public static final String TABLE_SQL_CREATE =
 
-		"create table FormCounterRule (formCounterRuleId LONG not null primary key,ruleName VARCHAR(75) null,description VARCHAR(75) null,ruleConditions VARCHAR(75) null,logicOperator VARCHAR(75) null,active BOOLEAN,companyId LONG,groupId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null)";
+		"create table FormCounterRule (formCounterRuleId LONG not null primary key,ruleName VARCHAR(75) null,description VARCHAR(75) null,ruleConditions VARCHAR(75) null,active BOOLEAN,companyId LONG,groupId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table FormCounterRule";
 
