@@ -2,7 +2,7 @@ package ir.seydef.plugin.formcounter.upgrade;
 
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 
-import ir.seydef.plugin.formcounter.upgrade.v1_0_1.UpgradeFormCounterRule;
+import ir.seydef.plugin.formcounter.upgrade.v1_0_0.UpgradeFormCounterRule;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -17,7 +17,7 @@ public class UpgradeSchema implements UpgradeStepRegistrator {
 
 	@Override
 	public void register(Registry registry) {
-		registry.register("1.0.0", "1.0.1", new UpgradeFormCounterRule());
+		registry.register("0.0.0", "1.0.0", new UpgradeFormCounterRule());
 	}
 
 }

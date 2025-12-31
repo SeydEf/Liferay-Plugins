@@ -1,9 +1,9 @@
-package ir.seydef.plugin.formcounter.upgrade.v1_0_1;
+package ir.seydef.plugin.formcounter.upgrade.v1_0_0;
 
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
-import ir.seydef.plugin.formcounter.upgrade.v1_0_1.util.FormCounterRuleTable;
-import ir.seydef.plugin.formcounter.upgrade.v1_0_1.util.FormSubmissionStatusTable;
+import ir.seydef.plugin.formcounter.upgrade.v1_0_0.util.FormCounterRuleTable;
+import ir.seydef.plugin.formcounter.upgrade.v1_0_0.util.FormSubmissionStatusTable;
 
 /**
  * @author S.Abolfazl Eftekhari

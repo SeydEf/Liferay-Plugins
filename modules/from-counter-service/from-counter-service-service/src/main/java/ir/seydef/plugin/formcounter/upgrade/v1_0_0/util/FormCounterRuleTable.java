@@ -1,4 +1,4 @@
-package ir.seydef.plugin.formcounter.upgrade.v1_0_1.util;
+package ir.seydef.plugin.formcounter.upgrade.v1_0_0.util;
 
 import java.sql.Types;
 
